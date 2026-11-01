@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f5c8c">
+<title>מתכנן קווי חלוקה</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <h1>מתכנן קווי חלוקה</h1>
+  <button id="openSaved" class="ghost">📁 מסלולים שמורים</button>
+</header>
+
+<main>
+  <section class="card">
+    <h2>נקודות התחלה וסיום</h2>
+    <label for="start">נקודת התחלה</label>
+    <input id="start" type="text" placeholder="לדוגמה: הגליל 20, טבריה" autocomplete="off">
+    <label class="check"><input id="roundTrip" type="checkbox" checked> לחזור לנקודת ההתחלה בסוף הקו</label>
+    <div id="endWrap" hidden>
+      <label for="end">נקודת סיום</label>
+      <input id="end" type="text" placeholder="לדוגמה: העצמאות 5, עפולה" autocomplete="off">
+    </div>
+    <details class="more">
+      <summary>הגדרות נוספות</summary>
+      <label for="city">עיר ברירת מחדל <small>(אם כתובת לא נמצאה, ננסה שוב עם העיר הזו)</small></label>
+      <input id="city" type="text" placeholder="לדוגמה: טבריה">
+      <label for="service">זמן עצירה בכל תחנה (דקות)</label>
+      <input id="service" type="number" min="0" max="120" value="0" inputmode="numeric">
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>תחנות <span id="count" class="badge">0</span></h2>
+    <form id="addForm" class="add">
+      <input id="addInput" type="text" placeholder="כתובת | שם החנות (לא חובה)" autocomplete="off">
+      <button type="submit">הוסף</button>
+    </form>
+    <details class="more" id="pasteBox">
+      <summary>📋 הדבקת רשימת כתובות</summary>
+      <textarea id="paste" rows="6" placeholder="כתובת אחת בכל שורה. אפשר להוסיף שם אחרי |
+הירדן 15, טבריה | סופר הירדן
+שדרות יהודה הלוי 40, טבריה | מכולת דני
+הרצל 2, עפולה"></textarea>
+      <button id="pasteAdd" type="button" class="secondary">הוסף את כל השורות</button>
+    </details>
+
+    <div id="banner" class="banner" hidden></div>
+    <div id="summary" class="summary" hidden></div>
+    <ol id="stops" class="stops"></ol>
+    <p id="empty" class="muted">עדיין אין תחנות. הוסף כתובת או הדבק רשימה.</p>
+  </section>
+
+  <section class="card map-card">
+    <div id="map"></div>
+    <p class="muted small">אפשר לגרור סיכה של תחנה כדי לתקן את המיקום שלה.</p>
+  </section>
+
+  <section class="card" id="navCard" hidden>
+    <h2>ניווט</h2>
+    <div id="navLinks" class="nav-links"></div>
+    <div class="row">
+      <button id="saveRoute" class="secondary">💾 שמור מסלול</button>
+      <button id="clearAll" class="secondary danger">🗑 נקה הכול</button>
+    </div>
+  </section>
+</main>
+
+<div class="bar">
+  <div id="status" class="status" role="status" aria-live="polite"></div>
+  <button id="calc" class="primary">חשב מסלול אופטימלי</button>
+</div>
+
+<dialog id="savedDlg">
+  <form method="dialog" class="dlg-head">
+    <h2>מסלולים שמורים</h2>
+    <button class="ghost" aria-label="סגור">✕</button>
+  </form>
+  <ul id="savedList" class="saved"></ul>
+  <p class="muted small">המסלולים נשמרים בדפדפן במכשיר הזה. לגיבוי או העברה למכשיר אחר:</p>
+  <div class="row">
+    <button id="exportBtn" class="secondary">ייצוא לקובץ</button>
+    <label class="btn secondary">ייבוא מקובץ<input id="importFile" type="file" accept="application/json" hidden></label>
+  </div>
+</dialog>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
