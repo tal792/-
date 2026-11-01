@@ -84,7 +84,7 @@ function arrivalOffset(i) {
   let t = 0; for (let k = 0; k <= i; k++) t += legs[k].duration;
   return t + S.service * 60 * i;
 }
-function invalidate(msg = 'הרשימה השתנתה — לחץ "חשב מסלול" לחישוב מחדש') {
+function invalidate(msg = 'הרשימה השתנתה — לחץ "סדר לי את הקו" לחישוב מחדש') {
   if (S.result) { S.result = null; S.banner = msg; }
   persist();
 }
@@ -207,7 +207,7 @@ function renderSummary() {
     exact: '✔ סדר אופטימלי — מוכח מתמטית שאין סדר מהיר יותר (לפי זמני נסיעה בכבישים)',
     verifying: '⏳ סדר ממוטב — מאמת אופטימליות…',
     heuristic: `✔ סדר ממוטב לפי זמני נסיעה בכבישים. מוכח שגם הסדר הטוב ביותר האפשרי לא יחסוך יותר מ-${fmtTime(Math.max(60, (r.cost || 0) - (r.bound || 0)))}`,
-    manual: '✋ סדר ידני — לא ממוטב. לחץ "חשב מסלול" לסדר אופטימלי',
+    manual: '✋ סדר ידני — לא ממוטב. לחץ "סדר לי את הקו" לסדר אופטימלי',
   }[r.method];
   $('summary').innerHTML = `
     <div class="totals"><span>🛣️ ${fmtKm(r.distance)}</span><span>⏱️ ${fmtTime(r.duration)}</span>
@@ -259,7 +259,7 @@ function renderStops() {
 function renderNav() {
   const r = S.result;
   $('navCard').hidden = !S.stops.length;
-  if (!r) { $('navLinks').innerHTML = '<p class="muted">חשב מסלול כדי לקבל קישורי ניווט לכל הקו.</p>'; return; }
+  if (!r) { $('navLinks').innerHTML = '<p class="muted">לחץ "סדר לי את הקו" כדי לקבל ניווט.</p>'; return; }
   const pts = [S.start.geo, ...S.stops.map(s => s.geo), endPlace().geo];
   const links = gmapsRouteLinks(pts);
   const next = S.stops.find(s => !s.done);
@@ -349,7 +349,7 @@ function drawMap() {
       const { lat, lng } = m.getLatLng();
       s.geo = { lat, lon: lng, label: 'מיקום ידני', precision: 'manual' };
       rememberCustomer(s);
-      invalidate('מיקום תחנה עודכן — לחץ "חשב מסלול" לחישוב מחדש'); render();
+      invalidate('מיקום תחנה עודכן — לחץ "סדר לי את הקו" לחישוב מחדש'); render();
     });
     bounds.push([s.geo.lat, s.geo.lon]);
   });
@@ -389,7 +389,7 @@ $('addForm').addEventListener('submit', e => {
 $('pasteAdd').addEventListener('click', () => {
   const lines = $('paste').value.split(/\r?\n/).filter(l => l.trim());
   if (!lines.length) return;
-  S.stops.push(...lines.map(parseLine)); $('paste').value = ''; $('manualBox').open = false;
+  S.stops.push(...lines.map(parseLine)); $('paste').value = ''; 
   invalidate(); render(); geocodeAll().catch(() => {});
 });
 

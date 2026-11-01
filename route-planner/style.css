@@ -120,3 +120,7 @@ input[type=time] { width: 100%; padding: 10px 12px; font: inherit; border: 1px s
 .stop-note { font-size: .9rem; background: var(--warn-soft); color: #5c3b00; border-radius: 8px; padding: 4px 8px; margin-top: 4px; }
 .d-note { font-size: 1.1rem; background: var(--warn-soft); color: #5c3b00; border-radius: 10px; padding: 10px 12px; font-weight: 600; }
 .ok.small { font-size: .8rem; }
+
+.add-btn { width: 100%; margin-top: 8px; padding: 14px; font-size: 1.1rem; font-weight: 700; }
+#manualBox { margin-top: 14px; }
+#manualBox .scan-btn { margin-top: 8px; }
