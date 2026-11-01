@@ -4,6 +4,7 @@
 const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
 
 import { ISRAEL_LOCALITIES } from './localities.js';
+import { matchProduct } from './catalog.js';
 
 // Localities around the store (official spelling) are matched first and more loosely;
 // all other localities in Israel are matched more strictly, to avoid false hits on OCR noise.
@@ -71,7 +72,7 @@ export function findPaper(img) {
   return box;
 }
 
-export async function preprocess(file) {
+export async function preprocess(file, { removePen = false } = {}) {
   const img = await createImageBitmap(file);
   const box = findPaper(img);
   const scale = Math.min(3, 3200 / Math.max(box.w, box.h));
@@ -96,7 +97,10 @@ export async function preprocess(file) {
   const px = ctx.getImageData(0, 0, w, h), bg = bctx.getImageData(0, 0, w, h).data, d = px.data;
   const gray = (a, i) => 0.299 * a[i] + 0.587 * a[i + 1] + 0.114 * a[i + 2];
   for (let i = 0; i < d.length; i += 4) {
-    const v = gray(bg, i) - gray(d, i) > 18 ? 0 : 255;
+    // blue/purple pen (circles, handwriting) is erased: the printed text is black/grey
+    // (compared with the paper around it, since photos often have a bluish cast)
+    const pen = removePen && (d[i + 2] - d[i]) - (bg[i + 2] - bg[i]) > 30 && d[i + 2] - d[i + 1] > 5;
+    const v = !pen && gray(bg, i) - gray(d, i) > 18 ? 0 : 255;
     d[i] = d[i + 1] = d[i + 2] = v;
   }
   ctx.putImageData(px, 0, 0);
@@ -109,6 +113,16 @@ export async function scanReceipt(file, onProgress, knownTowns = []) {
   const { data: h } = await heb.recognize(canvas);
   const { data: n } = await digits.recognize(canvas);
   const r = parseReceipt(h, n.text, knownTowns);
+  // Products are often circled in pen: re-read only the items area from a copy with the pen erased
+  const top = h.lines.find(l => /לכבו|לכבי/.test(l.text)), pay = h.lines.find(l => /אשראי|מזומן|מסוף/.test(l.text));
+  if (pay) {
+    const clearCanvas = await preprocess(file, { removePen: true });
+    const y0 = top ? top.bbox.y1 : 0, y1 = pay.bbox.y0;
+    if (y1 - y0 > 40) {
+      const { data: p } = await heb.recognize(clearCanvas, { rectangle: { left: 0, top: y0, width: clearCanvas.width, height: y1 - y0 } });
+      r.product = productsFrom(p.lines.map(l => l.text)) || r.product;
+    }
+  }
   // Hebrew OCR often misreads house numbers: re-read just that spot with the digits recognizer
   for (const c of r.cands) {
     if (!c.numBox) continue;
@@ -212,6 +226,20 @@ export function normalizeStreet(s) {
   return s.replace(/ל?א?\s*נבחר\s*רחוב/g, '').replace(/(^|\s)בית\s*(\d)/g, '$1$2').replace(/(\D)(\d)/g, '$1 $2').replace(/\s+/g, ' ').trim();
 }
 
+// Products: item lines (not gifts/shipping/discounts) matched to the store catalog.
+// Garbled OCR text is never shown – an unmatched product is simply left empty.
+export function productsFrom(lines) {
+  const found = [];
+  for (const raw of lines) {
+    const l = clean(raw);
+    if (/אשראי|מזומן|מסוף|נקודות/.test(l)) break;
+    if (/מתנה|משלוח|הנח|לקוח/.test(l) || hebCount(l) < 5) continue;
+    const p = matchProduct(l);
+    if (p && !found.includes(p)) found.push(p);
+  }
+  return found.join(' · ');
+}
+
 // hebOcr: Tesseract result ({ lines: [{ text, words: [{ text, bbox }] }] }) or plain text
 export function parseReceipt(hebOcr, digitText, knownTowns = []) {
   const src = typeof hebOcr === 'string' ? hebOcr.split('\n').map(text => ({ text, words: [] })) : hebOcr.lines;
@@ -240,7 +268,7 @@ export function parseReceipt(hebOcr, digitText, knownTowns = []) {
 
   // product: the line after the items header ("שם פריט")
   const items = find(/פריט|כמו?ת|מחיר/);
-  const product = items >= 0 ? trimEdges(words(lines[items + 1])).join(' ') : '';
+  const product = productsFrom(lines.slice(Math.max(0, to + 1)));
 
   // Box of the house number in a line: the digit word next to the street name and of similar size
   // (lines can also catch tiny vertical print from the paper's edge, which must be ignored).
