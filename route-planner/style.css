@@ -112,3 +112,7 @@ input[type=time] { width: 100%; padding: 10px 12px; font: inherit; border: 1px s
 .scan-fields input { padding: 8px 10px; margin-top: 2px; }
 .scan-item.added { opacity: .6; }
 .ok { color: var(--ok); font-weight: 700; }
+
+.scan-btn { flex-direction: column; gap: 2px; font-size: 1.15rem; padding: 18px 12px; }
+.scan-btn small { font-weight: 400; opacity: .85; font-size: .82rem; }
+#manualBox .add { margin-top: 8px; }

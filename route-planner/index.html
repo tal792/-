@@ -37,26 +37,24 @@
 
   <section class="card">
     <h2>תחנות <span id="count" class="badge">0</span></h2>
-    <label class="btn scan-btn">📷 סריקת חשבוניות (מצלמה / גלריה)
+    <label class="btn scan-btn">📷 צלם חשבוניות
+      <small>אפשר כמה בבת אחת · גם מהגלריה</small>
       <input id="scanInput" type="file" accept="image/*" multiple hidden>
     </label>
-    <form id="addForm" class="add">
-      <input id="addInput" type="text" placeholder="כתובת | שם | טלפון | מוצר" autocomplete="off">
-      <button type="submit">הוסף</button>
-    </form>
-    <details class="more" id="pasteBox">
-      <summary>📋 הדבקת רשימת כתובות</summary>
-      <textarea id="paste" rows="6" placeholder="כתובת אחת בכל שורה: כתובת | שם | טלפון | מוצר
-או להדביק עמודות מאקסל (כתובת, שם, טלפון)
-השיזף 3, כפר קיש | ישראל ישראלי | 050-0000000 | שק מזון 12 ק"ג
-ארבל | דנה כהן | 052-0000000"></textarea>
+    <details class="more" id="manualBox">
+      <summary>✏️ הוספה ידנית / הדבקת רשימה</summary>
+      <form id="addForm" class="add">
+        <input id="addInput" type="text" placeholder="כתובת | שם | טלפון | מוצר" autocomplete="off">
+        <button type="submit">הוסף</button>
+      </form>
+      <textarea id="paste" rows="4" placeholder="כמה שורות בבת אחת: כתובת | שם | טלפון | מוצר"></textarea>
       <button id="pasteAdd" type="button" class="secondary">הוסף את כל השורות</button>
     </details>
 
     <div id="banner" class="banner" hidden></div>
     <div id="summary" class="summary" hidden></div>
     <ol id="stops" class="stops"></ol>
-    <p id="empty" class="muted">עדיין אין תחנות. הוסף כתובת או הדבק רשימה.</p>
+    <p id="empty" class="muted">עדיין אין משלוחים. צלם את חשבוניות המשלוח, והכתובות והטלפונים ייכנסו לקו.</p>
   </section>
 
   <section class="card map-card">
@@ -101,7 +99,7 @@
     <button class="ghost" aria-label="סגור">✕</button>
   </form>
   <ul id="savedList" class="saved"></ul>
-  <p class="muted small">המסלולים נשמרים בדפדפן במכשיר הזה. לגיבוי או העברה למכשיר אחר:</p>
+  <p class="muted small">המסלולים וכרטיסי הלקוחות נשמרים בדפדפן במכשיר הזה. לגיבוי או העברה למכשיר אחר:</p>
   <div class="row">
     <button id="exportBtn" class="secondary">ייצוא לקובץ</button>
     <label class="btn secondary">ייבוא מקובץ<input id="importFile" type="file" accept="application/json" hidden></label>

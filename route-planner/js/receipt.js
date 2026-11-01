@@ -38,13 +38,52 @@ async function getWorkers(onProgress) {
 }
 
 // Grayscale + background removal + threshold: makes thermal-paper photos far more readable.
+// Finds the receipt (bright, colourless paper) in the photo, so the table/background is cut away.
+export function findPaper(img) {
+  const W = 200, H = Math.max(1, Math.round(img.height * W / img.width));
+  const c = Object.assign(document.createElement('canvas'), { width: W, height: H });
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, W, H);
+  const d = ctx.getImageData(0, 0, W, H).data;
+  const rows = new Float32Array(H), cols = new Float32Array(W);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4, mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]);
+    if (mx - mn < 40) {          // colourless = paper (wood/table is coloured)
+      if (mn > 120) cols[x]++;     // columns: bright paper
+      if (mn > 70) rows[y]++;      // rows: also paper in shadow, so the bottom isn't cut off
+    }
+  }
+  // longest run of rows/columns that are mostly paper (short gaps from shadows/creases are bridged)
+  const run = (arr, len) => {
+    const lim = Math.max(...arr) * 0.45, maxGap = Math.max(2, Math.round(len * 0.06));
+    let best = [0, len - 1], bestL = 0, s = -1, last = -1;
+    for (let i = 0; i <= len; i++) {
+      if (i < len && arr[i] >= lim) { if (s < 0) s = i; last = i; }
+      else if (s >= 0 && (i === len || i - last > maxGap)) {
+        if (last - s + 1 > bestL) { bestL = last - s + 1; best = [s, last]; }
+        s = -1;
+      }
+    }
+    return best;
+  };
+  const [y0, y1] = run(rows, H), [x0, x1] = run(cols, W);
+  const k = img.width / W, mx = (x1 - x0) * 0.03, my = (y1 - y0) * 0.02;
+  const box = { x: Math.max(0, (x0 - mx) * k), y: Math.max(0, (y0 - my) * k) };
+  box.w = Math.min(img.width - box.x, (x1 - x0 + 1 + 2 * mx) * k);
+  box.h = Math.min(img.height - box.y, (y1 - y0 + 1 + 2 * my) * k);
+  // ignore implausible results (paper fills the whole photo, or only a sliver was found)
+  if (box.w * box.h < img.width * img.height * 0.12) return { x: 0, y: 0, w: img.width, h: img.height };
+  return box;
+}
+
 export async function preprocess(file) {
   const img = await createImageBitmap(file);
-  const scale = Math.min(2.5, 4000 / Math.max(img.width, img.height));
-  const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+  const box = findPaper(img);
+  const scale = Math.min(3, 3200 / Math.max(box.w, box.h));
+  const w = Math.round(box.w * scale), h = Math.round(box.h * scale);
   const c = Object.assign(document.createElement('canvas'), { width: w, height: h });
   const ctx = c.getContext('2d', { willReadFrequently: true });
-  ctx.drawImage(img, 0, 0, w, h);
+  ctx.drawImage(img, box.x, box.y, box.w, box.h, 0, 0, w, h);
   // blurred background: real blur where supported, otherwise smooth down/up-scaling (iOS Safari)
   const bgC = Object.assign(document.createElement('canvas'), { width: w, height: h });
   const bctx = bgC.getContext('2d', { willReadFrequently: true });

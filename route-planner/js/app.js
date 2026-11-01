@@ -67,7 +67,10 @@ function parseLine(line) {
     if (k < 0) k = 0;
   }
   const rest = cols.filter((_, i) => i !== k);
-  return { id: uid(), text: normalizeStreet(cols[k] || '').replace(/^,\s*/, ''), name: rest[0] || '', product: rest.slice(1).join(' · '), phone, geo: null };
+  const text = normalizeStreet(cols[k] || '').replace(/^,\s*/, '');
+  const known = phone && customers[phone.replace(/\D/g, '')];
+  return { id: uid(), text, name: rest[0] || known?.name || '', product: rest.slice(1).join(' · '), phone,
+    geo: known?.geo && known.text === text ? known.geo : null };
 }
 function clockAt(offsetSec) {
   const [h, m] = (S.startTime || '08:00').split(':').map(Number);
@@ -226,7 +229,7 @@ function renderStops() {
   $('stops').innerHTML = S.stops.map((s, i) => {
     const leg = r?.legs?.[i];
     const geoInfo = s.failed ? '<div class="err">⚠ הכתובת לא אותרה — ערוך אותה</div>'
-      : s.geo ? `<div class="sub">${esc(s.geo.precision === 'manual' ? '📍 מיקום שנקבע ידנית' : s.geo.label)}</div>${PRECISION_WARN[s.geo.precision] || ''}`
+      : s.geo ? `<div class="sub">${esc({ manual: '📍 מיקום שנקבע ידנית', gps: '📍 מיקום מדויק שנשמר במסירה' }[s.geo.precision] || s.geo.label)}</div>${PRECISION_WARN[s.geo.precision] || ''}`
       : '<div class="sub">טרם אותרה</div>';
     return `<li data-i="${i}" class="${s.done ? 'done' : ''}">
       <div class="num">${i + 1}</div>
@@ -295,14 +298,29 @@ function renderDrive() {
       <div class="d-big">${esc(s.name || s.text)}</div>
       ${s.name ? `<div class="d-addr">${esc(s.text)}</div>` : ''}
       ${s.product ? `<div class="d-product">📦 ${esc(s.product)}</div>` : ''}
-      ${s.geo.precision === 'street' || s.geo.precision === 'area' ? '<div class="warn">⚠ מיקום משוער — בדוק את הכתובת</div>' : ''}
+      ${s.geo.precision === 'street' || s.geo.precision === 'area' ? '<div class="warn">⚠ מיקום משוער. כשתגיע ללקוח לחץ "📍 שמור מיקום", ובפעם הבאה הניווט יגיע בדיוק לדלת</div>' : ''}
       <a class="btn d-nav" target="_blank" rel="noopener" href="${wazeLink(s.geo)}">🚗 נווט עם Waze</a>
       <a class="btn secondary" target="_blank" rel="noopener" href="${gmapsLink(s.geo)}">נווט עם Google Maps</a>
       ${s.phone ? `<div class="d-row"><a class="btn secondary" href="tel:${s.phone.replace(/\D/g, '')}">📞 התקשר ${esc(s.phone)}</a>
         <a class="btn secondary" target="_blank" rel="noopener" href="${customerWa(s, i)}">💬 שלח "אני בדרך"</a></div>` : ''}
+      ${s.phone ? `<button class="secondary" data-d="gps">${s.geo.precision === 'gps' ? '📍 עדכן מיקום מדויק ללקוח' : '📍 אני אצל הלקוח — שמור מיקום'}</button>` : ''}
+      <div id="gpsMsg" class="muted small"></div>
       <button class="d-done" data-d="done">✔ בוצע — לתחנה הבאה</button>
       ${doneCount ? '<button class="ghost" data-d="back">⟵ בטל את הסימון האחרון</button>' : ''}`;
   }
+}
+
+function saveGps(s) {
+  if (!s || !navigator.geolocation) return;
+  $('gpsMsg').textContent = 'מאתר את המיקום שלך…';
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+    if (accuracy > 150) { $('gpsMsg').textContent = `המיקום לא מספיק מדויק (±${Math.round(accuracy)} מ'). נסה שוב בעוד רגע, בחוץ.`; return; }
+    s.geo = { lat, lon, label: 'מיקום מהמסירה', precision: 'gps' };
+    rememberCustomer(s); persist(); renderDrive();
+    $('gpsMsg').textContent = `✔ נשמר (±${Math.round(accuracy)} מ'). בפעם הבאה הניווט ללקוח הזה יגיע לכאן.`;
+  }, err => { $('gpsMsg').textContent = err.code === 1 ? 'צריך לאשר גישה למיקום בדפדפן.' : 'לא ניתן לאתר מיקום כרגע.'; },
+  { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
 }
 
 // ---------- map ----------
@@ -327,6 +345,7 @@ function drawMap() {
     m.on('dragend', () => {
       const { lat, lng } = m.getLatLng();
       s.geo = { lat, lon: lng, label: 'מיקום ידני', precision: 'manual' };
+      rememberCustomer(s);
       invalidate('מיקום תחנה עודכן — לחץ "חשב מסלול" לחישוב מחדש'); render();
     });
     bounds.push([s.geo.lat, s.geo.lon]);
@@ -341,6 +360,7 @@ $('driveBody').addEventListener('click', e => {
   const a = e.target.closest('[data-d]')?.dataset.d; if (!a) return;
   if (a === 'done') { const s = S.stops.find(x => !x.done); if (s) s.done = true; }
   if (a === 'back') { const done = S.stops.filter(x => x.done); if (done.length) done[done.length - 1].done = false; }
+  if (a === 'gps') return saveGps(S.stops.find(x => !x.done));
   persist(); renderDrive();
 });
 $('startTime').addEventListener('change', e => { S.startTime = e.target.value || '08:00'; persist(); render(); });
@@ -366,7 +386,7 @@ $('addForm').addEventListener('submit', e => {
 $('pasteAdd').addEventListener('click', () => {
   const lines = $('paste').value.split(/\r?\n/).filter(l => l.trim());
   if (!lines.length) return;
-  S.stops.push(...lines.map(parseLine)); $('paste').value = ''; $('pasteBox').open = false;
+  S.stops.push(...lines.map(parseLine)); $('paste').value = ''; $('manualBox').open = false;
   invalidate(); render(); geocodeAll().catch(() => {});
 });
 
@@ -396,6 +416,7 @@ $('stops').addEventListener('click', e => {
       if (addr !== s.text) { s.text = addr; s.geo = null; s.failed = false; invalidate(); }
       s.name = name; s.phone = normPhone(li.querySelector('.e-phone').value) || li.querySelector('.e-phone').value.trim();
       s.product = li.querySelector('.e-product').value.trim();
+      rememberCustomer(s);
       persist(); render(); geocodeAll().catch(() => {});
       break;
     }
@@ -407,6 +428,22 @@ $('clearAll').addEventListener('click', () => {
   if (!confirm('למחוק את כל התחנות?')) return;
   S.stops = []; S.result = null; S.banner = ''; persist(); render();
 });
+
+// ---------- customer memory (by phone) ----------
+// The phone is read reliably from receipts, so it is the key: after a customer is confirmed once,
+// the next receipt fills in the verified name/address and the exact delivery location.
+const CUST = 'rp.customers.v1';
+let customers = load(CUST, {});
+const phoneKey = p => (p || '').replace(/\D/g, '');
+const EXACT = ['gps', 'manual', 'house'];
+function rememberCustomer(s) {
+  const k = phoneKey(s.phone); if (k.length < 9) return;
+  const prev = customers[k] || {};
+  customers[k] = { name: s.name || prev.name || '', text: s.text || prev.text || '',
+    geo: s.geo && ['gps', 'manual'].includes(s.geo.precision) ? s.geo : prev.geo || null, updated: Date.now() };
+  save(CUST, customers);
+}
+const knownCustomer = phone => customers[phoneKey(phone)] || null;
 
 // ---------- receipt scanning ----------
 const knownTowns = () => [...new Set(S.stops.map(s => s.text.split(',').pop().trim()).filter(t => t && !/\d/.test(t)))];
@@ -420,7 +457,9 @@ $('scanInput').addEventListener('change', async e => {
     scanned[i].status = 'working'; renderScan(`סורק חשבונית ${i + 1} מתוך ${files.length}…`);
     try {
       const r = await scanReceipt(files[i], msg => renderScan(msg), knownTowns());
-      Object.assign(scanned[i], r, { status: 'done' });
+      const known = knownCustomer(r.phone);
+      Object.assign(scanned[i], r, { status: 'done' },
+        known ? { name: known.name || r.name, address: known.text || r.address, geo: known.geo, known: true, cityMatched: true } : {});
     } catch (err) { Object.assign(scanned[i], { status: 'error', error: err.message }); }
     renderScan();
   }
@@ -433,6 +472,7 @@ function renderScan(msg) {
     <div class="scan-fields">
       ${r.status === 'pending' ? '<div class="muted">ממתין…</div>' : r.status === 'working' ? '<div class="muted">⏳ סורק…</div>'
       : r.status === 'error' ? `<div class="err">${esc(r.error)}</div>` : r.added ? '<div class="ok">✔ נוסף לקו</div>' : `
+      ${r.known ? `<div class="ok">⭐ לקוח מוכר — פרטים שמורים${r.geo ? ' + מיקום מדויק' : ''}</div>` : ''}
       <label>שם<input type="text" data-f="name" value="${esc(r.name)}"></label>
       <label>טלפון ${r.phone ? '' : '<span class="warn">⚠ לא זוהה</span>'}<input type="tel" data-f="phone" value="${esc(r.phone)}" inputmode="tel"></label>
       <label>כתובת ${r.cityMatched ? '' : '<span class="warn">⚠ בדוק</span>'}<input type="text" data-f="address" value="${esc(r.address)}"></label>
@@ -448,7 +488,11 @@ $('scanList').addEventListener('input', e => {
 function addScanned(list) {
   const ok = list.filter(r => r.status === 'done' && !r.added && r.address.trim());
   for (const r of ok) {
-    S.stops.push({ id: uid(), text: normalizeStreet(r.address).replace(/^,\s*/, ''), name: r.name.trim(), phone: normPhone(r.phone) || r.phone.trim(), product: r.product.trim(), geo: null });
+    const text = normalizeStreet(r.address).replace(/^,\s*/, '');
+    const known = knownCustomer(r.phone);
+    const stop = { id: uid(), text, name: r.name.trim(), phone: normPhone(r.phone) || r.phone.trim(), product: r.product.trim(),
+      geo: known?.geo && known.text === text ? known.geo : null }; // saved location only if the address wasn't changed
+    S.stops.push(stop); rememberCustomer(stop);
     r.added = true;
   }
   if (ok.length) { invalidate(); render(); geocodeAll().catch(() => {}); }
@@ -491,15 +535,17 @@ $('savedList').addEventListener('click', e => {
   } else if (confirm(`למחוק את "${list[i].name}"?`)) { list.splice(i, 1); save(SAVED, list); renderSaved(); }
 });
 $('exportBtn').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(load(SAVED, []), null, 1)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ routes: load(SAVED, []), customers }, null, 1)], { type: 'application/json' });
   const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'routes-backup.json' });
   a.click(); URL.revokeObjectURL(a.href);
 });
 $('importFile').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   try {
-    const incoming = JSON.parse(await f.text());
-    if (!Array.isArray(incoming) || !incoming.every(r => r.name && r.data?.stops)) throw 0;
+    const raw = JSON.parse(await f.text());
+    const incoming = Array.isArray(raw) ? raw : raw.routes || [];
+    if (!incoming.every(r => r.name && r.data?.stops)) throw 0;
+    if (raw.customers) { customers = { ...raw.customers, ...customers }; save(CUST, customers); }
     const list = load(SAVED, []), names = new Set(list.map(r => r.name));
     incoming.forEach(r => { if (!names.has(r.name)) list.push(r); });
     save(SAVED, list); renderSaved();
