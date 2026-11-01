@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בניית קו משלוחים</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --bg: #f4f6f8; --card: #fff; --text: #1d2733; --muted: #6b7785;
+    --accent: #1f7a4d; --accent-2: #e8f5ee; --danger: #c0392b; --border: #dde3e9;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+         background: var(--bg); color: var(--text); font-size: 16px; }
+  header { background: var(--accent); color: #fff; padding: 14px 16px; }
+  header h1 { margin: 0; font-size: 1.3rem; }
+  header p { margin: 4px 0 0; opacity: .85; font-size: .9rem; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+          padding: 16px; margin-bottom: 16px; }
+  label { display: block; font-weight: 600; margin: 10px 0 6px; }
+  .hint { color: var(--muted); font-size: .85rem; font-weight: 400; }
+  input[type=text], textarea { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid var(--border);
+          border-radius: 8px; font-family: inherit; }
+  textarea { min-height: 180px; resize: vertical; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .row > * { flex: 1 1 200px; }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-weight: 400; }
+  button, .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+          padding: 12px 16px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--accent);
+          background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; font-family: inherit; }
+  button.secondary, .btn.secondary { background: #fff; color: var(--accent); }
+  button:disabled { opacity: .6; cursor: wait; }
+  .big { width: 100%; font-size: 1.15rem; font-weight: 700; margin-top: 14px; }
+  #status { margin-top: 10px; color: var(--muted); min-height: 1.2em; }
+  #map { height: 340px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; }
+  ol#stops { list-style: none; padding: 0; margin: 0; }
+  ol#stops li { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0;
+          border-bottom: 1px solid var(--border); }
+  ol#stops li:last-child { border-bottom: 0; }
+  .num { flex: 0 0 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff;
+          display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  li.done .num { background: #9aa5b1; }
+  li.done .addr { text-decoration: line-through; color: var(--muted); }
+  .info { flex: 1; min-width: 0; }
+  .addr { font-weight: 600; word-break: break-word; }
+  .note { color: var(--muted); font-size: .9rem; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .actions .btn, .actions button { padding: 7px 10px; font-size: .9rem; }
+  .failed { color: var(--danger); }
+  .summary { background: var(--accent-2); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+  .hidden { display: none; }
+  .num-marker { background: var(--accent); color: #fff; border-radius: 50%; width: 26px; height: 26px;
+          display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+          border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+  .num-marker.start { background: #1d2733; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🐾 בניית קו משלוחים</h1>
+  <p>מכניסים כתובות ← מקבלים סדר נסיעה קצר ← נוסעים עם Waze / Google Maps</p>
+</header>
+
+<main>
+  <section class="card">
+    <label for="start">נקודת יציאה <span class="hint">(המחסן / החנות / הבית)</span></label>
+    <input type="text" id="start" placeholder="לדוגמה: הרצל 10, ראשון לציון">
+
+    <label for="city">עיר ברירת מחדל <span class="hint">(תתווסף לכתובות שאין בהן עיר — לא חובה)</span></label>
+    <input type="text" id="city" placeholder="לדוגמה: ראשון לציון">
+
+    <label for="addresses">כתובות למשלוח <span class="hint">— כתובת אחת בכל שורה. אפשר להוסיף הערה אחרי | (שם לקוח, טלפון, מה להביא)</span></label>
+    <textarea id="addresses" placeholder="רוטשילד 5, ראשון לציון | דנה - שק 15 ק&quot;ג לכלב
+ז'בוטינסקי 40, ראשון לציון | משה 050-1234567
+הנרקיסים 3, נס ציונה"></textarea>
+
+    <label class="check"><input type="checkbox" id="roundtrip"> לחזור לנקודת היציאה בסוף הקו</label>
+
+    <button id="build" class="big">🚚 בנה קו</button>
+    <div id="status"></div>
+  </section>
+
+  <section id="result" class="hidden">
+    <div id="map"></div>
+    <div class="card">
+      <div id="summary" class="summary"></div>
+      <div class="row" style="margin-bottom:10px">
+        <div id="gmapsLinks" class="actions" style="margin:0"></div>
+      </div>
+      <div class="actions" style="margin-bottom:12px">
+        <button class="secondary" id="share">📤 שלח את הקו בוואטסאפ</button>
+        <button class="secondary" id="copy">📋 העתק רשימה</button>
+        <button class="secondary" id="resetDone">↺ אפס סימוני "נמסר"</button>
+      </div>
+      <ol id="stops"></ol>
+      <div id="failedBox" class="hidden">
+        <h3 class="failed">כתובות שלא נמצאו (תקן ונסה שוב):</h3>
+        <ul id="failed" class="failed"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+
+  // ---------- remember form between visits ----------
+  $('start').value = store.get('start', '');
+  $('city').value = store.get('city', '');
+  $('addresses').value = store.get('addresses', '');
+  $('roundtrip').checked = store.get('roundtrip', false);
+  ['start', 'city', 'addresses'].forEach(id => $(id).addEventListener('input', () => store.set(id, $(id).value)));
+  $('roundtrip').addEventListener('change', () => store.set('roundtrip', $('roundtrip').checked));
+
+  const setStatus = t => $('status').textContent = t;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // ---------- geocoding (OpenStreetMap / Nominatim, cached) ----------
+  const geoCache = store.get('geoCache', {});
+  let lastGeoCall = 0;
+
+  function withCity(addr) {
+    const city = $('city').value.trim();
+    if (!city || addr.includes(',') || addr.includes(city)) return addr;
+    return addr + ', ' + city;
+  }
+
+  async function geocode(addr) {
+    const key = addr.trim();
+    if (geoCache[key]) return geoCache[key];
+    const wait = 1100 - (Date.now() - lastGeoCall); // Nominatim: max 1 request / second
+    if (wait > 0) await sleep(wait);
+    lastGeoCall = Date.now();
+    const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=il&accept-language=he&q='
+      + encodeURIComponent(key);
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('geocode ' + res.status);
+    const data = await res.json();
+    if (!data.length) return null;
+    const p = { lat: +data[0].lat, lon: +data[0].lon };
+    geoCache[key] = p;
+    store.set('geoCache', geoCache);
+    return p;
+  }
+
+  // ---------- route optimisation ----------
+  function haversine(a, b) {
+    const R = 6371, toR = x => x * Math.PI / 180;
+    const dLat = toR(b.lat - a.lat), dLon = toR(b.lon - a.lon);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a.lat)) * Math.cos(toR(b.lat)) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+
+  // Try real road distances from OSRM; fall back to straight-line distances.
+  async function distanceMatrix(points) {
+    try {
+      const coords = points.map(p => p.lon + ',' + p.lat).join(';');
+      const res = await fetch('https://router.project-osrm.org/table/v1/driving/' + coords + '?annotations=duration');
+      if (res.ok) {
+        const j = await res.json();
+        if (j.code === 'Ok' && j.durations) return { m: j.durations, road: true };
+      }
+    } catch {}
+    return { m: points.map(a => points.map(b => haversine(a, b))), road: false };
+  }
+
+  // Nearest-neighbour start + 2-opt improvement. Index 0 is the fixed start point.
+  function solve(m, roundtrip) {
+    const n = m.length, d = (i, j) => (m[i][j] == null ? 1e12 : m[i][j]);
+    const left = new Set([...Array(n).keys()].slice(1));
+    const tour = [0];
+    while (left.size) {
+      const last = tour[tour.length - 1];
+      let best = null;
+      for (const j of left) if (best === null || d(last, j) < d(last, best)) best = j;
+      tour.push(best); left.delete(best);
+    }
+    const cost = t => {
+      let c = 0;
+      for (let i = 0; i < t.length - 1; i++) c += d(t[i], t[i + 1]);
+      if (roundtrip) c += d(t[t.length - 1], 0);
+      return c;
+    };
+    let improved = true, best = cost(tour);
+    while (improved) {
+      improved = false;
+      for (let i = 1; i < tour.length - 1; i++) {
+        for (let k = i + 1; k < tour.length; k++) {
+          const cand = tour.slice(0, i).concat(tour.slice(i, k + 1).reverse(), tour.slice(k + 1));
+          const c = cost(cand);
+          if (c < best - 1e-9) { tour.splice(0, tour.length, ...cand); best = c; improved = true; }
+        }
+      }
+    }
+    return tour;
+  }
+
+  // ---------- links ----------
+  const waze = p => `https://waze.com/ul?ll=${p.lat},${p.lon}&navigate=yes`;
+  const gmapsOne = p => `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=driving`;
+
+  // Google Maps allows ~9 waypoints per link, so split long routes into parts.
+  function gmapsParts(points) {
+    const parts = [], CH = 10;
+    for (let i = 0; i < points.length - 1; i += CH) {
+      const seg = points.slice(i, Math.min(i + CH + 1, points.length));
+      const ll = p => p.lat + ',' + p.lon;
+      let url = 'https://www.google.com/maps/dir/?api=1&travelmode=driving'
+        + '&origin=' + ll(seg[0]) + '&destination=' + ll(seg[seg.length - 1]);
+      if (seg.length > 2) url += '&waypoints=' + seg.slice(1, -1).map(ll).join('|');
+      parts.push(url);
+    }
+    return parts;
+  }
+
+  // ---------- map ----------
+  let map, layer;
+  function drawMap(start, stops, roundtrip) {
+    if (!map) {
+      map = L.map('map');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+    }
+    if (layer) layer.remove();
+    layer = L.layerGroup().addTo(map);
+    const icon = (t, cls) => L.divIcon({ className: '', html: `<div class="num-marker ${cls || ''}">${t}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] });
+    L.marker([start.lat, start.lon], { icon: icon('🏠', 'start') }).bindPopup('נקודת יציאה').addTo(layer);
+    stops.forEach((s, i) => L.marker([s.lat, s.lon], { icon: icon(i + 1) }).bindPopup(`${i + 1}. ${s.addr}`).addTo(layer));
+    const line = [start, ...stops, ...(roundtrip ? [start] : [])].map(p => [p.lat, p.lon]);
+    L.polyline(line, { color: '#1f7a4d', weight: 4, opacity: .7 }).addTo(layer);
+    map.fitBounds(L.latLngBounds(line), { padding: [30, 30] });
+  }
+
+  // ---------- render result ----------
+  let current = null;
+  function render() {
+    const { start, stops, failed, roundtrip, road, total } = current;
+    const done = store.get('done', {});
+    $('result').classList.remove('hidden');
+    drawMap(start, stops, roundtrip);
+
+    const tot = road ? `כ-${Math.round(total / 60)} דקות נסיעה` : `כ-${total.toFixed(1)} ק"מ בקו אווירי`;
+    $('summary').textContent = `${stops.length} עצירות · ${tot}` + (roundtrip ? ' · כולל חזרה' : '');
+
+    const route = [start, ...stops, ...(roundtrip ? [start] : [])];
+    const parts = gmapsParts(route);
+    $('gmapsLinks').innerHTML = parts.map((u, i) =>
+      `<a class="btn" target="_blank" rel="noopener" href="${u}">🗺️ כל הקו ב-Google Maps${parts.length > 1 ? ` (חלק ${i + 1})` : ''}</a>`).join('');
+
+    $('stops').innerHTML = '';
+    stops.forEach((s, i) => {
+      const li = document.createElement('li');
+      if (done[s.addr]) li.classList.add('done');
+      li.innerHTML = `
+        <div class="num">${i + 1}</div>
+        <div class="info">
+          <div class="addr"></div>
+          <div class="note"></div>
+          <div class="actions">
+            <a class="btn" target="_blank" rel="noopener" href="${waze(s)}">Waze</a>
+            <a class="btn secondary" target="_blank" rel="noopener" href="${gmapsOne(s)}">Google Maps</a>
+            <button class="secondary mark">${done[s.addr] ? 'בטל סימון' : '✔ נמסר'}</button>
+          </div>
+        </div>`;
+      li.querySelector('.addr').textContent = s.addr;
+      li.querySelector('.note').textContent = s.note || '';
+      li.querySelector('.mark').onclick = () => {
+        const d = store.get('done', {});
+        if (d[s.addr]) delete d[s.addr]; else d[s.addr] = true;
+        store.set('done', d);
+        render();
+      };
+      $('stops').appendChild(li);
+    });
+
+    $('failedBox').classList.toggle('hidden', !failed.length);
+    $('failed').innerHTML = '';
+    failed.forEach(f => { const li = document.createElement('li'); li.textContent = f; $('failed').appendChild(li); });
+  }
+
+  function routeText() {
+    return 'קו משלוחים:\n' + current.stops.map((s, i) =>
+      `${i + 1}. ${s.addr}${s.note ? ' — ' + s.note : ''}\n${waze(s)}`).join('\n\n');
+  }
+
+  $('share').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(routeText()), '_blank');
+  $('copy').onclick = async () => {
+    try { await navigator.clipboard.writeText(routeText()); $('copy').textContent = '✔ הועתק'; }
+    catch { prompt('העתק:', routeText()); }
+    setTimeout(() => $('copy').textContent = '📋 העתק רשימה', 1500);
+  };
+  $('resetDone').onclick = () => { store.set('done', {}); render(); };
+
+  // ---------- main ----------
+  $('build').onclick = async () => {
+    const startAddr = $('start').value.trim();
+    const lines = $('addresses').value.split('\n').map(l => l.trim()).filter(Boolean);
+    if (!startAddr) return setStatus('נא למלא נקודת יציאה');
+    if (!lines.length) return setStatus('נא להכניס לפחות כתובת אחת');
+
+    $('build').disabled = true;
+    try {
+      setStatus('מאתר את נקודת היציאה...');
+      const sp = await geocode(withCity(startAddr));
+      if (!sp) { setStatus('לא נמצאה נקודת היציאה — נסה לכתוב רחוב, מספר ועיר'); return; }
+      const start = { ...sp, addr: startAddr };
+
+      const stops = [], failed = [];
+      for (let i = 0; i < lines.length; i++) {
+        const [addr, ...rest] = lines[i].split('|');
+        const a = addr.trim(), note = rest.join('|').trim();
+        setStatus(`מאתר כתובות... ${i + 1} מתוך ${lines.length}`);
+        let p = null;
+        try { p = await geocode(withCity(a)); } catch {}
+        if (p) stops.push({ ...p, addr: a, note }); else failed.push(a);
+      }
+      if (!stops.length) { setStatus('לא נמצאה אף כתובת. בדוק את הכתובות ונסה שוב.'); return; }
+
+      setStatus('מחשב את הסדר הכי קצר...');
+      const roundtrip = $('roundtrip').checked;
+      const pts = [start, ...stops];
+      const { m, road } = await distanceMatrix(pts);
+      const order = solve(m, roundtrip);
+      const ordered = order.slice(1).map(i => pts[i]);
+      let total = 0;
+      for (let i = 0; i < order.length - 1; i++) total += m[order[i]][order[i + 1]] || 0;
+      if (roundtrip) total += m[order[order.length - 1]][0] || 0;
+
+      current = { start, stops: ordered, failed, roundtrip, road, total };
+      render();
+      setStatus(failed.length ? `הקו מוכן. ${failed.length} כתובות לא נמצאו (ראה למטה).` : 'הקו מוכן ✔');
+      $('result').scrollIntoView({ behavior: 'smooth' });
+    } catch (e) {
+      setStatus('שגיאה: ' + e.message + ' — בדוק חיבור לאינטרנט ונסה שוב');
+    } finally {
+      $('build').disabled = false;
+    }
+  };
+})();
+</script>
+</body>
+</html>
