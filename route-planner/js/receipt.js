@@ -41,6 +41,7 @@ export function findPaper(img) {
   const ctx = c.getContext('2d', { willReadFrequently: true });
   ctx.drawImage(img, 0, 0, W, H);
   const d = ctx.getImageData(0, 0, W, H).data;
+  freeCanvas(c);
   const rows = new Float32Array(H), cols = new Float32Array(W);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = (y * W + x) * 4, mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]);
@@ -72,67 +73,138 @@ export function findPaper(img) {
   return box;
 }
 
-export async function preprocess(file, { removePen = false } = {}) {
+// iOS Safari has a small total budget for canvas memory: every canvas is released right after use,
+// otherwise after a few receipts Safari silently hands out blank canvases and nothing is read.
+const newCanvas = (w, h) => Object.assign(document.createElement('canvas'), { width: w, height: h });
+export const freeCanvas = c => { if (c) { c.width = 0; c.height = 0; } };
+const MAX_SIDE = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent)) ? 2800 : 3200;
+
+// Returns two cleaned black/white versions of the receipt: as printed, and with blue pen ink erased.
+export async function preprocess(file) {
   const img = await createImageBitmap(file);
-  const box = findPaper(img);
-  const scale = Math.min(3, 3200 / Math.max(box.w, box.h));
-  const w = Math.round(box.w * scale), h = Math.round(box.h * scale);
-  const c = Object.assign(document.createElement('canvas'), { width: w, height: h });
-  const ctx = c.getContext('2d', { willReadFrequently: true });
-  ctx.drawImage(img, box.x, box.y, box.w, box.h, 0, 0, w, h);
-  // blurred background: real blur where supported, otherwise smooth down/up-scaling (iOS Safari)
-  const bgC = Object.assign(document.createElement('canvas'), { width: w, height: h });
-  const bctx = bgC.getContext('2d', { willReadFrequently: true });
-  bctx.filter = 'blur(25px)';
-  if (bctx.filter === 'blur(25px)') bctx.drawImage(c, 0, 0);
-  else {
-    let src = c, cw = w, ch = h;
-    while (cw > w / 16) { // halve step by step for a smooth result
-      cw = Math.round(cw / 2); ch = Math.round(ch / 2);
-      const t = Object.assign(document.createElement('canvas'), { width: cw, height: ch });
-      const tc = t.getContext('2d'); tc.imageSmoothingQuality = 'high'; tc.drawImage(src, 0, 0, cw, ch); src = t;
+  let c, bgC, pen;
+  const temps = [];
+  try {
+    const box = findPaper(img);
+    const scale = Math.min(3, MAX_SIDE / Math.max(box.w, box.h));
+    const w = Math.round(box.w * scale), h = Math.round(box.h * scale);
+    c = newCanvas(w, h);
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, box.x, box.y, box.w, box.h, 0, 0, w, h);
+    // blurred background: real blur where supported, otherwise smooth down/up-scaling (iOS Safari)
+    bgC = newCanvas(w, h);
+    const bctx = bgC.getContext('2d', { willReadFrequently: true });
+    bctx.filter = 'blur(25px)';
+    if (bctx.filter === 'blur(25px)') bctx.drawImage(c, 0, 0);
+    else {
+      let src = c, cw = w, ch = h;
+      while (cw > w / 16) { // halve step by step for a smooth result
+        cw = Math.round(cw / 2); ch = Math.round(ch / 2);
+        const t = newCanvas(cw, ch); temps.push(t);
+        const tc = t.getContext('2d'); tc.imageSmoothingQuality = 'high'; tc.drawImage(src, 0, 0, cw, ch); src = t;
+      }
+      bctx.imageSmoothingQuality = 'high'; bctx.drawImage(src, 0, 0, w, h);
     }
-    bctx.imageSmoothingQuality = 'high'; bctx.drawImage(src, 0, 0, w, h);
+    const px = ctx.getImageData(0, 0, w, h), bg = bctx.getImageData(0, 0, w, h).data, d = px.data;
+    freeCanvas(bgC); temps.forEach(freeCanvas);
+    const penPx = new ImageData(w, h), q = penPx.data;
+    const gray = (a, i) => 0.299 * a[i] + 0.587 * a[i + 1] + 0.114 * a[i + 2];
+    for (let i = 0; i < d.length; i += 4) {
+      const ink = gray(bg, i) - gray(d, i) > 18;
+      // blue/purple pen (circles, handwriting), compared with the paper around it (photos are often bluish)
+      const isPen = (d[i + 2] - d[i]) - (bg[i + 2] - bg[i]) > 30 && d[i + 2] - d[i + 1] > 5;
+      const v = ink ? 0 : 255;
+      d[i] = d[i + 1] = d[i + 2] = v;
+      q[i] = q[i + 1] = q[i + 2] = ink && !isPen ? 0 : 255; q[i + 3] = 255;
+    }
+    ctx.putImageData(px, 0, 0);
+    pen = newCanvas(w, h);
+    pen.getContext('2d').putImageData(penPx, 0, 0);
+    return { canvas: c, penCanvas: pen };
+  } catch (e) {
+    freeCanvas(c); freeCanvas(bgC); freeCanvas(pen); temps.forEach(freeCanvas);
+    throw e;
+  } finally {
+    img.close?.();
   }
-  const px = ctx.getImageData(0, 0, w, h), bg = bctx.getImageData(0, 0, w, h).data, d = px.data;
-  const gray = (a, i) => 0.299 * a[i] + 0.587 * a[i + 1] + 0.114 * a[i + 2];
-  for (let i = 0; i < d.length; i += 4) {
-    // blue/purple pen (circles, handwriting) is erased: the printed text is black/grey
-    // (compared with the paper around it, since photos often have a bluish cast)
-    const pen = removePen && (d[i + 2] - d[i]) - (bg[i + 2] - bg[i]) > 30 && d[i + 2] - d[i + 1] > 5;
-    const v = !pen && gray(bg, i) - gray(d, i) > 18 ? 0 : 255;
-    d[i] = d[i + 1] = d[i + 2] = v;
+}
+
+const rectOf = (b, padRatio = 0.25) => {
+  const pad = Math.round((b.y1 - b.y0) * padRatio);
+  return { left: Math.max(0, b.x0 - pad), top: Math.max(0, b.y0 - pad), width: b.x1 - b.x0 + 2 * pad, height: b.y1 - b.y0 + 2 * pad };
+};
+
+// Re-reads a small spot (phone, house number) as one line of digits, enlarged to a fixed text height.
+async function readDigitsAt(digits, canvas, bbox, padRatio = 0.3, scale = 0, psm = '7') {
+  const r = rectOf(bbox, padRatio), k = scale || Math.min(4, Math.max(1, 70 / Math.max(1, bbox.y1 - bbox.y0)));
+  const tmp = newCanvas(Math.round(r.width * k), Math.round(r.height * k));
+  try {
+    const t = tmp.getContext('2d');
+    t.fillStyle = '#fff'; t.fillRect(0, 0, tmp.width, tmp.height);
+    t.imageSmoothingQuality = 'high';
+    t.drawImage(canvas, r.left, r.top, r.width, r.height, 0, 0, tmp.width, tmp.height);
+    await digits.setParameters({ tessedit_pageseg_mode: psm });
+    const { data } = await digits.recognize(tmp);
+    return data.text.replace(/\s/g, '');
+  } finally {
+    await digits.setParameters({ tessedit_pageseg_mode: '6' });
+    freeCanvas(tmp);
   }
-  ctx.putImageData(px, 0, 0);
-  return c;
 }
 
 export async function scanReceipt(file, onProgress, knownTowns = []) {
   const { heb, digits } = await getWorkers(onProgress);
-  const canvas = await preprocess(file);
-  const { data: h } = await heb.recognize(canvas);
-  const { data: n } = await digits.recognize(canvas);
-  const r = parseReceipt(h, n.text, knownTowns);
-  // Products are often circled in pen: re-read only the items area from a copy with the pen erased
-  const top = h.lines.find(l => /לכבו|לכבי/.test(l.text)), pay = h.lines.find(l => /אשראי|מזומן|מסוף/.test(l.text));
-  if (pay) {
-    const clearCanvas = await preprocess(file, { removePen: true });
-    const y0 = top ? top.bbox.y1 : 0, y1 = pay.bbox.y0;
-    if (y1 - y0 > 40) {
-      const { data: p } = await heb.recognize(clearCanvas, { rectangle: { left: 0, top: y0, width: clearCanvas.width, height: y1 - y0 } });
-      r.product = productsFrom(p.lines.map(l => l.text)) || r.product;
+  const { canvas, penCanvas } = await preprocess(file);
+  try {
+    const { data: h } = await heb.recognize(canvas);
+    if ((h.text.match(/[א-ת]/g) || []).length < 40)
+      throw new Error('לא הצלחתי לקרוא את החשבונית. צלם שוב מקרוב, ישר מלמעלה ובתאורה טובה, כך שהחשבונית תמלא את רוב התמונה.');
+    const { data: n } = await digits.recognize(canvas);
+    const r = parseReceipt(h, n.text, knownTowns);
+
+    // Phone: read several ways and take a vote (single reads of a digit or two are often wrong)
+    const to = h.lines.findIndex(l => /לכבו|לכבי/.test(l.text));
+    // customer phones are mobiles (05X/07X); the store's own landline and dates must never match
+    const phonesIn = t => (t.match(/0[57]\d-?\s?\d{7}(?=\D|$|0[57]\d)/g) || []).map(p => p.replace(/\D/g, ''));
+    const fmt = p => p.replace(/^(05\d|07\d)(\d{7})$/, '$1-$2').replace(/^(0\d)(\d{7})$/, '$1-$2');
+    const votes = new Map(), add = (list, w) => list.forEach((p, i) => votes.set(p, (votes.get(p) || 0) + w * (i === 0 ? 1 : 0.6)));
+    add(phonesIn(n.text), 1);
+    // locate the phone line: a digits-pass line that holds a phone number, else a Hebrew-pass line with 8+ digits
+    const dLine = n.lines.find(l => phonesIn(l.text).length);
+    const hLine = h.lines.find((l, i) => i > to && (l.text.match(/\d/g) || []).length >= 8 && !/\d{2}\/\d{2}|\.\d\d/.test(l.text));
+    const box = dLine?.bbox || hLine?.bbox;
+    if (hLine) add(phonesIn(hLine.text), 0.5);
+    if (box) for (const [cv, k, psm] of [[canvas, 2, '7'], [canvas, 2, '6'], [canvas, 1.5, '7'], [penCanvas, 2, '7'], [penCanvas, 2, '6']])
+      add(phonesIn(await readDigitsAt(digits, cv, box, 0.3, k, psm)), 1);   // pen-free copy: handwriting near the phone
+    const ranked = [...votes.entries()].sort((x, y) => y[1] - x[1]);
+    if (ranked.length) {
+      const main = fmt(ranked[0][0]);
+      r.note = r.note.replace(/(^| · )טלפון נוסף [\d-]+/g, '').replace(/^ · /, '');
+      r.phone = main;
+      // a second, different number seen by more than one read = the customer's second phone
+      const second = ranked.find(([p, v]) => p !== ranked[0][0] && v >= 1.2 && [...p].filter((d, i) => d !== ranked[0][0][i]).length > 2);
+      if (second) r.note = [r.note, 'טלפון נוסף ' + fmt(second[0])].filter(Boolean).join(' · ');
     }
+
+    // Products are often circled in pen: re-read only the items area from the pen-free copy
+    const top = h.lines[to], pay = h.lines.find(l => /אשראי|מזומן|מסוף/.test(l.text));
+    if (pay) {
+      const y0 = top ? top.bbox.y1 : 0, y1 = pay.bbox.y0;
+      if (y1 - y0 > 40) {
+        const { data: p } = await heb.recognize(penCanvas, { rectangle: { left: 0, top: y0, width: penCanvas.width, height: y1 - y0 } });
+        r.product = productsFrom(p.lines.map(l => l.text)) || r.product;
+      }
+    }
+    // Hebrew OCR often misreads house numbers: re-read just that spot with the digits recognizer
+    for (const c of r.cands) {
+      if (!c.numBox) continue;
+      const m = (await readDigitsAt(digits, canvas, c.numBox, 0.25)).match(/\d{1,4}/);
+      if (m) c.num = m[0];
+    }
+    return finishAddress(r);
+  } finally {
+    freeCanvas(canvas); freeCanvas(penCanvas);
   }
-  // Hebrew OCR often misreads house numbers: re-read just that spot with the digits recognizer
-  for (const c of r.cands) {
-    if (!c.numBox) continue;
-    const { x0, y0, x1, y1 } = c.numBox, pad = Math.round((y1 - y0) * 0.25);
-    const rectangle = { left: Math.max(0, x0 - pad), top: Math.max(0, y0 - pad), width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad };
-    const { data } = await digits.recognize(canvas, { rectangle });
-    const m = data.text.replace(/\s/g, '').match(/\d{1,4}/);
-    if (m) c.num = m[0];
-  }
-  return finishAddress(r);
 }
 
 // ---------- parsing ----------

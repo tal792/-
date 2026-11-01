@@ -48,10 +48,33 @@ export function similarity(a, b) {
   return na + nb ? (2 * inter) / (na + nb) : 0;
 }
 
+// Words that many products share; a match also needs a distinctive word (usually the brand).
+const GENERIC = new Set(['חתול', 'כלב', 'כלבים', 'חתולים', 'עוף', 'ואורז', 'אורז', 'ברווז', 'הודו', 'טונה', 'סלמון', 'כבש',
+  'קג', 'גרם', 'ליטר', 'חטיף', 'חול', 'מזון', 'בוגר', 'גור', 'מיני', 'לייט', 'סניור', 'קיטן', 'גזע', 'גדול', 'קטן', 'בקופסה', 'יחידה', 'ועוף'].map(w => norm(w)));
+const lev = (a, b) => {
+  const dp = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) { let prev = dp[0]; dp[0] = i;
+    for (let j = 1; j <= b.length; j++) { const t = dp[j]; dp[j] = Math.min(dp[j] + 1, dp[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = t; } }
+  return dp[b.length];
+};
+function hasDistinctiveWord(line, product) {
+  const L = norm(line);
+  // the brand: the first distinctive word of the product name (קוויקר, נאטורה, פודיס, בונסיבו...)
+  const words = product.split(/[\s.]+/).map(norm).filter(w => w.length >= 4 && !GENERIC.has(w) && !/\d/.test(w)).slice(0, 1);
+  if (!words.length) return true;
+  return words.some(w => {
+    const tol = w.length >= 6 ? 2 : 1;
+    for (let len = w.length - tol; len <= w.length + tol; len++)
+      for (let i = 0; i + len <= L.length; i++) if (lev(L.slice(i, i + len), w) <= tol) return true;
+    return false;
+  });
+}
+
 // Best catalog entry for an OCR line, or null when nothing is convincingly close.
 export function matchProduct(line, catalog = loadCatalog()) {
   let best = null, score = 0, second = 0;
   for (const p of catalog) {
+    if (!hasDistinctiveWord(line, p)) continue;
     const s = similarity(line, p);
     if (s > score) { second = score; score = s; best = p; } else if (s > second) second = s;
   }
