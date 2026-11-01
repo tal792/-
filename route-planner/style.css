@@ -98,3 +98,17 @@ input[type=time] { width: 100%; padding: 10px 12px; font: inherit; border: 1px s
 .d-addr { font-size: 1.15rem; color: var(--muted); }
 .d-nav { padding: 18px; font-size: 1.2rem; font-weight: 700; }
 .d-done { padding: 18px; font-size: 1.2rem; font-weight: 700; background: var(--ok); border-color: var(--ok); margin-top: 8px; }
+
+.scan-btn { width: 100%; margin-bottom: 10px; padding: 12px; font-weight: 700; }
+.product { font-size: .9rem; color: var(--text); }
+.d-product { font-size: 1.1rem; background: var(--primary-soft); border-radius: 10px; padding: 8px 12px; }
+.d-row { display: flex; gap: 8px; } .d-row > * { flex: 1; }
+.scan-dlg { width: min(640px, calc(100vw - 16px)); }
+.scan-list { list-style: none; padding: 0; margin: 0; }
+.scan-item { display: flex; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border); }
+.scan-item img { width: 96px; max-height: 220px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border); background: #fff; }
+.scan-fields { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.scan-fields label { margin: 0; font-size: .85rem; }
+.scan-fields input { padding: 8px 10px; margin-top: 2px; }
+.scan-item.added { opacity: .6; }
+.ok { color: var(--ok); font-weight: 700; }

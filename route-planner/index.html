@@ -18,7 +18,7 @@
   <section class="card">
     <h2>נקודות התחלה וסיום</h2>
     <label for="start">נקודת התחלה</label>
-    <input id="start" type="text" placeholder="לדוגמה: הגליל 20, טבריה" autocomplete="off">
+    <input id="start" type="text" placeholder="לדוגמה: הלחי 3, כפר תבור" autocomplete="off">
     <label class="check"><input id="roundTrip" type="checkbox" checked> לחזור לנקודת ההתחלה בסוף הקו</label>
     <div id="endWrap" hidden>
       <label for="end">נקודת סיום</label>
@@ -37,16 +37,19 @@
 
   <section class="card">
     <h2>תחנות <span id="count" class="badge">0</span></h2>
+    <label class="btn scan-btn">📷 סריקת חשבוניות (מצלמה / גלריה)
+      <input id="scanInput" type="file" accept="image/*" multiple hidden>
+    </label>
     <form id="addForm" class="add">
-      <input id="addInput" type="text" placeholder="כתובת | שם החנות (לא חובה)" autocomplete="off">
+      <input id="addInput" type="text" placeholder="כתובת | שם | טלפון | מוצר" autocomplete="off">
       <button type="submit">הוסף</button>
     </form>
     <details class="more" id="pasteBox">
       <summary>📋 הדבקת רשימת כתובות</summary>
-      <textarea id="paste" rows="6" placeholder="כתובת אחת בכל שורה. אפשר להוסיף שם אחרי | או להדביק 2 עמודות מאקסל (שם + כתובת)
-הירדן 15, טבריה | סופר הירדן
-שדרות יהודה הלוי 40, טבריה | מכולת דני
-הרצל 2, עפולה"></textarea>
+      <textarea id="paste" rows="6" placeholder="כתובת אחת בכל שורה: כתובת | שם | טלפון | מוצר
+או להדביק עמודות מאקסל (כתובת, שם, טלפון)
+השיזף 3, כפר קיש | ישראל ישראלי | 050-0000000 | שק מזון 12 ק"ג
+ארבל | דנה כהן | 052-0000000"></textarea>
       <button id="pasteAdd" type="button" class="secondary">הוסף את כל השורות</button>
     </details>
 
@@ -80,6 +83,17 @@
   <div class="drive-head"><b>מצב נהיגה</b><button id="driveClose" class="ghost">✕ סגור</button></div>
   <div id="driveBody" class="drive-body"></div>
 </div>
+
+<dialog id="scanDlg" class="scan-dlg">
+  <form method="dialog" class="dlg-head">
+    <h2>סריקת חשבוניות</h2>
+    <button class="ghost" aria-label="סגור">✕</button>
+  </form>
+  <p id="scanStatus" class="muted"></p>
+  <ul id="scanList" class="scan-list"></ul>
+  <div class="row"><button id="scanAddAll">➕ הוסף את כולן לקו</button></div>
+  <p class="muted small">הזיהוי נעשה בטלפון עצמו, והתמונות לא נשלחות לשום שרת. זיהוי אוטומטי עלול לטעות, אז כדאי לבדוק מול התמונה.</p>
+</dialog>
 
 <dialog id="savedDlg">
   <form method="dialog" class="dlg-head">
