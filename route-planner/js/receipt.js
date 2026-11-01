@@ -3,16 +3,11 @@
 
 const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
 
-// Localities around the store, used to fix OCR mistakes in town names. Towns the user types are added too.
-export const LOCALITIES = [
-  'כפר תבור', 'כפר קיש', 'ארבל', 'יבנאל', 'כנרת', 'מצפה', 'שדה אילן', 'אילניה', 'כפר כמא', 'דבוריה', 'שבלי',
-  'גבעת אבני', 'הזורעים', 'פוריה עילית', 'פוריה כפר עבודה', 'טבריה', 'כדורי', 'בית קשת', 'מגדל', 'כפר חיטים',
-  'לביא', 'שרונה', 'עין דור', 'כפר מצר', 'שדמות דבורה', 'מולדת', 'גזית', 'תל עדשים', 'מרחביה', 'בלפוריה',
-  'כפר גדעון', 'עין חרוד', 'עפולה', 'נצרת', 'נוף הגליל', 'מגדל העמק', 'כפר כנא', 'ריינה', 'משהד', 'עין מאהל',
-  'טורעאן', 'עילבון', 'בית שאן', 'נהלל', 'כפר יהושע', 'רמת ישי', 'קריית טבעון', 'יקנעם עילית', 'כרמיאל',
-  'צפת', 'ראש פינה', 'חצור הגלילית', 'קצרין', 'עין גב', 'דגניה א', 'דגניה ב', 'אלומות', 'בית זרע', 'אפיקים',
-  'מנחמיה', 'יזרעאל', 'גבע', 'גדעונה', 'כפר יחזקאל', 'אכסאל', 'יפיע', 'כפר החורש', 'אלוני אבא', 'בית לחם הגלילית',
-];
+import { ISRAEL_LOCALITIES } from './localities.js';
+
+// Localities around the store (official spelling) are matched first and more loosely;
+// all other localities in Israel are matched more strictly, to avoid false hits on OCR noise.
+export const LOCALITIES = ["אילניה", "אכסאל", "אלומות", "אלוני אבא", "אפיקים", "ארבל", "בית זרע", "בית לחם הגלילית", "בית קשת", "בית שאן", "בלפוריה", "גבע", "גבעת אבני", "גדעונה", "גזית", "דבוריה", "דגניה א'", "דגניה ב'", "הזורעים", "חצור הגלילית", "טבריה", "טורעאן", "יבנאל", "יזרעאל", "יפיע", "יקנעם עילית", "כדורי", "כנרת (מושבה)", "כנרת (קבוצה)", "כפר גדעון", "כפר החורש", "כפר חיטים", "כפר יהושע", "כפר יחזקאל", "כפר כמא", "כפר כנא", "כפר מצר", "כפר קיש", "כפר תבור", "כרמיאל", "לביא", "מגדל", "מגדל העמק", "מולדת", "מנחמיה", "מצפה", "מרחביה (מושב)", "מרחביה (קיבוץ)", "משהד", "נהלל", "נוף הגליל", "נצרת", "עיילבון", "עין גב", "עין דור", "עין חרוד (איחוד)", "עין חרוד (מאוחד)", "עין מאהל", "עפולה", "פוריה - כפר עבודה", "פוריה עילית", "צפת", "קצרין", "קרית טבעון", "ראש פינה", "ריינה", "רמת ישי", "שבלי - אום אל-גנם", "שדה אילן", "שדמות דבורה", "שרונה", "תל עדשים"];
 
 let tessReady = null;
 function loadTesseract() {
@@ -111,8 +106,19 @@ export async function preprocess(file) {
 export async function scanReceipt(file, onProgress, knownTowns = []) {
   const { heb, digits } = await getWorkers(onProgress);
   const canvas = await preprocess(file);
-  const [{ data: h }, { data: n }] = [await heb.recognize(canvas), await digits.recognize(canvas)];
-  return parseReceipt(h.text, n.text, knownTowns);
+  const { data: h } = await heb.recognize(canvas);
+  const { data: n } = await digits.recognize(canvas);
+  const r = parseReceipt(h, n.text, knownTowns);
+  // Hebrew OCR often misreads house numbers: re-read just that spot with the digits recognizer
+  for (const c of r.cands) {
+    if (!c.numBox) continue;
+    const { x0, y0, x1, y1 } = c.numBox, pad = Math.round((y1 - y0) * 0.25);
+    const rectangle = { left: Math.max(0, x0 - pad), top: Math.max(0, y0 - pad), width: x1 - x0 + 2 * pad, height: y1 - y0 + 2 * pad };
+    const { data } = await digits.recognize(canvas, { rectangle });
+    const m = data.text.replace(/\s/g, '').match(/\d{1,4}/);
+    if (m) c.num = m[0];
+  }
+  return finishAddress(r);
 }
 
 // ---------- parsing ----------
@@ -133,21 +139,69 @@ function lev(a, b) {
   return dp[b.length];
 }
 
-// Find a known locality inside an OCR line (tolerates missing spaces and 1–2 wrong letters).
+// Find a locality inside an OCR line (tolerates missing spaces and wrong letters).
+const windowsOf = line => {
+  const ws = line.split(/[^\u05D0-\u05EA]+/).filter(w => w.length >= 2), out = new Set([strip(line)]);
+  for (let i = 0; i < ws.length; i++) for (let k = 1; k <= 4 && i + k <= ws.length; k++) out.add(ws.slice(i, i + k).join(''));
+  return [...out];
+};
+const LOCAL_SET = new Set(LOCALITIES);
 export function matchLocality(line, extra = []) {
   const s = strip(line);
   if (!s) return null;
-  const ws = line.split(/[^\u05D0-\u05EA]+/).filter(w => w.length >= 2);
-  const windows = new Set([s]);
-  for (let i = 0; i < ws.length; i++) for (let k = 1; k <= 3 && i + k <= ws.length; k++) windows.add(ws.slice(i, i + k).join(''));
-  const locs = [...new Set([...extra, ...LOCALITIES])];
-  for (const loc of locs) if (s.includes(strip(loc)) && strip(loc).length >= 3) return loc;
+  const wins = windowsOf(line);
+  const tiers = [[...new Set([...extra, ...LOCALITIES])], ISRAEL_LOCALITIES.filter(n => !LOCAL_SET.has(n))];
+  for (const [t, locs] of tiers.entries()) {
+    let best = null, bestD = Infinity;
+    for (const loc of locs) {
+      const L = strip(loc.replace(/\s*\(.*?\)/, ''));   // "כנרת (מושבה)" → "כנרת"
+      if (L.length < 3) continue;
+      if (wins.includes(L)) return loc;
+      const tol = t === 0 ? (L.length >= 4 ? Math.max(1, Math.floor(L.length * 0.25)) : s.length <= L.length + 1 ? 1 : 0) : (L.length >= 6 ? 1 : 0);
+      if (!tol) continue;
+      for (const w of wins) {
+        if (Math.abs(w.length - L.length) > tol) continue;
+        const d = lev(w, L);
+        if (d <= tol && d < bestD) { best = loc; bestD = d; }
+      }
+    }
+    if (best) return best;
+  }
+  return null;
+}
+
+// Official street names per locality (data.gov.il, free), cached on the device.
+const STREETS_KEY = 'rp.streets.v1';
+export async function getStreets(city) {
+  let all = {};
+  try { all = JSON.parse(localStorage.getItem(STREETS_KEY)) || {}; } catch {}
+  if (all[city]) return all[city];
+  try {
+    const url = 'https://data.gov.il/api/3/action/datastore_search?resource_id=9ad3862c-8391-4b2f-84a4-2d4c68625f4b&limit=3000&fields=%D7%A9%D7%9D_%D7%A8%D7%97%D7%95%D7%91&filters='
+      + encodeURIComponent(JSON.stringify({ 'שם_ישוב': city }));
+    const j = await (await fetch(url)).json();
+    const list = [...new Set(j.result.records.map(r => r['שם_רחוב'].trim().replace(/\s+/g, ' ')).filter(n => n && n !== city))];
+    all[city] = list;
+    try { localStorage.setItem(STREETS_KEY, JSON.stringify(all)); } catch {}
+    return list;
+  } catch { return []; }
+}
+
+// Closest official street to the OCR words ("השיוף" → "השיזף", "מיר" → "זמיר").
+export function matchStreet(words, streets) {
+  if (!words.length || !streets.length) return null;
+  const wins = [];
+  for (let i = 0; i < words.length; i++) for (let k = 1; k <= 3 && i + k <= words.length; k++) wins.push(words.slice(i, i + k).join(''));
   let best = null, bestD = Infinity;
-  for (const loc of locs) {
-    const L = strip(loc), tol = L.length >= 4 ? Math.max(1, Math.floor(L.length * 0.25)) : 0;
-    for (const w of windows) {
-      const d = lev(w, L);
-      if (d <= tol && d < bestD) { best = loc; bestD = d; }
+  for (const st of streets) {
+    const forms = [strip(st), strip(st.replace(/^(ה|רחוב |שד(רות|')? )/, ''))];
+    for (const F of forms) {
+      if (F.length < 2) continue;
+      const tol = F.length >= 7 ? 2 : F.length >= 4 ? 1 : 0;
+      for (const w of wins) {
+        const d = lev(w, F);
+        if (d <= tol && (d < bestD || d === bestD && st.length > (best || '').length)) { best = st; bestD = d; }
+      }
     }
   }
   return best;
@@ -158,8 +212,12 @@ export function normalizeStreet(s) {
   return s.replace(/ל?א?\s*נבחר\s*רחוב/g, '').replace(/(^|\s)בית\s*(\d)/g, '$1$2').replace(/(\D)(\d)/g, '$1 $2').replace(/\s+/g, ' ').trim();
 }
 
-export function parseReceipt(hebText, digitText, knownTowns = []) {
-  const lines = hebText.split('\n').map(clean).filter(l => hebCount(l) >= 2 || /\d{3}/.test(l));
+// hebOcr: Tesseract result ({ lines: [{ text, words: [{ text, bbox }] }] }) or plain text
+export function parseReceipt(hebOcr, digitText, knownTowns = []) {
+  const src = typeof hebOcr === 'string' ? hebOcr.split('\n').map(text => ({ text, words: [] })) : hebOcr.lines;
+  const kept = src.map(l => ({ text: clean(l.text.replace(/([א-ת])(\d)/g, '$1 $2').replace(/(\d)([א-ת])/g, '$1 $2')), words: l.words || [] }))
+    .filter(l => hebCount(l.text) >= 2 || /\d{3}/.test(l.text));
+  const lines = kept.map(l => l.text);
   const find = re => lines.findIndex(l => re.test(l));
 
   // phone: prefer mobile numbers from the digits-only pass
@@ -184,28 +242,103 @@ export function parseReceipt(hebText, digitText, knownTowns = []) {
   const items = find(/פריט|כמו?ת|מחיר/);
   const product = items >= 0 ? trimEdges(words(lines[items + 1])).join(' ') : '';
 
-  // address: town (fuzzy-matched) + the street line just above it.
-  // Prefer the "נתונים למשלוח" (delivery details) section, else the customer block under the name.
-  const tail = l => /פידבק|מקבוצת|ח\.?\s?פ/.test(l);
-  const deliv = lines.findIndex((l, i) => /נתונים/.test(l) && i > items);
-  const block = (from, to2) => { const out = []; for (let i = from; i < Math.min(to2, lines.length) && !tail(lines[i]); i++) out.push(lines[i]); return out; };
+  // Box of the house number in a line: the digit word next to the street name and of similar size
+  // (lines can also catch tiny vertical print from the paper's edge, which must be ignored).
+  const numBoxOf = (idx, streetWord) => {
+    const ws = kept[idx]?.words || [];
+    const si = ws.findIndex(w => streetWord && w.text.replace(/[^א-ת]/g, '').includes(streetWord.slice(0, 3)));
+    if (si < 0) return null;
+    const sb = ws[si].bbox, sh = sb.y1 - sb.y0;
+    let best = null, bestD = Infinity;
+    ws.forEach((w, i) => {
+      if (!/\d/.test(w.text) || /\d{2}\/\d{2}/.test(w.text)) return;
+      const b = w.bbox, h = b.y1 - b.y0, gap = Math.max(0, sb.x0 - b.x1, b.x0 - sb.x1);
+      if (h < sh * 0.6 || h > sh * 1.7 || gap > sh * 6) return;
+      const d = Math.abs(i - si) * 1000 + gap;
+      if (d < bestD) { bestD = d; best = w; }
+    });
+    if (!best) { // digits misread as letters ("44" → "וו"): take the short word right after the street name
+      for (const i of [si + 1, si + 2, si - 1, si - 2]) {
+        const w = ws[i]; if (!w || /בית/.test(w.text)) continue;
+        const b = w.bbox, h = b.y1 - b.y0, gap = Math.max(0, sb.x0 - b.x1, b.x0 - sb.x1);
+        if (w.text.replace(/[^א-ת0-9]/g, '').length <= 3 && h >= sh * 0.6 && h <= sh * 1.7 && gap <= sh * 3) return b;
+      }
+      return null;
+    }
+    const t = best.text.replace(/[^א-ת0-9]/g, ''), digs = (t.match(/\d/g) || []).length;
+    if (!t || digs === t.length) return best.bbox;
+    const frac = Math.min(1, (digs + 0.5) / t.length), b = best.bbox;  // RTL: the number sits at the left end
+    return { x0: b.x0, y0: b.y0, x1: Math.round(b.x0 + (b.x1 - b.x0) * frac), y1: b.y1 };
+  };
+
+  // second phone (some receipts list two)
+  const phone2 = (phones.find(p => p.replace(/\D/g, '') !== phone.replace(/\D/g, '')) || '').replace(/\s/g, '').replace(/^(\d{3})(\d{7})$/, '$1-$2');
+
+  // address: town (fuzzy-matched, searched from the bottom of a block) + the street line above it.
+  // A receipt prints the address twice: under the customer's name and in "נתונים למשלוח" (delivery
+  // details). Both copies are read and cross-checked.
+  const NAV = /[נג][יו]תוב|ניתו?ב:/;                       // "ניתוב" (often read as "גיתוב")
+  const END = /דבק|קבוצת|ח\.?\s?פ\b/;                    // store footer ("פידבק", "מקבוצת")
+  const tail = l => END.test(l) || NAV.test(l);
+  const deliv = lines.findIndex((l, i) => /[נג]תונים|ל[מנ]ש?לו[חת]/.test(l) && i > items);
+  const block = (from, to2) => { const out = []; for (let i = from; i < Math.min(to2, lines.length) && !tail(lines[i]); i++) out.push(i); return out; };
   const blocks = [];
   if (deliv >= 0) blocks.push(block(deliv + 1, deliv + 9));
-  if (to >= 0) blocks.push(block(to + 2, items > to ? items : to + 5));
-  let city = '', street = '';
+  if (to >= 0) blocks.push(block(to + 2, items > to ? items : to + 6));
+  const notes = [], cands = [];
+  let city = '', noStreet = false;
   for (const bl of blocks) {
-    const ti = bl.findIndex(l => matchLocality(l, knownTowns));
-    if (ti < 0) continue;
-    city = matchLocality(bl[ti], knownTowns);
+    let ti = -1, c = null;
+    for (let i = bl.length - 1; i >= 0 && !c; i--) if ((c = matchLocality(lines[bl[i]], knownTowns))) ti = i;
+    if (!c) continue;
+    city ||= c;
     for (let j = ti - 1; j >= 0; j--) {
-      if (NO_STREET.test(bl[j])) break;          // "לא נבחר רחוב" = no street
-      const ws = words(bl[j].replace(/\d{2}\/\d{2}\/\d{2,4}/g, '').replace(/(^|\s)בית\s*(?=\d)/g, ' '));
-      while (ws.length && /^\d/.test(ws[0])) ws.shift(); // leading numbers are noise
-      if (ws.some(w => !/^\d/.test(w))) { street = ws.slice(0, 4).join(' '); break; }
+      const raw = lines[bl[j]].replace(/\d{2}\/\d{2}\/\d{2,4}/g, '');
+      if (/^\s*רחוב\s*$/.test(raw)) { noStreet = true; break; }
+      if (NO_STREET.test(raw)) { noStreet = true; break; }          // "לא נבחר רחוב" = no street
+      if (/כניסה|קומה|דירה/.test(raw)) { const w = words(raw).join(' '); if (w && !notes.includes(w)) notes.push(w); continue; }
+      const ws = words(raw.replace(/(^|\s)בית\s*(?=\d)/g, ' '));
+      while (ws.length && /^\d/.test(ws[0])) ws.shift();            // leading numbers are noise
+      if (ws.some(w => !/^\d/.test(w))) {
+        const num = ws.find(w => /^\d{1,4}$/.test(w)) || '';
+        const sw = ws.filter(w => !/^\d/.test(w)).slice(0, 4);
+        cands.push({ words: sw, num, numBox: numBoxOf(bl[j], sw[0]) });
+        break;
+      }
     }
-    break;
   }
-  const address = [normalizeStreet(street), city].filter(Boolean).join(', ');
 
-  return { name, phone, address, product, date, cityMatched: !!city };
+  // delivery notes ("ניתוב:"): gate codes, directions – essential for the driver
+  const nav = lines.findIndex((l, i) => NAV.test(l) && i > items);
+  if (nav >= 0) for (let i = nav + 1; i < lines.length && i <= nav + 4 && !END.test(lines[i]); i++) {
+    const ws = words(lines[i]);
+    while (ws.length > 1 && /^\d$/.test(ws[ws.length - 1])) ws.pop();  // stray digit from the paper edge
+    const w = ws.join(' ');
+    if (w) notes.push(w);
+  }
+  if (phone2) notes.push('טלפון נוסף ' + phone2);
+
+  return { name, phone, product, date, city, noStreet: noStreet && !cands.length, cands: cands.map(({ numBox, ...c }) => ({ ...c, numBox })), digitText: flat,
+    note: notes.join(' · '), cityMatched: !!city, address: composeAddress(city, cands, []) };
 }
+
+// Picks the street (corrected to an official name when possible) and the house number.
+export function composeAddress(city, cands, streets, digitText = '') {
+  if (!cands.length) return city;
+  const fixed = cands.map(c => ({ ...c, official: matchStreet(c.words, streets) }));
+  const pick = fixed.find(c => c.official) || fixed[0];
+  const street = pick.official || pick.words.join(' ');
+  // house number: both copies agree → take it; otherwise prefer one also seen by the digits pass
+  const nums = fixed.map(c => c.num).filter(Boolean);
+  let num = nums.find((n, i) => nums.indexOf(n) !== i) || '';
+  if (!num) num = nums.find(n => new RegExp(`(^|\\D)${n}(\\D|$)`).test(digitText)) || pick.num || nums[0] || '';
+  return [normalizeStreet(`${street} ${num}`), city].filter(Boolean).join(', ');
+}
+
+export async function finishAddress(r) {
+  if (!r.city || !r.cands.length) return r;
+  const streets = await getStreets(r.city);
+  const address = composeAddress(r.city, r.cands, streets, r.digitText);
+  return { ...r, address, streetOfficial: r.cands.some(c => matchStreet(c.words, streets)) };
+}
+

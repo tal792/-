@@ -69,7 +69,7 @@ function parseLine(line) {
   const rest = cols.filter((_, i) => i !== k);
   const text = normalizeStreet(cols[k] || '').replace(/^,\s*/, '');
   const known = phone && customers[phone.replace(/\D/g, '')];
-  return { id: uid(), text, name: rest[0] || known?.name || '', product: rest.slice(1).join(' · '), phone,
+  return { id: uid(), text, name: rest[0] || known?.name || '', product: rest.slice(1).join(' · '), phone, note: known?.note || '',
     geo: known?.geo && known.text === text ? known.geo : null };
 }
 function clockAt(offsetSec) {
@@ -237,6 +237,7 @@ function renderStops() {
         <div class="title">${esc(s.name || s.text)}</div>
         ${s.name ? `<div class="sub">${esc(s.text)}</div>` : ''}
         ${s.product ? `<div class="product">📦 ${esc(s.product)}</div>` : ''}
+        ${s.note ? `<div class="stop-note">📝 ${esc(s.note)}</div>` : ''}
         ${geoInfo}
         ${leg ? `<div class="leg">🕐 ~${clockAt(arrivalOffset(i))} · ${fmtTime(leg.duration)} · ${fmtKm(leg.distance)} מהתחנה הקודמת</div>` : ''}
         <div class="acts">
@@ -277,7 +278,7 @@ function customerWa(s, i) {
 }
 
 function shareText() {
-  const lines = S.stops.map((s, i) => `${i + 1}. ${s.name ? s.name + ' — ' : ''}${s.text} (~${clockAt(arrivalOffset(i))})${s.phone ? '\n📞 ' + s.phone : ''}${s.product ? '\n📦 ' + s.product : ''}\n${wazeLink(s.geo)}`);
+  const lines = S.stops.map((s, i) => `${i + 1}. ${s.name ? s.name + ' — ' : ''}${s.text} (~${clockAt(arrivalOffset(i))})${s.phone ? '\n📞 ' + s.phone : ''}${s.product ? '\n📦 ' + s.product : ''}${s.note ? '\n📝 ' + s.note : ''}\n${wazeLink(s.geo)}`);
   return `🚚 קו חלוקה · יציאה ${S.startTime} מ${S.start.text}\n${fmtKm(S.result.distance)} · ${fmtTime(S.result.duration)} נסיעה\n\n${lines.join('\n')}`;
 }
 
@@ -298,6 +299,7 @@ function renderDrive() {
       <div class="d-big">${esc(s.name || s.text)}</div>
       ${s.name ? `<div class="d-addr">${esc(s.text)}</div>` : ''}
       ${s.product ? `<div class="d-product">📦 ${esc(s.product)}</div>` : ''}
+      ${s.note ? `<div class="d-note">📝 ${esc(s.note)}</div>` : ''}
       ${s.geo.precision === 'street' || s.geo.precision === 'area' ? '<div class="warn">⚠ מיקום משוער. כשתגיע ללקוח לחץ "📍 שמור מיקום", ובפעם הבאה הניווט יגיע בדיוק לדלת</div>' : ''}
       <a class="btn d-nav" target="_blank" rel="noopener" href="${wazeLink(s.geo)}">🚗 נווט עם Waze</a>
       <a class="btn secondary" target="_blank" rel="noopener" href="${gmapsLink(s.geo)}">נווט עם Google Maps</a>
@@ -404,7 +406,8 @@ $('stops').addEventListener('click', e => {
         <input type="text" class="e-addr" value="${esc(s.text)}" placeholder="כתובת">
         <input type="text" class="e-name" value="${esc(s.name)}" placeholder="שם הלקוח / החנות">
         <input type="tel" class="e-phone" value="${esc(s.phone || '')}" placeholder="טלפון" inputmode="tel">
-        <input type="text" class="e-product" value="${esc(s.product || '')}" placeholder="מוצר / הערה">
+        <input type="text" class="e-product" value="${esc(s.product || '')}" placeholder="מוצר">
+        <input type="text" class="e-note" value="${esc(s.note || '')}" placeholder="הערה לשליח (קוד כניסה, הוראות)">
         <div class="acts"><button data-a="saveEdit">שמור</button><button class="secondary" data-a="cancelEdit">ביטול</button></div></div>`);
       btn.disabled = true; body.querySelector('.e-addr').focus();
       break;
@@ -416,6 +419,7 @@ $('stops').addEventListener('click', e => {
       if (addr !== s.text) { s.text = addr; s.geo = null; s.failed = false; invalidate(); }
       s.name = name; s.phone = normPhone(li.querySelector('.e-phone').value) || li.querySelector('.e-phone').value.trim();
       s.product = li.querySelector('.e-product').value.trim();
+      s.note = li.querySelector('.e-note').value.trim();
       rememberCustomer(s);
       persist(); render(); geocodeAll().catch(() => {});
       break;
@@ -439,7 +443,7 @@ const EXACT = ['gps', 'manual', 'house'];
 function rememberCustomer(s) {
   const k = phoneKey(s.phone); if (k.length < 9) return;
   const prev = customers[k] || {};
-  customers[k] = { name: s.name || prev.name || '', text: s.text || prev.text || '',
+  customers[k] = { name: s.name || prev.name || '', text: s.text || prev.text || '', note: s.note || prev.note || '',
     geo: s.geo && ['gps', 'manual'].includes(s.geo.precision) ? s.geo : prev.geo || null, updated: Date.now() };
   save(CUST, customers);
 }
@@ -459,7 +463,7 @@ $('scanInput').addEventListener('change', async e => {
       const r = await scanReceipt(files[i], msg => renderScan(msg), knownTowns());
       const known = knownCustomer(r.phone);
       Object.assign(scanned[i], r, { status: 'done' },
-        known ? { name: known.name || r.name, address: known.text || r.address, geo: known.geo, known: true, cityMatched: true } : {});
+        known ? { name: known.name || r.name, address: known.text || r.address, note: r.note || known.note || '', geo: known.geo, known: true, cityMatched: true } : {});
     } catch (err) { Object.assign(scanned[i], { status: 'error', error: err.message }); }
     renderScan();
   }
@@ -475,8 +479,9 @@ function renderScan(msg) {
       ${r.known ? `<div class="ok">⭐ לקוח מוכר — פרטים שמורים${r.geo ? ' + מיקום מדויק' : ''}</div>` : ''}
       <label>שם<input type="text" data-f="name" value="${esc(r.name)}"></label>
       <label>טלפון ${r.phone ? '' : '<span class="warn">⚠ לא זוהה</span>'}<input type="tel" data-f="phone" value="${esc(r.phone)}" inputmode="tel"></label>
-      <label>כתובת ${r.cityMatched ? '' : '<span class="warn">⚠ בדוק</span>'}<input type="text" data-f="address" value="${esc(r.address)}"></label>
+      <label>כתובת ${!r.cityMatched ? '<span class="warn">⚠ בדוק</span>' : r.streetOfficial ? '<span class="ok small">✔ רחוב רשמי</span>' : ''}<input type="text" data-f="address" value="${esc(r.address)}"></label>
       <label>מוצר<input type="text" data-f="product" value="${esc(r.product)}"></label>
+      <label>הערה לשליח<input type="text" data-f="note" value="${esc(r.note || '')}" placeholder="קוד כניסה, הוראות הגעה…"></label>
       ${r.date ? `<div class="muted small">תאריך משלוח: ${esc(r.date)}</div>` : ''}
       <button data-s="add">➕ הוסף לקו</button>`}
     </div></li>`).join('');
@@ -490,7 +495,7 @@ function addScanned(list) {
   for (const r of ok) {
     const text = normalizeStreet(r.address).replace(/^,\s*/, '');
     const known = knownCustomer(r.phone);
-    const stop = { id: uid(), text, name: r.name.trim(), phone: normPhone(r.phone) || r.phone.trim(), product: r.product.trim(),
+    const stop = { id: uid(), text, name: r.name.trim(), phone: normPhone(r.phone) || r.phone.trim(), product: r.product.trim(), note: (r.note || '').trim(),
       geo: known?.geo && known.text === text ? known.geo : null }; // saved location only if the address wasn't changed
     S.stops.push(stop); rememberCustomer(stop);
     r.added = true;

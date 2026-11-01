@@ -116,3 +116,7 @@ input[type=time] { width: 100%; padding: 10px 12px; font: inherit; border: 1px s
 .scan-btn { flex-direction: column; gap: 2px; font-size: 1.15rem; padding: 18px 12px; }
 .scan-btn small { font-weight: 400; opacity: .85; font-size: .82rem; }
 #manualBox .add { margin-top: 8px; }
+
+.stop-note { font-size: .9rem; background: var(--warn-soft); color: #5c3b00; border-radius: 8px; padding: 4px 8px; margin-top: 4px; }
+.d-note { font-size: 1.1rem; background: var(--warn-soft); color: #5c3b00; border-radius: 10px; padding: 10px 12px; font-weight: 600; }
+.ok.small { font-size: .8rem; }
