@@ -28,6 +28,8 @@
       <summary>הגדרות נוספות</summary>
       <label for="city">עיר ברירת מחדל <small>(אם כתובת לא נמצאה, ננסה שוב עם העיר הזו)</small></label>
       <input id="city" type="text" placeholder="לדוגמה: טבריה">
+      <label for="startTime">שעת יציאה <small>(לחישוב שעות הגעה)</small></label>
+      <input id="startTime" type="time" value="08:00">
       <label for="service">זמן עצירה בכל תחנה (דקות)</label>
       <input id="service" type="number" min="0" max="120" value="0" inputmode="numeric">
     </details>
@@ -41,7 +43,7 @@
     </form>
     <details class="more" id="pasteBox">
       <summary>📋 הדבקת רשימת כתובות</summary>
-      <textarea id="paste" rows="6" placeholder="כתובת אחת בכל שורה. אפשר להוסיף שם אחרי |
+      <textarea id="paste" rows="6" placeholder="כתובת אחת בכל שורה. אפשר להוסיף שם אחרי | או להדביק 2 עמודות מאקסל (שם + כתובת)
 הירדן 15, טבריה | סופר הירדן
 שדרות יהודה הלוי 40, טבריה | מכולת דני
 הרצל 2, עפולה"></textarea>
@@ -72,6 +74,11 @@
 <div class="bar">
   <div id="status" class="status" role="status" aria-live="polite"></div>
   <button id="calc" class="primary">חשב מסלול אופטימלי</button>
+</div>
+
+<div id="drive" class="drive" hidden>
+  <div class="drive-head"><b>מצב נהיגה</b><button id="driveClose" class="ghost">✕ סגור</button></div>
+  <div id="driveBody" class="drive-body"></div>
 </div>
 
 <dialog id="savedDlg">

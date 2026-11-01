@@ -40,7 +40,8 @@ async function query(q) {
 
 // Tries the full address, then the street without house number, then the town only.
 export async function geocode(text, defaultCity = '') {
-  const t = text.trim().replace(/\s+/g, ' ');
+  // the country name only hurts the search (and must never become a 'city' fallback)
+  const t = text.trim().replace(/[,\s]*(ישראל|israel)\s*$/i, '').replace(/\s+/g, ' ');
   const parts = t.split(',').map(x => x.trim()).filter(Boolean);
   const city = parts.length > 1 ? parts[parts.length - 1] : defaultCity;
   const street = parts.length > 1 ? parts.slice(0, -1).join(' ') : t;
