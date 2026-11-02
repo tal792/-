@@ -245,7 +245,7 @@ function renderStops() {
           ${s.geo ? `<a class="btn" target="_blank" rel="noopener" href="${wazeLink(s.geo)}">Waze</a>
                      <a class="btn secondary" target="_blank" rel="noopener" href="${gmapsLink(s.geo)}">Google</a>` : ''}
           ${s.phone ? `<a class="btn secondary" href="tel:${s.phone.replace(/\D/g, '')}">📞 ${esc(s.phone)}</a>
-                       <a class="btn secondary" target="_blank" rel="noopener" href="${customerWa(s, i)}" aria-label="וואטסאפ ללקוח">💬</a>` : ''}
+                       <a class="btn secondary" target="_blank" rel="noopener" href="${customerWa(s, i)}">💬 אני בדרך</a>` : ''}
           ${r ? `<button class="secondary" data-a="done">${s.done ? 'בטל ✔' : '✔ בוצע'}</button>` : ''}
           <button class="ghost" data-a="up" aria-label="הזז למעלה">▲</button>
           <button class="ghost" data-a="down" aria-label="הזז למטה">▼</button>
@@ -267,7 +267,8 @@ function renderNav() {
     `<a class="btn" target="_blank" rel="noopener" href="${u}">🗺️ כל הקו ב-Google Maps${links.length > 1 ? ` — חלק ${i + 1} מתוך ${links.length}` : ''}</a>`).join('')
     + (next ? `<a class="btn secondary" target="_blank" rel="noopener" href="${wazeLink(next.geo)}">🚗 Waze לתחנה הבאה: ${esc(next.name || next.text)}</a>` : '<p class="muted">כל התחנות בוצעו ✔</p>')
     + `<button id="driveBtn" class="primary">🚚 מצב נהיגה — תחנה אחר תחנה</button>
-       <a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(shareText())}">📤 שלח את הקו לנהג בוואטסאפ</a>`;
+       <button id="shareDriver" class="secondary">📤 שלח את הקו לשליח (וואטסאפ)</button>`;
+  $('shareDriver').onclick = shareToDriver;
   $('driveBtn').onclick = openDrive;
 }
 
@@ -278,9 +279,24 @@ function customerWa(s, i) {
   return `https://wa.me/${intlPhone(s.phone)}?text=${encodeURIComponent(`שלום${first ? ' ' + first : ''}, המשלוח שלך בדרך אליך 🚚${eta}`)}`;
 }
 
+// "On my way" link for the driver's WhatsApp list: no arrival time, since the driver's real timing varies
+function onMyWayLink(s) {
+  const first = (s.name || '').split(' ')[0];
+  return `https://wa.me/${intlPhone(s.phone)}?text=${encodeURIComponent(`שלום${first ? ' ' + first : ''}, המשלוח שלך בדרך אליך 🚚`)}`;
+}
+
 function shareText() {
-  const lines = S.stops.map((s, i) => `${i + 1}. ${s.name ? s.name + ' — ' : ''}${s.text} (~${clockAt(arrivalOffset(i))})${s.phone ? '\n📞 ' + s.phone : ''}${s.product ? '\n📦 ' + s.product : ''}${s.note ? '\n📝 ' + s.note : ''}\n${wazeLink(s.geo)}`);
+  const lines = S.stops.map((s, i) => `${i + 1}. ${s.name ? s.name + ' — ' : ''}${s.text} (~${clockAt(arrivalOffset(i))})${s.phone ? '\n📞 ' + s.phone : ''}${s.product ? '\n📦 ' + s.product : ''}${s.note ? '\n📝 ' + s.note : ''}\n🚗 ניווט: ${wazeLink(s.geo)}${s.phone ? '\n💬 אני בדרך: ' + onMyWayLink(s) : ''}`);
   return `🚚 קו חלוקה · יציאה ${S.startTime} מ${S.start.text}\n${fmtKm(S.result.distance)} · ${fmtTime(S.result.duration)} נסיעה\n\n${lines.join('\n')}`;
+}
+
+// Phone share sheet (no length limit, pick WhatsApp and the driver); fallback: a wa.me link
+async function shareToDriver() {
+  const text = shareText();
+  if (navigator.share) {
+    try { await navigator.share({ text }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
 }
 
 // ---------- driving mode: one big card per stop ----------
