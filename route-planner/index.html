@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="קווי חלוקה">
 <title>מתכנן קווי חלוקה</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.css?v=202611020650">
+<link rel="stylesheet" href="style.css?v=202611020657">
 </head>
 <body>
 <header class="top">
@@ -51,11 +51,12 @@
       <summary>➕ לקוח חדש</summary>
     <form id="addForm" class="add-form" autocomplete="off">
       <label for="fAddr">כתובת</label>
-      <input id="fAddr" type="text" placeholder="לדוגמה: צאלון 44, טבריה" required>
+      <input id="fAddr" type="text" placeholder="לדוגמה: צאלון 44, טבריה">
       <label for="fName">שם הלקוח</label>
       <input id="fName" type="text" placeholder="לדוגמה: אסתר כהן">
       <label for="fPhone">טלפון</label>
       <input id="fPhone" type="tel" inputmode="tel" placeholder="לדוגמה: 050-1234567">
+      <p id="formMsg" class="err" hidden></p>
       <button type="submit" class="add-btn">➕ הוסף משלוח (והלקוח נשמר לפעם הבאה)</button>
     </form>
     </details>
@@ -95,7 +96,7 @@
       <button id="clearAll" class="secondary danger">🗑 נקה הכול</button>
     </div>
   </section>
-  <p class="muted small version">גרסה <span id="version">202611020650</span></p>
+  <p class="muted small version">גרסה <span id="version">202611020657</span></p>
 </main>
 
 <div class="bar">
@@ -151,6 +152,6 @@
 <datalist id="catalogList"></datalist>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module" src="js/app.js?v=202611020650"></script>
+<script type="module" src="js/app.js?v=202611020657"></script>
 </body>
 </html>

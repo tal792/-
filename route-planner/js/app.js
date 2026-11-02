@@ -1,13 +1,13 @@
-import { geocode, travelMatrix, drivingRoute, wazeLink, gmapsLink, gmapsRouteLinks } from './services.js?v=202611020650';
-import { solveRoute, routeCost } from './solver.js?v=202611020650';
-import { scanReceipt, normalizeStreet } from './receipt.js?v=202611020650';
-import { loadCatalog, learnProduct } from './catalog.js?v=202611020650';
+import { geocode, travelMatrix, drivingRoute, wazeLink, gmapsLink, gmapsRouteLinks } from './services.js?v=202611020657';
+import { solveRoute, routeCost } from './solver.js?v=202611020657';
+import { scanReceipt, normalizeStreet } from './receipt.js?v=202611020657';
+import { loadCatalog, learnProduct } from './catalog.js?v=202611020657';
 
 // Optimisation runs in a Web Worker: a fast answer first, then (for >13 stops) an exact proof.
 function runSolver(m, onQuick) {
   return new Promise(resolve => {
     let w;
-    try { w = new Worker(new URL('./solver-worker.js?v=202611020650', import.meta.url), { type: 'module' }); }
+    try { w = new Worker(new URL('./solver-worker.js?v=202611020657', import.meta.url), { type: 'module' }); }
     catch { const r = solveRoute(m); onQuick(r); return resolve(r); }
     w.onmessage = ({ data }) => {
       if (data.type === 'quick') onQuick(data);
@@ -41,7 +41,12 @@ function fmtTime(sec) {
   const min = Math.round(sec / 60), h = Math.floor(min / 60);
   return h ? `${h} ש' ${min % 60} דק'` : `${min} דק'`;
 }
-function setStatus(msg, error = false) { $('status').textContent = msg || ''; $('status').classList.toggle('error', error); }
+function setStatus(msg, error = false, ok = false) {
+  $('status').textContent = msg || ''; $('status').classList.toggle('error', error); $('status').classList.toggle('ok', ok);
+}
+// any unexpected error is shown on screen, so it can be photographed and reported
+window.addEventListener('error', e => setStatus('תקלה: ' + (e.message || 'לא ידועה'), true));
+window.addEventListener('unhandledrejection', e => setStatus('תקלה: ' + (e.reason?.message || e.reason || 'לא ידועה'), true));
 // Phone numbers anywhere in the text: 050-1234567 / 0501234567 / 04-9692535 / +972...
 const PHONE_RE = /(?:\+?972[-\s]?|0)(?:5\d|7\d|[2-4689])[-\s]?\d{3}[-\s]?\d{4}/;
 export function normPhone(p) {
@@ -398,18 +403,32 @@ $('service').addEventListener('change', e => { S.service = Math.max(0, +e.target
 
 $('addForm').addEventListener('submit', e => {
   e.preventDefault();
+  $('formMsg').hidden = true;
+  // a known customer's phone is enough: take the saved address
+  const savedC = customers[$('fPhone').value.replace(/\D/g, '').replace(/^972/, '0')];
+  if (!$('fAddr').value.trim() && savedC?.text) $('fAddr').value = savedC.text;
+  if (!$('fName').value.trim() && savedC?.name) $('fName').value = savedC.name;
   const addr = $('fAddr').value.trim();
-  if (!addr) return;
+  if (!addr) {
+    $('formMsg').textContent = '⚠ חסרה כתובת. כתוב כתובת (למשל: צאלון 44, טבריה) ולחץ שוב.';
+    $('formMsg').hidden = false; $('fAddr').focus();
+    return;
+  }
   const stop = parseLine(addr);                       // cleans the address, uses a remembered customer
   stop.name = $('fName').value.trim() || stop.name;
   const ph = $('fPhone').value.trim();
   if (ph) stop.phone = normPhone(ph) || ph;
   const known = stop.phone && customers[stop.phone.replace(/\D/g, '')];
   if (known && !stop.name) stop.name = known.name || '';
+  if (stop.phone && S.stops.some(x => phoneKey(x.phone) === phoneKey(stop.phone))) {
+    $('formMsg').textContent = `⚠ ${stop.name || 'הלקוח הזה'} כבר בקו של היום.`;
+    $('formMsg').hidden = false;
+    return;
+  }
   S.stops.push(stop); rememberCustomer(stop);
   $('fAddr').value = $('fName').value = $('fPhone').value = '';
   invalidate(); render(); geocodeAll().catch(() => {});
-  setStatus(`נוסף: ${stop.name || stop.text}`);
+  setStatus(`✔ נוסף: ${stop.name || stop.text} · ${S.stops.length} משלוחים בקו`, false, true);
   $('fAddr').focus();
 });
 // typing a known customer's phone fills in the name and address
@@ -516,7 +535,7 @@ $('custQ').addEventListener('input', renderCustomerSearch);
 $('custResults').addEventListener('click', e => {
   if (e.target.dataset.c !== 'add') return;
   addCustomerToRoute(e.target.closest('li').dataset.k);
-  setStatus(`נוסף לקו: ${customers[e.target.closest('li').dataset.k]?.name || ''}`);
+  setStatus(`✔ נוסף: ${customers[e.target.closest('li').dataset.k]?.name || ''} · ${S.stops.length} משלוחים בקו`, false, true);
   $('custQ').value = ''; renderCustomerSearch(); $('custQ').focus();
 });
 

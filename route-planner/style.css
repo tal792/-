@@ -141,3 +141,4 @@ input[type=tel] { width: 100%; padding: 11px 12px; font: inherit; border: 1px so
 #newCustBox { margin-top: 12px; }
 .cust-dlg { width: min(640px, calc(100vw - 16px)); }
 .cust-dlg textarea { width: 100%; margin: 6px 0; }
+.status.ok { color: var(--ok); font-weight: 700; }
