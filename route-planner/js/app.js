@@ -397,10 +397,26 @@ $('service').addEventListener('change', e => { S.service = Math.max(0, +e.target
 
 $('addForm').addEventListener('submit', e => {
   e.preventDefault();
-  const v = $('addInput').value.trim();
-  if (!v) return;
-  S.stops.push(parseLine(v)); $('addInput').value = '';
+  const addr = $('fAddr').value.trim();
+  if (!addr) return;
+  const stop = parseLine(addr);                       // cleans the address, uses a remembered customer
+  stop.name = $('fName').value.trim() || stop.name;
+  const ph = $('fPhone').value.trim();
+  if (ph) stop.phone = normPhone(ph) || ph;
+  const known = stop.phone && customers[stop.phone.replace(/\D/g, '')];
+  if (known && !stop.name) stop.name = known.name || '';
+  S.stops.push(stop); rememberCustomer(stop);
+  $('fAddr').value = $('fName').value = $('fPhone').value = '';
   invalidate(); render(); geocodeAll().catch(() => {});
+  setStatus(`נוסף: ${stop.name || stop.text}`);
+  $('fAddr').focus();
+});
+// typing a known customer's phone fills in the name and address
+$('fPhone').addEventListener('change', () => {
+  const known = customers[$('fPhone').value.replace(/\D/g, '').replace(/^972/, '0')];
+  if (!known) return;
+  if (!$('fName').value.trim()) $('fName').value = known.name || '';
+  if (!$('fAddr').value.trim()) $('fAddr').value = known.text || '';
 });
 $('pasteAdd').addEventListener('click', () => {
   const lines = $('paste').value.split(/\r?\n/).filter(l => l.trim());

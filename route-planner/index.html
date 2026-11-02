@@ -40,13 +40,24 @@
   </section>
 
   <section class="card">
-    <h2>כתובות למשלוח <span id="count" class="badge">0</span></h2>
-    <textarea id="paste" rows="6" placeholder="כתוב כתובות, כתובת אחת בכל שורה. לדוגמה:
-השיזף 3, כפר קיש
-צאלון 44, טבריה
+    <h2>משלוחים <span id="count" class="badge">0</span></h2>
+    <form id="addForm" class="add-form" autocomplete="off">
+      <label for="fAddr">כתובת</label>
+      <input id="fAddr" type="text" placeholder="לדוגמה: צאלון 44, טבריה" required>
+      <label for="fName">שם הלקוח</label>
+      <input id="fName" type="text" placeholder="לדוגמה: אסתר כהן">
+      <label for="fPhone">טלפון</label>
+      <input id="fPhone" type="tel" inputmode="tel" placeholder="לדוגמה: 050-1234567">
+      <button type="submit" class="add-btn">➕ הוסף משלוח</button>
+    </form>
+
+    <details class="more" id="pasteBox">
+      <summary>📋 הדבקת הרבה כתובות בבת אחת</summary>
+      <textarea id="paste" rows="5" placeholder="כתובת אחת בכל שורה. אפשר להוסיף שם וטלפון עם קו מפריד:
+צאלון 44, טבריה | אסתר | 050-1234567
 עין דור"></textarea>
-    <button id="pasteAdd" type="button" class="add-btn">➕ הוסף לקו</button>
-    <p class="muted small">אפשר להוסיף אחרי הכתובת שם וטלפון עם קו מפריד: <b>צאלון 44, טבריה | אסתר | 050-1234567</b></p>
+      <button id="pasteAdd" type="button" class="secondary">הוסף את כל השורות</button>
+    </details>
 
     <details class="more" id="manualBox">
       <summary>📷 אפשרות נוספת: צילום חשבוניות</summary>
@@ -55,12 +66,11 @@
         <input id="scanInput" type="file" accept="image/*" multiple hidden>
       </label>
     </details>
-    <form id="addForm" hidden><input id="addInput" type="text"></form>
 
     <div id="banner" class="banner" hidden></div>
     <div id="summary" class="summary" hidden></div>
     <ol id="stops" class="stops"></ol>
-    <p id="empty" class="muted">עדיין אין כתובות. כתוב אותן בתיבה למעלה ולחץ "הוסף לקו".</p>
+    <p id="empty" class="muted">עדיין אין משלוחים. מלא כתובת, שם וטלפון ולחץ "הוסף משלוח".</p>
   </section>
 
   <section class="card map-card">

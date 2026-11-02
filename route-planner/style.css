@@ -124,3 +124,8 @@ input[type=time] { width: 100%; padding: 10px 12px; font: inherit; border: 1px s
 .add-btn { width: 100%; margin-top: 8px; padding: 14px; font-size: 1.1rem; font-weight: 700; }
 #manualBox { margin-top: 14px; }
 #manualBox .scan-btn { margin-top: 8px; }
+
+.add-form label { margin-top: 8px; }
+.add-form .add-btn { margin-top: 12px; }
+#pasteBox { margin-top: 14px; }
+input[type=tel] { width: 100%; padding: 11px 12px; font: inherit; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: inherit; text-align: right; }
