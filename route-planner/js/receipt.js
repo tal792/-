@@ -3,8 +3,8 @@
 
 const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
 
-import { ISRAEL_LOCALITIES } from './localities.js';
-import { matchProduct } from './catalog.js';
+import { ISRAEL_LOCALITIES } from './localities.js?v=202611020647';
+import { matchProduct } from './catalog.js?v=202611020647';
 
 // Localities around the store (official spelling) are matched first and more loosely;
 // all other localities in Israel are matched more strictly, to avoid false hits on OCR noise.

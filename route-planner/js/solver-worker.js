@@ -1,8 +1,8 @@
 // Runs the optimisation off the main thread so the screen stays responsive.
 // 1) fast result (exact DP up to 13 stops, otherwise iterated local search + lower bound)
 // 2) for larger routes: exact integer programming (HiGHS) to PROVE optimality or improve the order.
-import { solveRoute, routeCost } from './solver.js';
-import { solveExact } from './exact.js';
+import { solveRoute, routeCost } from './solver.js?v=202611020647';
+import { solveExact } from './exact.js?v=202611020647';
 
 const HIGHS = 'https://cdn.jsdelivr.net/npm/highs@1.8.0';
 let highs = null;

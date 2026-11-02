@@ -129,3 +129,4 @@ input[type=time] { width: 100%; padding: 10px 12px; font: inherit; border: 1px s
 .add-form .add-btn { margin-top: 12px; }
 #pasteBox { margin-top: 14px; }
 input[type=tel] { width: 100%; padding: 11px 12px; font: inherit; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: inherit; text-align: right; }
+.version { text-align: center; opacity: .6; }

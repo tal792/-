@@ -1,13 +1,13 @@
-import { geocode, travelMatrix, drivingRoute, wazeLink, gmapsLink, gmapsRouteLinks } from './services.js';
-import { solveRoute, routeCost } from './solver.js';
-import { scanReceipt, normalizeStreet } from './receipt.js';
-import { loadCatalog, learnProduct } from './catalog.js';
+import { geocode, travelMatrix, drivingRoute, wazeLink, gmapsLink, gmapsRouteLinks } from './services.js?v=202611020647';
+import { solveRoute, routeCost } from './solver.js?v=202611020647';
+import { scanReceipt, normalizeStreet } from './receipt.js?v=202611020647';
+import { loadCatalog, learnProduct } from './catalog.js?v=202611020647';
 
 // Optimisation runs in a Web Worker: a fast answer first, then (for >13 stops) an exact proof.
 function runSolver(m, onQuick) {
   return new Promise(resolve => {
     let w;
-    try { w = new Worker(new URL('./solver-worker.js', import.meta.url), { type: 'module' }); }
+    try { w = new Worker(new URL('./solver-worker.js?v=202611020647', import.meta.url), { type: 'module' }); }
     catch { const r = solveRoute(m); onQuick(r); return resolve(r); }
     w.onmessage = ({ data }) => {
       if (data.type === 'quick') onQuick(data);
