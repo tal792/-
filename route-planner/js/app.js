@@ -1,13 +1,13 @@
-import { geocode, travelMatrix, drivingRoute, wazeLink, gmapsLink, gmapsRouteLinks } from './services.js?v=202611020647';
-import { solveRoute, routeCost } from './solver.js?v=202611020647';
-import { scanReceipt, normalizeStreet } from './receipt.js?v=202611020647';
-import { loadCatalog, learnProduct } from './catalog.js?v=202611020647';
+import { geocode, travelMatrix, drivingRoute, wazeLink, gmapsLink, gmapsRouteLinks } from './services.js?v=202611020650';
+import { solveRoute, routeCost } from './solver.js?v=202611020650';
+import { scanReceipt, normalizeStreet } from './receipt.js?v=202611020650';
+import { loadCatalog, learnProduct } from './catalog.js?v=202611020650';
 
 // Optimisation runs in a Web Worker: a fast answer first, then (for >13 stops) an exact proof.
 function runSolver(m, onQuick) {
   return new Promise(resolve => {
     let w;
-    try { w = new Worker(new URL('./solver-worker.js?v=202611020647', import.meta.url), { type: 'module' }); }
+    try { w = new Worker(new URL('./solver-worker.js?v=202611020650', import.meta.url), { type: 'module' }); }
     catch { const r = solveRoute(m); onQuick(r); return resolve(r); }
     w.onmessage = ({ data }) => {
       if (data.type === 'quick') onQuick(data);
@@ -194,6 +194,7 @@ function render() {
   $('roundTrip').checked = S.roundTrip; $('endWrap').hidden = S.roundTrip;
   $('city').value = S.city; $('service').value = S.service; $('startTime').value = S.startTime;
   renderStops(); renderSummary(); drawMap(); renderNav();
+  if (typeof renderCustomerSearch === 'function' && $('custQ')) renderCustomerSearch();
 }
 
 function renderSummary() {
@@ -477,11 +478,105 @@ const EXACT = ['gps', 'manual', 'house'];
 function rememberCustomer(s) {
   const k = phoneKey(s.phone); if (k.length < 9) return;
   const prev = customers[k] || {};
-  customers[k] = { name: s.name || prev.name || '', text: s.text || prev.text || '', note: s.note || prev.note || '',
+  customers[k] = { name: s.name || prev.name || '', phone: s.phone || prev.phone || '', text: s.text || prev.text || '', note: s.note || prev.note || '',
     geo: s.geo && ['gps', 'manual'].includes(s.geo.precision) ? s.geo : prev.geo || null, updated: Date.now() };
   save(CUST, customers);
 }
 const knownCustomer = phone => customers[phoneKey(phone)] || null;
+
+// ---------- regular customers: search, add to today's route, manage ----------
+const norm = t => (t || '').replace(/[״"'׳\-.,]/g, '').replace(/\s+/g, ' ').trim();
+function customerMatches(q) {
+  const nq = norm(q), dq = q.replace(/\D/g, '');
+  return Object.entries(customers).filter(([k, c]) =>
+    (nq && (norm(c.name).includes(nq) || norm(c.text).includes(nq))) || (dq.length >= 3 && k.includes(dq)));
+}
+const inRoute = k => S.stops.some(s => phoneKey(s.phone) === k);
+function custRow(k, c, actions) {
+  return `<li data-k="${k}"><div class="body"><div class="title">${esc(c.name || 'ללא שם')}</div>
+    <div class="sub">${esc(c.text || '')} · ${esc(c.phone || k.replace(/^(\d{3})(\d+)$/, '$1-$2'))}</div>
+    ${c.note ? `<div class="sub">📝 ${esc(c.note)}</div>` : ''}</div>${actions}</li>`;
+}
+function renderCustomerSearch() {
+  const q = $('custQ').value.trim(), total = Object.keys(customers).length;
+  $('custCount').textContent = total ? `${total} לקוחות שמורים` : 'עדיין אין לקוחות שמורים';
+  let list = q ? customerMatches(q) : [];
+  list.sort((a, b) => (a[1].name || '').localeCompare(b[1].name || '', 'he'));
+  $('custResults').innerHTML = list.slice(0, 8).map(([k, c]) => custRow(k, c, inRoute(k)
+    ? '<span class="ok">✔ בקו</span>' : '<button type="button" data-c="add" class="add-mini">➕ הוסף</button>')).join('')
+    + (q && !list.length ? '<li class="muted">לא נמצא. אפשר להוסיף אותו ב"➕ לקוח חדש" למטה.</li>' : '');
+}
+function addCustomerToRoute(k) {
+  const c = customers[k]; if (!c || inRoute(k)) return;
+  S.stops.push({ id: uid(), text: c.text, name: c.name, phone: c.phone || k.replace(/^(\d{3})(\d+)$/, '$1-$2'), note: c.note || '', product: '',
+    geo: c.geo || null });
+  invalidate(); render(); geocodeAll().catch(() => {});
+}
+$('custQ').addEventListener('input', renderCustomerSearch);
+$('custResults').addEventListener('click', e => {
+  if (e.target.dataset.c !== 'add') return;
+  addCustomerToRoute(e.target.closest('li').dataset.k);
+  setStatus(`נוסף לקו: ${customers[e.target.closest('li').dataset.k]?.name || ''}`);
+  $('custQ').value = ''; renderCustomerSearch(); $('custQ').focus();
+});
+
+// management dialog
+function renderCustomerList() {
+  const f = $('custFilter').value.trim(), all = Object.entries(customers);
+  $('custTotal').textContent = all.length;
+  const list = (f ? customerMatches(f) : all).sort((a, b) => (a[1].name || '').localeCompare(b[1].name || '', 'he'));
+  $('custList').innerHTML = list.map(([k, c]) => custRow(k, c, `<button type="button" class="ghost" data-c="edit">✏️</button>
+      <button type="button" class="ghost" data-c="del" aria-label="מחק">🗑</button>`)).join('')
+    || '<li class="muted">אין לקוחות. אפשר להוסיף הרבה בבת אחת למעלה.</li>';
+}
+$('openCustomers').addEventListener('click', () => { renderCustomerList(); $('custDlg').showModal(); });
+$('custFilter').addEventListener('input', renderCustomerList);
+$('custList').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-c]'); if (!btn) return;
+  const li = btn.closest('li'), k = li.dataset.k, c = customers[k];
+  if (btn.dataset.c === 'del') {
+    if (!confirm(`למחוק את ${c.name || 'הלקוח'} מהרשימה?`)) return;
+    delete customers[k]; save(CUST, customers); renderCustomerList(); renderCustomerSearch();
+  } else if (btn.dataset.c === 'edit') {
+    li.innerHTML = `<div class="edit" style="flex:1">
+      <input type="text" class="c-name" value="${esc(c.name || '')}" placeholder="שם">
+      <input type="tel" class="c-phone" value="${esc(c.phone || k)}" placeholder="טלפון">
+      <input type="text" class="c-addr" value="${esc(c.text || '')}" placeholder="כתובת">
+      <input type="text" class="c-note" value="${esc(c.note || '')}" placeholder="הערה לשליח (קוד כניסה...)">
+      <div class="acts"><button type="button" data-c="save">שמור</button><button type="button" class="secondary" data-c="cancel">ביטול</button></div></div>`;
+  } else if (btn.dataset.c === 'save') {
+    const phone = normPhone(li.querySelector('.c-phone').value) || li.querySelector('.c-phone').value.trim();
+    const nk = phoneKey(phone); if (nk.length < 9) return alert('טלפון לא תקין');
+    const text = li.querySelector('.c-addr').value.trim();
+    const updated = { ...c, name: li.querySelector('.c-name').value.trim(), phone, text, note: li.querySelector('.c-note').value.trim(),
+      geo: text === c.text ? c.geo : null, updated: Date.now() };
+    delete customers[k]; customers[nk] = updated; save(CUST, customers);
+    renderCustomerList(); renderCustomerSearch();
+  } else if (btn.dataset.c === 'cancel') renderCustomerList();
+});
+// bulk import: name, phone, address in any order (| or Excel tabs)
+$('custImportBtn').addEventListener('click', () => {
+  let added = 0, skipped = [];
+  for (const line of $('custImport').value.split(/\r?\n/).filter(l => l.trim())) {
+    const cols = line.split(/\s*[|\t]\s*/).map(c => c.trim()).filter(Boolean);
+    const pi = cols.findIndex(c => PHONE_RE.test(c));
+    if (pi < 0) { skipped.push(line); continue; }
+    const phone = normPhone(cols[pi].match(PHONE_RE)[0]);
+    const rest = cols.filter((_, i) => i !== pi);
+    // the address: the column with a digit or comma, else the last remaining one
+    let ai = rest.findIndex(c => /\d|,/.test(c)); if (ai < 0) ai = rest.length - 1;
+    const text = ai >= 0 ? normalizeStreet(rest[ai]) : '';
+    const name = rest.filter((_, i) => i !== ai).join(' ');
+    if (!text) { skipped.push(line); continue; }
+    const k = phoneKey(phone), prev = customers[k] || {};
+    customers[k] = { ...prev, name: name || prev.name || '', phone, text, geo: prev.text === text ? prev.geo : null, updated: Date.now() };
+    added++;
+  }
+  save(CUST, customers);
+  $('custImport').value = skipped.join('\n');
+  renderCustomerList(); renderCustomerSearch();
+  alert(`נוספו ${added} לקוחות.` + (skipped.length ? `\n${skipped.length} שורות לא נקלטו (חסר טלפון או כתובת) – נשארו בתיבה לתיקון.` : ''));
+});
 
 // ---------- receipt scanning ----------
 const knownTowns = () => [...new Set(S.stops.map(s => s.text.split(',').pop().trim()).filter(t => t && !/\d/.test(t)))];

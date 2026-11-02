@@ -130,3 +130,14 @@ input[type=time] { width: 100%; padding: 10px 12px; font: inherit; border: 1px s
 #pasteBox { margin-top: 14px; }
 input[type=tel] { width: 100%; padding: 11px 12px; font: inherit; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: inherit; text-align: right; }
 .version { text-align: center; opacity: .6; }
+
+.cust-search input[type=search], #custFilter { width: 100%; padding: 12px; font: inherit; font-size: 1.05rem; border: 2px solid var(--primary); border-radius: 10px; background: #fff; }
+#custFilter { border-width: 1px; border-color: var(--border); margin: 8px 0; }
+.cust-results { list-style: none; padding: 0; margin: 6px 0 0; }
+.cust-results li, .cust-dlg .saved li { display: flex; gap: 8px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border); }
+.cust-results li .body, .cust-dlg .saved li .body { flex: 1; min-width: 0; }
+.add-mini { padding: 8px 12px; font-weight: 700; white-space: nowrap; }
+.linklike { background: none; border: 0; padding: 0; color: var(--primary); font-weight: 600; text-decoration: underline; }
+#newCustBox { margin-top: 12px; }
+.cust-dlg { width: min(640px, calc(100vw - 16px)); }
+.cust-dlg textarea { width: 100%; margin: 6px 0; }

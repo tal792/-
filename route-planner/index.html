@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="קווי חלוקה">
 <title>מתכנן קווי חלוקה</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="style.css?v=202611020647">
+<link rel="stylesheet" href="style.css?v=202611020650">
 </head>
 <body>
 <header class="top">
@@ -40,7 +40,15 @@
   </section>
 
   <section class="card">
-    <h2>משלוחים <span id="count" class="badge">0</span></h2>
+    <h2>משלוחים להיום <span id="count" class="badge">0</span></h2>
+    <div class="cust-search">
+      <input id="custQ" type="search" placeholder="🔍 חפש לקוח קבוע: שם, טלפון או יישוב" autocomplete="off">
+      <ul id="custResults" class="cust-results"></ul>
+      <p class="muted small"><span id="custCount"></span> · <button type="button" id="openCustomers" class="linklike">📇 ניהול לקוחות קבועים</button></p>
+    </div>
+
+    <details class="more" id="newCustBox">
+      <summary>➕ לקוח חדש</summary>
     <form id="addForm" class="add-form" autocomplete="off">
       <label for="fAddr">כתובת</label>
       <input id="fAddr" type="text" placeholder="לדוגמה: צאלון 44, טבריה" required>
@@ -48,8 +56,9 @@
       <input id="fName" type="text" placeholder="לדוגמה: אסתר כהן">
       <label for="fPhone">טלפון</label>
       <input id="fPhone" type="tel" inputmode="tel" placeholder="לדוגמה: 050-1234567">
-      <button type="submit" class="add-btn">➕ הוסף משלוח</button>
+      <button type="submit" class="add-btn">➕ הוסף משלוח (והלקוח נשמר לפעם הבאה)</button>
     </form>
+    </details>
 
     <details class="more" id="pasteBox">
       <summary>📋 הדבקת הרבה כתובות בבת אחת</summary>
@@ -70,7 +79,7 @@
     <div id="banner" class="banner" hidden></div>
     <div id="summary" class="summary" hidden></div>
     <ol id="stops" class="stops"></ol>
-    <p id="empty" class="muted">עדיין אין משלוחים. מלא כתובת, שם וטלפון ולחץ "הוסף משלוח".</p>
+    <p id="empty" class="muted">עדיין אין משלוחים להיום. חפש לקוח למעלה ולחץ "➕ הוסף".</p>
   </section>
 
   <section class="card map-card">
@@ -86,7 +95,7 @@
       <button id="clearAll" class="secondary danger">🗑 נקה הכול</button>
     </div>
   </section>
-  <p class="muted small version">גרסה <span id="version">202611020647</span></p>
+  <p class="muted small version">גרסה <span id="version">202611020650</span></p>
 </main>
 
 <div class="bar">
@@ -110,6 +119,22 @@
   <p class="muted small">הזיהוי נעשה בטלפון עצמו, והתמונות לא נשלחות לשום שרת. זיהוי אוטומטי עלול לטעות, אז כדאי לבדוק מול התמונה.</p>
 </dialog>
 
+<dialog id="custDlg" class="cust-dlg">
+  <form method="dialog" class="dlg-head">
+    <h2>לקוחות קבועים <span id="custTotal" class="badge">0</span></h2>
+    <button class="ghost" aria-label="סגור">✕</button>
+  </form>
+  <details class="more" id="importBox">
+    <summary>📋 הוספת הרבה לקוחות בבת אחת</summary>
+    <p class="muted small">לקוח בכל שורה: שם, טלפון וכתובת, בכל סדר (מופרדים ב-| או עמודות מאקסל).</p>
+    <textarea id="custImport" rows="5" placeholder="אסתר כהן | 050-1234567 | צאלון 44, טבריה
+משה לוי | 052-7654321 | עין דור"></textarea>
+    <button id="custImportBtn" type="button">הוסף לרשימה</button>
+  </details>
+  <input id="custFilter" type="search" placeholder="🔍 סינון" autocomplete="off">
+  <ul id="custList" class="saved"></ul>
+</dialog>
+
 <dialog id="savedDlg">
   <form method="dialog" class="dlg-head">
     <h2>מסלולים שמורים</h2>
@@ -126,6 +151,6 @@
 <datalist id="catalogList"></datalist>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module" src="js/app.js?v=202611020647"></script>
+<script type="module" src="js/app.js?v=202611020650"></script>
 </body>
 </html>
