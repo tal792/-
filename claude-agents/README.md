@@ -6,6 +6,7 @@
 | `developer` | sonnet | כותב קוד ב-worktree וב-branch נפרדים. בלי push או deploy |
 | `qa-tester` | haiku | בודק ומתקן תקלות קטנות ב-worktree נפרד |
 | `security-reviewer` | sonnet | סקירת אבטחה. קריאה בלבד |
+| `inbox-cleaner` | haiku | מנקה ספאם וזבל מ-Gmail. ארכוב ותוויות, בלי מחיקה. דורש חיבור Gmail |
 
 ## התקנה במחשב שלך
 
