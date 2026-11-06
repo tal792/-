@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(vercel:*)",
+      "Bash(netlify:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(npm publish:*)",
+      "Bash(psql:*)",
+      "Bash(mysql:*)",
+      "Bash(mongosh:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(curl -X POST:*)"
+    ]
+  }
+}
