@@ -14,11 +14,11 @@
 
 ## S001 – Petstar (Hangzhou Tianyuan)
 **To:** info@tianyuanpet.com
-**Subject:** Private label inquiry from Israel – Ashtal Europet (beds, leashes, toys, bowls)
+**Subject:** Private label inquiry from Israel – Ashtal Yourpet (beds, leashes, toys, bowls)
 
 Dear Petstar team,
 
-My name is [NAME], [TITLE] at Ashtal Europet, an importer and wholesale distributor of pet food and pet accessories in Israel, supplying pet shops and retail chains nationwide.
+My name is [NAME], [TITLE] at Ashtal Yourpet, an importer and wholesale distributor of pet food and pet accessories in Israel, supplying pet shops and retail chains nationwide.
 
 We are building a private-label accessories line under our own brand and are looking for a long-term manufacturing partner who can supply several categories in one consolidated shipment:
 
@@ -45,7 +45,7 @@ Looking forward to your reply.
 
 Best regards,
 [NAME]
-[TITLE] | Ashtal Europet
+[TITLE] | Ashtal Yourpet
 [PHONE / WHATSAPP] | [WEBSITE]
 Israel
 
@@ -53,7 +53,7 @@ Israel
 
 ## S002 – PamiPet (Preeminent Pet Products)
 **To:** info@cnpreeminent.com
-**Subject:** Private label inquiry from Israel – Ashtal Europet
+**Subject:** Private label inquiry from Israel – Ashtal Yourpet
 
 גוף זהה ל-S001, עם שינויים:
 - פתיחה: `Dear PamiPet team,`
@@ -66,7 +66,7 @@ Israel
 ## S003 – Ronipet (Suzhou Roni Pet Products)
 **To:** rosa@ronipet.com
 **Cc:** nina@ronipet.com
-**Subject:** Private label inquiry from Israel – Ashtal Europet
+**Subject:** Private label inquiry from Israel – Ashtal Yourpet
 
 גוף זהה ל-S001, עם שינויים:
 - פתיחה: `Dear Rosa and Nina,`
