@@ -73,3 +73,15 @@ Israel
 - להשמיט "Training / pee pads" מהרשימה (לא מופיע אצלם), ולהוסיף במקומו שאלה:
   `Do you also supply training / pee pads?`
 - סעיף 8 חשוב במיוחד אצלם (הכתובת היא בניין משרדים): להשאיר כמו שהוא.
+
+---
+
+# סבב 2 – ספקים חדשים (אותו נוסח כמו S001)
+
+| id | ספק | To | שינוי בגוף המייל |
+|---|---|---|---|
+| T01 | OKEYPETS | sale@okeypets.com | פתיחה `Dear Bella,`; להוסיף שאלה: `Which of these items are produced in your own factory?` |
+| B01 | Bestjoy Pet | info@bestjoypet.com | פתיחה `Dear Bestjoy team,` |
+| B02 | Ivy Textile | julieni@ivytextile.com ⚠️ לאמת | פתיחה `Dear Ivy Textile team,`; להדגיש washable pee pads ו-beds |
+| B04 | Hengshang (פדים בלבד) | mike@hengshangtex.com | רק סעיף pads: `washable puppy training pads, custom size and logo` |
+| B05 | JCZCARE (פדים חד-פעמיים) | hengtuo@nthengtuo.com ⚠️ דומיין שונה מהאתר | רק סעיף pads: `disposable puppy training pads, private label` |
