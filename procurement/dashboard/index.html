@@ -3,249 +3,277 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Assistant:wght@400;600;700&display=swap">
 <style>
-/* Layout: sticky tab bar, one column of big touch-friendly cards; products as a shop-style grid with price tags */
+/* Layout: phone-first app shell. Fixed bottom tab bar; screens stack vertically; supplier = its own screen with 3 big segments (מחירים / קטלוגים / שיחות). */
 :root{
-  --bg:#f6f4ef; --card:#ffffff; --ink:#1d2a2a; --muted:#5d6b69; --line:#e2ddd2;
-  --accent:#0f6f6a; --accent-ink:#ffffff; --tag:#ffcf3d; --tag-ink:#1d2a2a;
-  --ok:#1e8a4c; --wait:#c98a07; --off:#9aa3a1; --soft:#eef4f3;
+  --bg:#f5f3ee; --card:#ffffff; --ink:#18282a; --muted:#5f6d6b; --line:#e4dfd4;
+  --accent:#0e6f69; --accent-2:#e9f4f2; --accent-ink:#ffffff;
+  --tag:#ffcf3d; --tag-ink:#18282a; --ok:#1e8a4c; --wait:#c98a07; --off:#98a19f; --danger:#c2412d;
   --display:'Rubik',system-ui,sans-serif; --body:'Assistant','Rubik',system-ui,sans-serif;
+  --tabh:68px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#121a19; --card:#1b2524; --ink:#eef3f2; --muted:#a6b3b1; --line:#2c3836;
-  --accent:#4cc3b9; --accent-ink:#0b1514; --tag:#ffd54f; --tag-ink:#1d2a2a;
-  --ok:#4cd187; --wait:#f0b532; --off:#6f7a78; --soft:#1f2d2b; color-scheme:dark}}
+  --bg:#111918; --card:#1a2423; --ink:#eef3f2; --muted:#a3b0ae; --line:#2b3735;
+  --accent:#4cc3b9; --accent-2:#1d302e; --accent-ink:#0b1514;
+  --tag:#ffd54f; --tag-ink:#18282a; --ok:#4cd187; --wait:#f0b532; --off:#6f7a78; --danger:#ff7a63; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#121a19; --card:#1b2524; --ink:#eef3f2; --muted:#a6b3b1; --line:#2c3836;
-  --accent:#4cc3b9; --accent-ink:#0b1514; --tag:#ffd54f; --tag-ink:#1d2a2a;
-  --ok:#4cd187; --wait:#f0b532; --off:#6f7a78; --soft:#1f2d2b; color-scheme:dark}
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;direction:rtl;margin:0}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
-.wrap{max-width:1100px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 6px;flex-wrap:wrap}
-.brand{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.2px}
-.brand small{display:block;font-family:var(--body);font-weight:600;font-size:14px;color:var(--muted)}
-.upd{font-size:14px;color:var(--muted)}
-nav{display:flex;gap:8px;padding-block:6px 12px;overflow-x:auto}
-nav a{flex:0 0 auto;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:700;font-size:17px;padding:10px 18px;border-radius:999px;border:2px solid var(--line);background:var(--bg)}
-nav a[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-nav a:focus-visible,.chip:focus-visible,.btn:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
-h2{font-family:var(--display);font-size:26px;margin:28px 0 12px;text-wrap:balance}
-h3{font-family:var(--display);font-size:19px;margin:0}
+  --bg:#111918; --card:#1a2423; --ink:#eef3f2; --muted:#a3b0ae; --line:#2b3735;
+  --accent:#4cc3b9; --accent-2:#1d302e; --accent-ink:#0b1514;
+  --tag:#ffd54f; --tag-ink:#18282a; --ok:#4cd187; --wait:#f0b532; --off:#6f7a78; --danger:#ff7a63; color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;direction:rtl;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+.screen{max-width:760px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(var(--tabh) + 28px + env(safe-area-inset-bottom,0px))}
+h1{font-family:var(--display);font-weight:800;font-size:28px;margin:8px 0 2px;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:20px;margin:26px 0 10px}
+h3{font-family:var(--display);font-weight:700;font-size:18px;margin:0}
+.sub{color:var(--muted);font-size:15px}
 .muted{color:var(--muted)}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-.stat b{display:block;font-family:var(--display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
-.stat span{color:var(--muted);font-weight:600}
-.stat.ok b{color:var(--ok)}.stat.wait b{color:var(--wait)}.stat.you b{color:var(--accent)}
-.todo{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.todo li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
-.todo li::before{content:"";flex:0 0 12px;height:12px;margin-top:7px;border-radius:50%;background:var(--wait)}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.chip{font-family:var(--display);font-weight:700;font-size:16px;padding:10px 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.prod{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
-.pic{position:relative;aspect-ratio:1/1;background:var(--soft);display:grid;place-items:center;max-width:100%}
-.pic img{width:100%;height:100%;object-fit:contain;background:#fff}
-.pic svg{width:46%;height:46%;opacity:.55}
-.price{position:absolute;top:10px;inset-inline-start:10px;background:var(--tag);color:var(--tag-ink);font-family:var(--display);font-weight:800;font-size:22px;padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 rgba(0,0,0,.18);font-variant-numeric:tabular-nums;direction:ltr}
-.price small{font-size:13px;font-weight:700}
-.pbody{padding:12px 14px 14px;display:grid;gap:4px}
-.pbody .sup{font-size:14px;font-weight:700;color:var(--accent)}
-.kv{display:flex;justify-content:space-between;gap:8px;font-size:15px;border-top:1px dashed var(--line);padding-top:6px}
-.kv span:last-child{font-weight:700;font-variant-numeric:tabular-nums;text-align:left}
-.code{font-size:13px;color:var(--muted);direction:ltr;text-align:right}
-.sups{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.sup-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:8px;min-width:0}
-.sup-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.pill{font-size:14px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
-.pill.replied{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
-.pill.waiting{background:color-mix(in srgb,var(--wait) 20%,transparent);color:var(--wait)}
-.pill.lead{background:color-mix(in srgb,var(--off) 20%,transparent);color:var(--muted)}
-.contact{font-size:15px;direction:ltr;text-align:right;overflow-wrap:anywhere}
-.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;text-decoration:none;font-family:var(--display);font-weight:700;font-size:16px;padding:12px 16px;border-radius:12px;background:var(--accent);color:var(--accent-ink);border:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+/* bottom tab bar */
+.tabs{position:fixed;inset:auto 0 0 0;z-index:15;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tabs a{flex:1;max-width:140px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:var(--muted);font-family:var(--display);font-weight:700;font-size:13px;border-radius:14px;position:relative}
+.tabs a .ic{font-size:24px;line-height:1}
+.tabs a[aria-current="page"]{color:var(--accent);background:var(--accent-2)}
+.badge{position:absolute;top:4px;inset-inline-end:22%;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--danger);color:#fff;font-size:12px;display:grid;place-items:center}
+/* home */
+.hello{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px;text-decoration:none;color:inherit;display:block}
+.tile b{display:block;font-family:var(--display);font-size:34px;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile span{font-size:14px;color:var(--muted);font-weight:600}
+.tile.ok b{color:var(--ok)}.tile.wait b{color:var(--wait)}.tile.you b{color:var(--accent)}
+.alert{display:flex;gap:12px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px 16px;text-decoration:none;color:inherit;margin-top:14px}
+.alert.hot{border-color:var(--danger)}
+.alert .big{font-size:30px}
+.list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.list>*{min-width:0}
+[hidden]{display:none!important}
+.item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.dot{flex:0 0 12px;height:12px;border-radius:50%;margin-top:7px;background:var(--wait)}
+/* supplier rows */
+.search{width:100%;font:inherit;font-size:17px;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.seg{display:flex;gap:6px;overflow-x:auto;padding:4px 0 2px;margin:10px 0 12px;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{flex:0 0 auto;min-height:44px;padding:8px 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-family:var(--display);font-weight:700;font-size:15px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.srow{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;text-decoration:none;color:inherit;min-height:84px}
+.avatar{flex:0 0 52px;height:52px;border-radius:16px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px;color:#fff}
+.srow .mid{flex:1;min-width:0}
+.srow .mid h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.chip{font-size:13px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--accent-2);color:var(--accent)}
+.st{font-size:13px;font-weight:700;padding:3px 9px;border-radius:999px}
+.st.replied{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.st.waiting{background:color-mix(in srgb,var(--wait) 22%,transparent);color:var(--wait)}
+.st.lead{background:color-mix(in srgb,var(--off) 22%,transparent);color:var(--muted)}
+.chev{font-size:22px;color:var(--muted)}
+/* supplier screen */
+.back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;text-decoration:none;color:var(--accent);font-family:var(--display);font-weight:700}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:10px}
+.hero .top{display:flex;gap:14px;align-items:center}
+.hero .avatar{flex-basis:64px;height:64px;font-size:28px;border-radius:20px}
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 14px;border-radius:14px;text-decoration:none;background:var(--accent);color:var(--accent-ink);font-family:var(--display);font-weight:700;font-size:16px;border:0;cursor:pointer;text-align:center}
 .btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
-.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-.file{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:12px}
-.tbl{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
-table{border-collapse:collapse;width:100%;font-size:15px}
-td,th{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th{font-family:var(--display);background:var(--soft)}
-.note{font-size:14px;color:var(--muted);margin-top:10px}
-.empty{padding:28px;text-align:center;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:14px}
-@media (max-width:560px){.stats{grid-template-columns:1fr}.stat b{font-size:36px}h2{font-size:22px}}
-@media (prefers-reduced-motion:no-preference){.prod,.sup-card{transition:transform .15s}.prod:hover{transform:translateY(-2px)}}
+.copy{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg);border-radius:12px;padding:8px 12px;direction:ltr;font-size:15px;overflow-wrap:anywhere}
+.copy button{direction:rtl;flex:0 0 auto;border:0;background:var(--accent-2);color:var(--accent);font-weight:700;border-radius:10px;padding:8px 12px;cursor:pointer;min-height:40px}
+.segtabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px 0;margin-top:8px}
+.segtabs button{min-height:54px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-family:var(--display);font-weight:700;font-size:16px;cursor:pointer}
+.segtabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.segtabs button .muted{color:inherit;opacity:.75}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.wait li::before{content:"⏳ "}
+/* products */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:620px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.pic{position:relative;aspect-ratio:4/3;display:grid;place-items:center;max-width:100%}
+.pic .emo{font-size:46px}
+.pic img{width:100%;height:100%;object-fit:contain;background:#fff}
+.price{position:absolute;bottom:8px;inset-inline-start:8px;background:var(--tag);color:var(--tag-ink);font-family:var(--display);font-weight:800;font-size:19px;padding:4px 10px;border-radius:10px;direction:ltr;font-variant-numeric:tabular-nums;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.price small{font-size:12px;font-weight:700;opacity:.8}
+.pb{padding:10px 12px 12px;display:grid;gap:3px}
+.pb h3{font-size:16px}
+.pb .s{font-size:13px;color:var(--accent);font-weight:700}
+.pb .m{font-size:13px;color:var(--muted)}
+.pb .code{font-size:12px;color:var(--muted);direction:ltr;text-align:right}
+.more{width:100%;margin-top:12px}
+/* files */
+.frow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;text-decoration:none;color:inherit;min-height:68px}
+.frow .fi{font-size:28px}
+.frow .fn{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:700}
+.frow .fk{font-size:13px;color:var(--muted);font-weight:400}
+/* emails */
+.mail{display:grid;gap:4px}
+.mail .d{font-size:13px;color:var(--muted)}
+.notes{white-space:pre-wrap;font-size:15px}
+.empty{padding:26px 16px;text-align:center;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:16px}
+.empty .big{font-size:36px;display:block;margin-bottom:6px}
+.sort{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap}
+.sort select{font:inherit;min-height:44px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);padding:0 10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tabh) + 24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;z-index:30}
+@media (prefers-reduced-motion:no-preference){.srow,.prod,.frow,.tile{transition:transform .12s}.srow:active,.prod:active,.frow:active,.tile:active{transform:scale(.98)}}
+@media (min-width:900px){.screen{max-width:960px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
 
-<header><div class="wrap">
-  <div class="top">
-    <div class="brand">Ashtal Yourpet · רכש<small>ספקים, מוצרים ומחירים במקום אחד</small></div>
-    <div class="upd" id="upd">טוען…</div>
-  </div>
-  <nav aria-label="מסכים">
-    <a href="#home" data-v="home">🏠 מה המצב</a>
-    <a href="#products" data-v="products">🛍️ מוצרים ומחירים</a>
-    <a href="#suppliers" data-v="suppliers">🏭 ספקים</a>
-    <a href="#files" data-v="files">📁 קבצים</a>
-    <a href="#team" data-v="team">🤖 הצוות</a>
-  </nav>
-</div></header>
-
-<main class="wrap">
-  <section id="v-home">
-    <h2>מה המצב היום</h2>
-    <div class="stats">
-      <div class="stat ok"><b id="s-rep">–</b><span>ספקים ענו</span></div>
-      <div class="stat wait"><b id="s-wait">–</b><span>מחכים לתשובה</span></div>
-      <div class="stat you"><b id="s-prod">–</b><span>מוצרים עם מחיר</span></div>
-    </div>
-    <h2>✋ מחכה לאישורך</h2>
-    <div id="appr"></div>
-    <h2>מה קורה עכשיו</h2>
-    <ul class="todo" id="todo"></ul>
-    <h2>מה נשלח לספקים</h2>
-    <div class="tbl"><table><thead><tr><th>תאריך</th><th>ספק</th><th>סטטוס</th></tr></thead><tbody id="hist"></tbody></table></div>
-  </section>
-
-  <section id="v-products" hidden>
-    <h2>מוצרים ומחירים</h2>
-    <p class="muted">מחיר ליחידה בדולר, כפי שהספק כתב. עוד לא כולל הובלה, מכס ומע״מ. לחצו על קטגוריה:</p>
-    <div class="chips" id="chips" role="group" aria-label="קטגוריות"></div>
-    <div class="grid" id="grid"></div>
-    <p class="note">בקטגוריות מיטות, קערות ופדים חסרים עדיין מחירים מרוב הספקים. ביקשנו, ומחכים לתשובה.</p>
-  </section>
-
-  <section id="v-suppliers" hidden>
-    <h2>ספקים</h2>
-    <div class="chips" id="schips" role="group" aria-label="סינון ספקים"></div>
-    <div class="sups" id="sups"></div>
-  </section>
-
-  <section id="v-dossier" hidden>
-    <p><a class="btn ghost" href="#suppliers">→ חזרה לספקים</a></p>
-    <div id="dossier"></div>
-  </section>
-
-  <section id="v-team" hidden>
-    <h2>צוות הסוכנים</h2>
-    <p class="muted">הסוכנים עובדים לבד לפי לוח הזמנים. כל דבר שיוצא החוצה (מייל, הזמנה, תשלום) מחכה לאישור שלך.</p>
-    <div class="sups" id="team"></div>
-  </section>
-
-  <section id="v-files" hidden>
-    <h2>קבצים</h2>
-    <div class="files" id="files"></div>
-  </section>
+<main class="screen" id="app" aria-live="polite">
+  <div class="empty"><span class="big">🐾</span>טוען את הנתונים…</div>
 </main>
 
+<nav class="tabs" aria-label="תפריט ראשי">
+  <a href="#home" data-v="home"><span class="ic">🏠</span>בית</a>
+  <a href="#suppliers" data-v="suppliers"><span class="ic">🏭</span>ספקים</a>
+  <a href="#products" data-v="products"><span class="ic">💰</span>מחירים</a>
+  <a href="#approve" data-v="approve"><span class="ic">✋</span>לאישור<span class="badge" id="nb" hidden></span></a>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
 <script>
-const ICON={
- harness:'<path d="M20 30c8-10 32-10 40 0l-6 30H26z" fill="none" stroke="currentColor" stroke-width="5"/><path d="M28 42h24" stroke="currentColor" stroke-width="5"/>',
- collar:'<circle cx="40" cy="40" r="24" fill="none" stroke="currentColor" stroke-width="7"/><circle cx="40" cy="66" r="6" fill="currentColor"/>',
- leash:'<path d="M14 66c20-40 32-50 52-52" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="14" cy="66" r="7" fill="none" stroke="currentColor" stroke-width="5"/>',
- bed:'<rect x="10" y="34" width="60" height="26" rx="12" fill="none" stroke="currentColor" stroke-width="6"/><path d="M22 42h36" stroke="currentColor" stroke-width="5"/>',
- bowl:'<path d="M12 36h56c-2 18-14 26-28 26S14 54 12 36z" fill="none" stroke="currentColor" stroke-width="6"/>',
- toy:'<circle cx="40" cy="40" r="22" fill="none" stroke="currentColor" stroke-width="6"/><path d="M22 30c10 6 26 6 36 0M22 50c10-6 26-6 36 0" stroke="currentColor" stroke-width="4" fill="none"/>',
- pad:'<rect x="14" y="14" width="52" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="6"/><path d="M14 30h52M14 50h52" stroke="currentColor" stroke-width="3"/>',
- other:'<path d="M40 14l8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3z" fill="none" stroke="currentColor" stroke-width="5"/>'};
-const STATE={replied:'ענה',waiting:'מחכים לו',lead:'עוד לא פנינו'};
-let D=null, cat='all', sfilter='contacted';
+const CATEMO={harness:'🦺',collar:'⭕',leash:'🦮',bed:'🛏️',bowl:'🥣',toy:'🧸',pad:'🧻',other:'⭐'};
+const CATBG={harness:'#dff1ee',collar:'#fdf0d5',leash:'#e6eefc',bed:'#f3e6f7',bowl:'#e3f4e1',toy:'#fde5e1',pad:'#eceae4',other:'#f1efe8'};
+const AV=['#0e6f69','#b2552d','#3d5a99','#7a4e9c','#2f7d3e','#9c6b10','#a33a59'];
+const ST={replied:'ענה ✓',waiting:'מחכים לו',lead:'עוד לא פנינו'};
+let D=null, ui={sup:'all', q:'', cat:'all', sort:'price', seg:'prices', scat:'all', shown:20, pshown:20};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const money=(a,b)=>a===b||!b?`$${a.toFixed(2)}`:`$${a.toFixed(2)}<small>–${b.toFixed(2)}</small>`;
-
-function show(){
-  const v=(location.hash||'#home').slice(1);
-  const views=['home','products','suppliers','files','team','dossier'];
-  let cur=views.includes(v)?v:'home';
-  if(v.startsWith('sup-')){cur='dossier'; if(D) renderDossier(v.slice(4));}
-  views.forEach(x=>{$('v-'+x).hidden=x!==cur});
-  const navCur=cur==='dossier'?'suppliers':cur;
-  document.querySelectorAll('nav a').forEach(a=>{if(a.dataset.v===navCur)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
-  window.scrollTo(0,0);
+const money=(a,b)=>a==null?'—':(!b||a===b?`$${a.toFixed(2)}`:`$${a.toFixed(2)}<small> –${b.toFixed(2)}</small>`);
+const av=s=>AV[[...s.id].reduce((a,c)=>a+c.charCodeAt(0),0)%AV.length];
+const clean=v=>v&&!/not found|not stated|^—$/.test(v)?v:'';
+function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,1800)}
+function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('הועתק ✓'),()=>toast('סמנו והעתיקו ידנית'))}catch(e){toast('סמנו והעתיקו ידנית')}}
+function card(p,showSup){
+  return `<article class="prod"><div class="pic" style="background:${CATBG[p.cat]||CATBG.other}">${p.img?`<img src="${esc(p.img)}" alt="" loading="lazy">`:`<span class="emo" aria-hidden="true">${CATEMO[p.cat]||'⭐'}</span>`}<div class="price">${money(p.pmin,p.pmax)}</div></div>
+  <div class="pb"><h3>${esc(p.he)}</h3>${showSup?`<div class="s">${esc(p.sup)}</div>`:''}<div class="m">מינימום: <b>${esc(p.moq||'—')}</b></div>${p.code?`<div class="code">${esc(p.code)}</div>`:''}</div></article>`;
 }
-function renderHome(){
-  const s=D.suppliers;
-  $('s-rep').textContent=s.filter(x=>x.state==='replied').length;
-  $('s-wait').textContent=s.filter(x=>x.state==='waiting').length;
-  $('s-prod').textContent=D.products.length;
-  $('todo').innerHTML=D.todo.map(t=>`<li>${esc(t)}</li>`).join('');
+/* ---------- screens ---------- */
+function home(){
+  const s=D.suppliers, ap=D.approvals||[];
+  const replied=s.filter(x=>x.state==='replied'), waiting=s.filter(x=>x.state==='waiting');
+  const h=new Date().getHours(); const hi=h<12?'בוקר טוב':h<17?'צהריים טובים':'ערב טוב';
+  return `<div class="hello"><div><h1>${hi}, טל 👋</h1><div class="sub">עודכן ${esc(D.updated)} · הצוות עובד בשבילך</div></div></div>
+  <a class="alert ${ap.length?'hot':''}" href="#approve"><span class="big">${ap.length?'✋':'✅'}</span><div><h3>${ap.length?ap.length+' דברים מחכים לאישור שלך':'אין שום דבר שמחכה לך'}</h3><div class="sub">${ap.length?'לחצו לראות ולאשר':'הסוכנים יעדכנו כשיהיה'}</div></div></a>
+  <div class="tiles">
+    <a class="tile ok" href="#suppliers" data-filter="replied"><b>${replied.length}</b><span>ענו</span></a>
+    <a class="tile wait" href="#suppliers" data-filter="waiting"><b>${waiting.length}</b><span>מחכים להם</span></a>
+    <a class="tile you" href="#products"><b>${s.reduce((a,x)=>a+((x.dossier||{}).products||0),0)}</b><span>מחירים</span></a>
+  </div>
+  <h2>🔥 הספקים שענו</h2>
+  <div class="list">${replied.map(row).join('')||'<div class="empty">עוד אין</div>'}</div>
+  <h2>📌 מה קורה עכשיו</h2>
+  <ul class="list">${D.todo.map(t=>`<li class="item"><span class="dot"></span><span>${esc(t)}</span></li>`).join('')}</ul>
+  <h2>🤖 הצוות שעובד בשבילך</h2>
+  <div class="list">${(D.team||[]).map(t=>`<div class="item"><span style="font-size:24px">🤖</span><div><h3>${esc(t.name)}</h3><div class="sub">${esc(t.schedule||'')}</div><div>${esc(t.last)}</div></div></div>`).join('')}</div>`;
+}
+function row(s){
+  const d=s.dossier||{};
+  const chips=[d.products?`💰 ${d.products} מחירים`:'',d.files&&d.files.length?`📁 ${d.files.length} קבצים`:'',d.emails&&d.emails.length?`💬 ${d.emails.length}`:''].filter(Boolean);
+  return `<a class="srow" href="#s-${esc(s.id)}"><span class="avatar" style="background:${av(s)}" aria-hidden="true">${esc(s.name.trim()[0]||'?')}</span>
+  <div class="mid"><h3>${esc(s.name)}</h3><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="st ${s.state}">${ST[s.state]}</span><span class="sub">${esc(s.kind)}</span></div>${chips.length?`<div class="chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>`:''}</div><span class="chev" aria-hidden="true">‹</span></a>`;
+}
+function suppliers(){
+  const f=[['all','כולם'],['replied','ענו'],['waiting','מחכים'],['lead','לא פנינו'],['acc','אקססוריז'],['treat','חטיפים']];
+  let list=D.suppliers.filter(s=>ui.sup==='all'||(ui.sup==='acc'?s.kind==='אקססוריז':ui.sup==='treat'?s.kind==='חטיפים':s.state===ui.sup));
+  if(ui.q) list=list.filter(s=>(s.name+' '+s.legal+' '+s.city).toLowerCase().includes(ui.q.toLowerCase()));
+  const order={replied:0,waiting:1,lead:2}; list.sort((a,b)=>order[a.state]-order[b.state]||(b.score||0)-(a.score||0));
+  return `<h1>🏭 ספקים</h1><div class="sub">לחצו על ספק כדי לראות מחירים, קטלוגים ושיחות</div>
+  <div style="margin-top:12px"><input class="search" id="q" type="search" placeholder="🔎 חיפוש ספק…" value="${esc(ui.q)}" aria-label="חיפוש ספק"></div>
+  <div class="seg" role="group" aria-label="סינון">${f.map(([k,l])=>`<button data-sup="${k}" aria-pressed="${ui.sup===k}">${l}</button>`).join('')}</div>
+  <div class="list">${list.map(row).join('')||'<div class="empty"><span class="big">🔍</span>לא נמצא ספק</div>'}</div>`;
+}
+function supplier(id){
+  const s=D.suppliers.find(x=>x.id===id); if(!s) return `<a class="back" href="#suppliers">→ ספקים</a><div class="empty">הספק לא נמצא</div>`;
+  const d=s.dossier||{}; const items=d.items||[];
+  const email=clean(s.email), phone=clean(s.phone), web=(s.web||'').split(' ')[0];
+  const segs=[['prices',`💰 מחירים <span class="muted">${items.length}</span>`],['files',`📁 קטלוגים <span class="muted">${(d.files||[]).length}</span>`],['talk','💬 שיחות']];
+  let body='';
+  if(ui.seg==='prices'){
+    const cats=[...new Set(items.map(i=>i.cat))];
+    let li=items.filter(i=>ui.scat==='all'||i.cat===ui.scat);
+    li=li.slice().sort((a,b)=>ui.sort==='price'?a.pmin-b.pmin:b.pmin-a.pmin);
+    body=items.length?`${cats.length>1?`<div class="seg" role="group" aria-label="קטגוריה">${[['all','הכול']].concat(cats.map(c=>[c,(CATEMO[c]||'')+' '+(D.cats[c]||c)])).map(([k,l])=>`<button data-scat="${k}" aria-pressed="${ui.scat===k}">${l}</button>`).join('')}</div>`:''}
+      <div class="sort"><span class="sub">${li.length} מוצרים · מחיר ליחידה בדולר</span><select id="sort" aria-label="מיון"><option value="price" ${ui.sort==='price'?'selected':''}>הזול קודם</option><option value="desc" ${ui.sort==='desc'?'selected':''}>היקר קודם</option></select></div>
+      <div class="grid">${li.slice(0,ui.shown).map(p=>card(p,false)).join('')}</div>
+      ${li.length>ui.shown?`<button class="btn ghost more" data-more="1">עוד ${Math.min(20,li.length-ui.shown)} מוצרים ↓</button>`:''}`
+      :`<div class="empty"><span class="big">⏳</span>עוד לא קיבלנו מחירים מהספק הזה${(d.waiting_for||[]).length?'<br>מחכים ל: '+esc(d.waiting_for.join(', ')):''}</div>`;
+  } else if(ui.seg==='files'){
+    body=(d.files||[]).length?`<div class="list">${d.files.map(f=>`<a class="frow" href="${esc(f.url)}" target="_blank" rel="noopener"><span class="fi">${/certif|report|BSCI|ISO/i.test(f.kind+f.name)?'📜':/price/i.test(f.kind)?'💲':/image|jpg|png/i.test(f.kind+f.name)?'🖼️':'📘'}</span><span class="fn">${esc(f.name)}<br><span class="fk">${esc(f.kind)}</span></span><span class="chev">‹</span></a>`).join('')}</div>
+      ${s.drive?`<a class="btn more" href="${esc(s.drive)}" target="_blank" rel="noopener">📂 פתח את כל התיקייה ב-Drive</a>`:''}`
+      :`<div class="empty"><span class="big">📭</span>הספק עוד לא שלח קבצים</div>`;
+  } else {
+    body=`${(d.waiting_for||[]).length?`<h2>⏳ מחכים מהספק</h2><ul class="list wait">${d.waiting_for.map(w=>`<li class="item">${esc(w)}</li>`).join('')}</ul>`:''}
+      ${(d.issues||[]).length?`<h2>⚠️ שימו לב</h2><ul class="list">${d.issues.map(w=>`<li class="item"><span class="dot"></span>${esc(w)}</li>`).join('')}</ul>`:''}
+      <h2>📧 מה נשלח</h2>${(d.emails||[]).length?`<div class="list">${d.emails.map(e=>`<div class="item mail"><span class="d">${esc(e.date.split('-').reverse().join('.'))}</span><b>${esc(e.subject)}</b><span class="sub">${/repl|follow|quote|holding/.test(e.status)?'✅ ענו / בטיפול':'⏳ מחכים לתשובה'}</span></div>`).join('')}</div>`:'<div class="empty">עוד לא פנינו לספק הזה</div>'}
+      ${d.notes?`<h2>📝 מה הספק כתב</h2><div class="box notes">${esc(d.notes)}</div>`:''}`;
+  }
+  return `<a class="back" href="#suppliers">→ כל הספקים</a>
+  <section class="hero"><div class="top"><span class="avatar" style="background:${av(s)}" aria-hidden="true">${esc(s.name.trim()[0]||'?')}</span><div style="min-width:0"><h1 style="margin:0">${esc(s.name)}</h1><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="st ${s.state}">${ST[s.state]}</span><span class="sub">${esc(s.kind)} · ${esc(s.city)}</span></div></div></div>
+    ${s.summary?`<div>${esc(s.summary)}</div>`:''}
+    ${email?`<div class="copy"><span>✉️ ${esc(email)}</span><button data-copy="${esc(email.split(',')[0].trim())}">העתק</button></div>`:''}
+    ${phone?`<div class="copy"><span>📞 ${esc(phone)}</span><button data-copy="${esc((phone.match(/\+?[\d\s-]{8,}/)||[phone])[0].trim())}">העתק</button></div>`:''}
+    <div class="actions">${s.drive?`<a class="btn" href="${esc(s.drive)}" target="_blank" rel="noopener">📂 קטלוגים ב-Drive</a>`:''}${/^https?:/.test(web)?`<a class="btn ghost" href="${esc(web)}" target="_blank" rel="noopener">🌐 אתר הספק</a>`:''}</div>
+  </section>
+  <div class="segtabs" role="group" aria-label="תיק הספק">${segs.map(([k,l])=>`<button data-seg="${k}" aria-pressed="${ui.seg===k}">${l}</button>`).join('')}</div>
+  ${body}`;
+}
+function products(){
+  const all=D.suppliers.flatMap(s=>((s.dossier||{}).items||[]).map(i=>Object.assign({sup:s.name,sid:s.id},i)));
+  const cats=Object.keys(D.cats).filter(c=>all.some(p=>p.cat===c));
+  let li=all.filter(p=>ui.cat==='all'||p.cat===ui.cat);
+  if(ui.q2) li=li.filter(p=>(p.he+' '+p.name+' '+p.code+' '+p.sup).toLowerCase().includes(ui.q2.toLowerCase()));
+  li.sort((a,b)=>ui.sort==='price'?a.pmin-b.pmin:b.pmin-a.pmin);
+  return `<h1>💰 מחירים</h1><div class="sub">כל המוצרים מכל הספקים · מחיר ליחידה בדולר, כפי שהספק כתב (לפני הובלה ומכס)</div>
+  <div style="margin-top:12px"><input class="search" id="q2" type="search" placeholder="🔎 חיפוש: רתמה, קולר, קוד…" value="${esc(ui.q2||'')}" aria-label="חיפוש מוצר"></div>
+  <div class="seg" role="group" aria-label="קטגוריה">${[['all','הכול']].concat(cats.map(c=>[c,CATEMO[c]+' '+D.cats[c]])).map(([k,l])=>`<button data-cat="${k}" aria-pressed="${ui.cat===k}">${l}</button>`).join('')}</div>
+  <div class="sort"><span class="sub">${li.length} מוצרים</span><select id="sort" aria-label="מיון"><option value="price" ${ui.sort==='price'?'selected':''}>הזול קודם</option><option value="desc" ${ui.sort==='desc'?'selected':''}>היקר קודם</option></select></div>
+  <div class="grid">${li.slice(0,ui.pshown).map(p=>card(p,true)).join('')||''}</div>
+  ${li.length?'':'<div class="empty"><span class="big">🔍</span>לא נמצאו מוצרים</div>'}
+  ${li.length>ui.pshown?`<button class="btn ghost more" data-pmore="1">עוד ${Math.min(20,li.length-ui.pshown)} מוצרים ↓</button>`:''}
+  <p class="sub" style="margin-top:14px">מיטות, קערות ופדים: עוד מחכים למחירים מרוב הספקים.</p>`;
+}
+function approve(){
   const ap=D.approvals||[];
-  $('appr').innerHTML=ap.length?`<ul class="todo">${ap.map(a=>`<li style="flex-direction:column"><b>${esc(a.id)} · ${esc(a.title)}</b><span class="muted">${esc(a.supplier||'')} · ${esc(a.detail||'')}</span><span>לאישור: כתבו בצ׳אט "מאשר ${esc(a.id)}"</span></li>`).join('')}</ul>`:'<div class="empty">אין כרגע שום דבר שמחכה לאישור שלך ✅</div>';
-  $('hist').innerHTML=D.history.slice().reverse().map(h=>`<tr><td>${esc(h.date.split('-').reverse().join('.'))}</td><td>${esc(h.sup)}</td><td>${esc(/repl|follow|quote|holding/.test(h.status)?'✅ ענה / בטיפול':'⏳ מחכים')}</td></tr>`).join('');
+  return `<h1>✋ מחכה לאישורך</h1><div class="sub">כל מה שהסוכנים הכינו ומחכה לך, במקום אחד</div>
+  ${ap.length?`<div class="list" style="margin-top:14px">${ap.map(a=>`<div class="item" style="flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;width:100%;gap:8px"><h3>${esc(a.title)}</h3><span class="chip">${esc(a.id)}</span></div><div class="sub">${esc(a.supplier||'')}</div><div>${esc(a.detail||'')}</div><div class="copy" style="direction:rtl"><span>לאישור כתבו בצ׳אט: <b>מאשר ${esc(a.id)}</b></span><button data-copy="מאשר ${esc(a.id)}">העתק</button></div></div>`).join('')}</div>`
+  :`<div class="empty" style="margin-top:14px"><span class="big">✅</span>אין כרגע שום דבר שמחכה לאישור שלך.<br>הסוכנים יכינו כאן טיוטות ובקשות כשיהיה צורך.</div>`}
+  <h2>📁 קבצים כלליים</h2>
+  <div class="list"><a class="frow" href="${esc(D.drive_root)}" target="_blank" rel="noopener"><span class="fi">📂</span><span class="fn">כל הקטלוגים והמחירונים<br><span class="fk">תיקייה לכל ספק ב-Google Drive</span></span><span class="chev">‹</span></a>
+  ${(D.files||[]).filter(f=>f.url).map(f=>`<a class="frow" href="${esc(f.url)}" target="_blank" rel="noopener"><span class="fi">📊</span><span class="fn">${esc(f.name)}</span><span class="chev">‹</span></a>`).join('')}</div>`;
 }
-function renderChips(){
-  const used=[...new Set(D.products.map(p=>p.cat))];
-  const order=Object.keys(D.cats).filter(k=>used.includes(k));
-  const all=[['all','הכול']].concat(order.map(k=>[k,D.cats[k]]));
-  $('chips').innerHTML=all.map(([k,l])=>`<button class="chip" data-c="${k}" aria-pressed="${k===cat}">${esc(l)} <span class="muted">${k==='all'?D.products.length:D.products.filter(p=>p.cat===k).length}</span></button>`).join('');
+/* ---------- router ---------- */
+function render(){
+  if(!D) return;
+  const h=(location.hash||'#home').slice(1);
+  let v=h, html='';
+  if(h.startsWith('s-')){v='suppliers';html=supplier(h.slice(2));}
+  else if(h==='suppliers')html=suppliers();
+  else if(h==='products')html=products();
+  else if(h==='approve')html=approve();
+  else {v='home';html=home();}
+  $('app').innerHTML=html;
+  document.querySelectorAll('.tabs a').forEach(a=>{if(a.dataset.v===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  const nb=$('nb'),n=(D.approvals||[]).length; nb.hidden=!n; nb.textContent=n;
 }
-function renderProducts(){
-  renderChips();
-  const list=D.products.filter(p=>cat==='all'||p.cat===cat);
-  $('grid').innerHTML=list.length?list.map(p=>`<article class="prod">
-    <div class="pic">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.he)}" loading="lazy">`:`<svg viewBox="0 0 80 80" aria-hidden="true" style="color:var(--accent)">${ICON[p.cat]||ICON.other}</svg>`}
-      <div class="price">${money(p.pmin,p.pmax)}</div></div>
-    <div class="pbody"><h3>${esc(p.he)}</h3><div class="sup">${esc(p.sup)}</div>
-      ${p.code?`<div class="code">${esc(p.code)}</div>`:''}
-      <div class="kv"><span>מינימום הזמנה</span><span>${esc(p.moq||'—')}</span></div>
-      <div class="kv"><span>מידות</span><span>${esc(typeof p.sizes==='number'?p.sizes+' מידות':p.sizes||'—')}</span></div>
-    </div></article>`).join(''):'<div class="empty">אין עדיין מוצרים בקטגוריה הזו</div>';
-}
-function renderSuppliers(){
-  const f=[['contacted','פנינו אליהם'],['replied','ענו'],['all','כולם']];
-  $('schips').innerHTML=f.map(([k,l])=>`<button class="chip" data-s="${k}" aria-pressed="${k===sfilter}">${l}</button>`).join('');
-  const list=D.suppliers.filter(s=>sfilter==='all'||(sfilter==='replied'?s.state==='replied':s.state!=='lead'));
-  $('sups').innerHTML=list.map(s=>`<article class="sup-card">
-    <div class="sup-head"><h3>${esc(s.name)}</h3><span class="pill ${s.state}">${STATE[s.state]}</span></div>
-    <div class="muted">${esc(s.kind)} · ${esc(s.city)}</div>
-    ${s.summary?`<div>${esc(s.summary)}</div>`:''}
-    ${s.email&&!/not found|not stated/.test(s.email)?`<div class="contact">✉️ ${esc(s.email)}</div>`:''}
-    ${s.phone&&!/not found|not stated/.test(s.phone)?`<div class="contact">📞 ${esc(s.phone)}</div>`:''}
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a class="btn" href="#sup-${esc(s.id)}">📋 תיק ספק</a>
-      ${s.drive?`<a class="btn" href="${esc(s.drive)}" target="_blank" rel="noopener">📂 קטלוגים</a>`:''}
-      ${s.web&&/^https?:/.test(s.web)?`<a class="btn ghost" href="${esc(s.web.split(' ')[0])}" target="_blank" rel="noopener">🌐 אתר</a>`:''}
-    </div></article>`).join('');
-}
-function renderDossier(id){
-  const s=D.suppliers.find(x=>x.id===id); if(!s){$('dossier').innerHTML='<div class="empty">ספק לא נמצא</div>';return;}
-  const d=s.dossier||{}; const prods=D.products.filter(p=>p.sid===id);
-  const list=(a,f)=>a&&a.length?`<ul class="todo">${a.map(f).join('')}</ul>`:'<div class="empty">אין</div>';
-  $('dossier').innerHTML=`<article class="sup-card">
-    <div class="sup-head"><h2 style="margin:0">📋 ${esc(s.name)}</h2><span class="pill ${s.state}">${STATE[s.state]}</span></div>
-    <div class="muted">${esc(s.legal)} · ${esc(s.city)} · ${esc(s.kind)}</div>
-    ${s.summary?`<div>${esc(s.summary)}</div>`:''}
-    ${s.email?`<div class="contact">✉️ ${esc(s.email)}</div>`:''}${s.phone?`<div class="contact">📞 ${esc(s.phone)}</div>`:''}
-    <div style="display:flex;gap:8px;flex-wrap:wrap">${s.drive?`<a class="btn" href="${esc(s.drive)}" target="_blank" rel="noopener">📂 כל הקבצים ב-Drive</a>`:''}${s.web&&/^https?:/.test(s.web)?`<a class="btn ghost" href="${esc(s.web.split(' ')[0])}" target="_blank" rel="noopener">🌐 אתר</a>`:''}</div>
-  </article>
-  <h2>⏳ מחכים מהספק</h2>${list(d.waiting_for,w=>`<li>${esc(w)}</li>`)}
-  <h2>⚠️ בעיות פתוחות</h2>${list(d.issues,w=>`<li>${esc(w)}</li>`)}
-  <h2>🛍️ מוצרים ומחירים (${d.products||0})</h2>
-  ${prods.length?`<div class="grid">${prods.slice(0,24).map(p=>`<article class="prod"><div class="pic"><svg viewBox="0 0 80 80" aria-hidden="true" style="color:var(--accent)">${ICON[p.cat]||ICON.other}</svg><div class="price">${money(p.pmin,p.pmax)}</div></div><div class="pbody"><h3>${esc(p.he)}</h3>${p.code?`<div class="code">${esc(p.code)}</div>`:''}<div class="kv"><span>מינימום</span><span>${esc(p.moq||'—')}</span></div></div></article>`).join('')}</div>${d.products>prods.length?`<p class="note">מוצגים ${prods.length} מתוך ${d.products}. הרשימה המלאה בתיק הספק ב-Drive/במערכת.</p>`:''}`:'<div class="empty">עוד לא התקבלו מחירים</div>'}
-  <h2>📁 קבצים מהספק</h2>
-  ${d.files&&d.files.length?`<div class="tbl"><table><thead><tr><th>קובץ</th><th>מה זה</th></tr></thead><tbody>${d.files.map(f=>`<tr><td><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a></td><td>${esc(f.kind)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">אין קבצים עדיין</div>'}
-  <h2>📧 התכתבות</h2>
-  ${d.emails&&d.emails.length?`<div class="tbl"><table><thead><tr><th>תאריך</th><th>נושא</th><th>סטטוס</th></tr></thead><tbody>${d.emails.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.subject)}</td><td>${esc(e.status)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">עוד לא פנינו לספק הזה</div>'}
-  ${d.notes?`<h2>📝 סיכומי תשובות</h2><div class="sup-card" style="white-space:pre-wrap">${esc(d.notes)}</div>`:''}`;
-}
-function renderTeam(){
-  $('team').innerHTML=(D.team||[]).map(t=>`<article class="sup-card"><h3>🤖 ${esc(t.name)}</h3><div>${esc(t.role)}</div><div class="kv"><span>מתי עובד</span><span>${esc(t.schedule||'')}</span></div><div class="muted">אחרון: ${esc(t.last)}</div></article>`).join('');
-}
-function renderFiles(){
-  const items=[{name:'כל הקטלוגים והמחירונים',desc:'תיקייה לכל ספק ב-Google Drive',url:D.drive_root}].concat(D.files.filter(f=>f.url).map(f=>({name:f.name,desc:'פתיחה והדפסה מ-Google Drive',url:f.url})));
-  $('files').innerHTML=items.map(f=>`<div class="file"><h3>${esc(f.name)}</h3><div class="muted">${esc(f.desc)}</div><a class="btn" href="${esc(f.url)}" target="_blank" rel="noopener">פתח</a></div>`).join('');
-}
+let lastHash=location.hash;
+window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#s-')&&location.hash!==lastHash){ui.seg='prices';ui.scat='all';ui.shown=20;}lastHash=location.hash;render();window.scrollTo(0,0)});
 document.addEventListener('click',e=>{
-  const c=e.target.closest('[data-c]'); if(c){cat=c.dataset.c;renderProducts();}
-  const s=e.target.closest('[data-s]'); if(s){sfilter=s.dataset.s;renderSuppliers();}
+  const t=e.target.closest('[data-sup],[data-seg],[data-scat],[data-cat],[data-more],[data-pmore],[data-copy],[data-filter]'); if(!t) return;
+  if(t.dataset.copy){copy(t.dataset.copy);return;}
+  if(t.dataset.filter){ui.sup=t.dataset.filter;return;}
+  if(t.dataset.sup) ui.sup=t.dataset.sup;
+  if(t.dataset.seg){ui.seg=t.dataset.seg;}
+  if(t.dataset.scat){ui.scat=t.dataset.scat;ui.shown=20;}
+  if(t.dataset.cat){ui.cat=t.dataset.cat;ui.pshown=20;}
+  if(t.dataset.more) ui.shown+=20;
+  if(t.dataset.pmore) ui.pshown+=20;
+  const y=window.scrollY; render(); if(t.dataset.more||t.dataset.pmore||t.dataset.scat||t.dataset.cat||t.dataset.sup) window.scrollTo(0,y);
 });
-window.addEventListener('hashchange',show);
-fetch('data.json').then(r=>r.json()).then(d=>{D=d;
-  $('upd').textContent='עודכן: '+d.updated;
-  renderHome();renderProducts();renderSuppliers();renderFiles();renderTeam();show();
-}).catch(()=>{$('upd').textContent='לא הצלחתי לטעון את הנתונים. נסו לרענן.'});
-show();
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){ui.q=e.target.value;render();const q=$('q');q.focus();q.setSelectionRange(q.value.length,q.value.length);}
+  if(e.target.id==='q2'){ui.q2=e.target.value;ui.pshown=20;render();const q=$('q2');q.focus();q.setSelectionRange(q.value.length,q.value.length);}
+});
+document.addEventListener('change',e=>{if(e.target.id==='sort'){ui.sort=e.target.value;render();}});
+fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{D=d;render();})
+ .catch(()=>{$('app').innerHTML='<div class="empty"><span class="big">😕</span>לא הצלחתי לטעון את הנתונים. נסו לרענן את הדף.</div>'});
 </script>

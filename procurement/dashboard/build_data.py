@@ -98,6 +98,7 @@ for r in sup:
       emails=[dict(date=l['sent_date'],subject=l['subject'],status=l['status']) for l in contacted],
       files=[dict(name=f['name'],kind=f['result'],url='https://drive.google.com/file/d/'+f['file_id']+'/view') for f in fl],
       products=len(all_products.get(sid,[])),
+      items=[{k:v for k,v in it.items() if k not in ('sup','sid')} for it in all_products.get(sid,[])],
       waiting_for=wait, issues=issues,
       notes=inbox[:4000])
     suppliers.append(dict(id=sid,name=name,legal=r['legal_name'],city=r['city_province'],email=r['email'],phone=r['phone_whatsapp'],web=r['website'],
