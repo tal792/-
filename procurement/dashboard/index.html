@@ -153,7 +153,8 @@ const isMine=p=>pickOf(p)==='like'||(p.rec&&pickOf(p)!=='no');
 const imgFirst=(li,flag)=>{const w=li.filter(p=>p.img);return {list:flag?li:w,hidden:li.length-w.length};};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const money=(a,b)=>a==null?'—':(!b||a===b?`$${a.toFixed(2)}`:`$${a.toFixed(2)}<small> –${b.toFixed(2)}</small>`);
+const PV=x=>x.pmin==null?1e9:x.pmin;
+const money=(a,b)=>a==null?'<small>לבקש מחיר</small>':(!b||a===b?`$${a.toFixed(2)}`:`$${a.toFixed(2)}<small> –${b.toFixed(2)}</small>`);
 const av=s=>AV[[...s.id].reduce((a,c)=>a+c.charCodeAt(0),0)%AV.length];
 const clean=v=>v&&!/not found|not stated|^—$/.test(v)?v:'';
 function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,1800)}
@@ -162,7 +163,7 @@ function card(p,showSup){
   const pk=pickOf(p);
   const btns=canPick?`<div class="picks"><button class="like" data-pick="like" data-key="${esc(p.key)}" aria-pressed="${pk==='like'}" aria-label="להוסיף לקטלוג שלי">${pk==='like'?'❤️':'🤍'}</button><button class="no" data-pick="no" data-key="${esc(p.key)}" aria-pressed="${pk==='no'}" aria-label="לא רלוונטי כרגע">✖️</button></div>`:'';
   return `<article class="prod ${pk==='like'?'liked':''} ${pk==='no'?'dim':''}"><div class="pic" style="background:${CATBG[p.cat]||CATBG.other}">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.he)}" loading="lazy">`:`<span class="emo" aria-hidden="true">${CATEMO[p.cat]||'⭐'}</span>`}${p.rec&&pk!=='like'?'<span class="ribbon">✨ מומלץ לך</span>':''}${btns}<div class="price">${money(p.pmin,p.pmax)}</div></div>
-  <div class="pb"><h3>${esc(p.he)}</h3>${showSup?`<div class="s">${esc(p.sup)}</div>`:''}<div class="m">מינימום: <b>${esc(p.moq||'—')}</b></div>${p.code?`<div class="code">${esc(p.code)}</div>`:''}</div></article>`;
+  <div class="pb"><h3>${esc(p.he)}</h3>${showSup?`<div class="s">${esc(p.sup)}</div>`:''}${p.illu?'<div class="m">📷 תמונה להמחשה</div>':''}${p.web?`<a class="m" href="${esc(p.web)}" target="_blank" rel="noopener">🌐 לדף המוצר</a>`:''}<div class="m">מינימום: <b>${esc(p.moq||'—')}</b></div>${p.code?`<div class="code">${esc(p.code)}</div>`:''}</div></article>`;
 }
 /* ---------- screens ---------- */
 function home(){
@@ -256,7 +257,7 @@ function supplier(id){
     const cats=[...new Set(items.map(i=>i.cat))];
     let li0=items.map(i=>Object.assign({sup:s.name,sid:s.id},i)).filter(i=>ui.scat==='all'||i.cat===ui.scat);
     const r=imgFirst(li0,ui.noimg); let li=r.list;
-    li=li.slice().sort((a,b)=>ui.sort==='price'?a.pmin-b.pmin:b.pmin-a.pmin);
+    li=li.slice().sort((a,b)=>ui.sort==='price'?PV(a)-PV(b):(b.pmin??-1)-(a.pmin??-1));
     body=items.length?`${cats.length>1?`<div class="seg" role="group" aria-label="קטגוריה">${[['all','הכול']].concat(cats.map(c=>[c,(CATEMO[c]||'')+' '+(D.cats[c]||c)])).map(([k,l])=>`<button data-scat="${k}" aria-pressed="${ui.scat===k}">${l}</button>`).join('')}</div>`:''}
       <div class="sort"><span class="sub">${li.length} מוצרים · מחיר ליחידה בדולר</span><select id="sort" aria-label="מיון"><option value="price" ${ui.sort==='price'?'selected':''}>הזול קודם</option><option value="desc" ${ui.sort==='desc'?'selected':''}>היקר קודם</option></select></div>
       <div class="grid">${li.slice(0,ui.shown).map(p=>card(p,false)).join('')}</div>
@@ -286,7 +287,7 @@ function supplier(id){
 function mine(){
   const all=ALL().filter(isMine);
   const cats=Object.keys(D.cats).filter(c=>all.some(p=>p.cat===c));
-  const li=all.filter(p=>ui.mcat==='all'||p.cat===ui.mcat).sort((a,b)=>(pickOf(b)==='like')-(pickOf(a)==='like')||a.cat.localeCompare(b.cat)||a.pmin-b.pmin);
+  const li=all.filter(p=>ui.mcat==='all'||p.cat===ui.mcat).sort((a,b)=>(pickOf(b)==='like')-(pickOf(a)==='like')||a.cat.localeCompare(b.cat)||PV(a)-PV(b));
   const liked=all.filter(p=>pickOf(p)==='like').length, rec=all.length-liked;
   return `<h1>⭐ הקטלוג שלי</h1><div class="sub">${liked} מוצרים שבחרת · ${rec} שסוכן הטעם ממליץ לך</div>
   <div class="howto">💡 איך זה עובד: בקטלוג, לוחצים 🤍 על מוצר שמתאים לך והוא עובר לכאן. ✖️ = לא רלוונטי כרגע (נשאר בקטלוג הכללי). סוכן הטעם לומד מהבחירות שלך וממליץ על מוצרים דומים, מסומנים ✨.</div>
@@ -299,7 +300,7 @@ function products(){
   let li0=all.filter(p=>ui.cat==='all'||p.cat===ui.cat);
   if(ui.q2) li0=li0.filter(p=>(p.he+' '+p.name+' '+p.code+' '+p.sup).toLowerCase().includes(ui.q2.toLowerCase()));
   const r=imgFirst(li0,ui.noimg); const li=r.list;
-  li.sort((a,b)=>ui.sort==='price'?a.pmin-b.pmin:b.pmin-a.pmin);
+  li.sort((a,b)=>ui.sort==='price'?PV(a)-PV(b):(b.pmin??-1)-(a.pmin??-1));
   return `<h1>📚 קטלוג</h1><div class="sub">כל המוצרים מכל הספקים · מחיר ליחידה בדולר, כפי שהספק כתב (לפני הובלה ומכס)${canPick?' · 🤍 = לקטלוג שלי':''}</div>
   <div style="margin-top:12px"><input class="search" id="q2" type="search" placeholder="🔎 חיפוש: רתמה, קולר, קוד…" value="${esc(ui.q2||'')}" aria-label="חיפוש מוצר"></div>
   <div class="seg" role="group" aria-label="קטגוריה">${[['all','הכול']].concat(cats.map(c=>[c,CATEMO[c]+' '+D.cats[c]])).map(([k,l])=>`<button data-cat="${k}" aria-pressed="${ui.cat===k}">${l}</button>`).join('')}</div>

@@ -43,12 +43,13 @@ all_products=collections.defaultdict(list)   # sid -> all priced rows (dossier)
 def mkkey(sid,code,name,size):
     raw=f"{sid}~{code or name}~{size}"
     return re.sub(r'[^A-Za-z0-9_\-.~:@+]','-',raw)[:180].strip('.') or sid
-IMG={}
+IMG={}; ILLU=set()
 if os.path.exists(B+'dashboard/img/matches.csv'):
     for m in rows('dashboard/img/matches.csv'):
         if m.get('local_path') and m.get('match_type') in ('code','type'):
             lp=m['local_path'].split('dashboard/')[-1]
             IMG[(m['supplier_id'],m.get('price_item_code') or '',m.get('price_description') or '')]=lp
+            if m.get('match_type')=='type': ILLU.add(lp)
             if m.get('price_item_code'): IMG.setdefault((m['supplier_id'],m['price_item_code'],''),lp)
 TASTE=json.load(open(B+'data/taste.json',encoding='utf-8')) if os.path.exists(B+'data/taste.json') else {}
 REC=set(TASTE.get('recommended',[])); LIKED=set(TASTE.get('liked',[])); REJ=set(TASTE.get('rejected',[]))
@@ -71,10 +72,21 @@ for sid,path in PRICE_FILES.items():
           moq=' / '.join(moqs[:2]),term=r0.get('price_term',''),img='')
         code=item['code']
         item['img']=IMG.get((sid,code,''),'') or IMG.get((sid,code,desc or ''),'') or IMG.get((sid,'',desc or ''),'')
+        item['illu']=item['img'] in ILLU
         item['key']=mkkey(sid,code,clean,str(item['sizes']))
         item['rec']=item['key'] in REC
         item['mine']='like' if item['key'] in LIKED else ('no' if item['key'] in REJ else '')
         all_products[sid].append(item)
+used_imgs={it['img'] for v in all_products.values() for it in v if it['img']}
+if os.path.exists(B+'dashboard/img/catalog.csv'):
+    for c in rows('dashboard/img/catalog.csv'):
+        lp=(c.get('local_path') or '').split('dashboard/')[-1]
+        if not lp or lp in used_imgs: continue
+        sid=c['supplier_id']; title=c.get('title','')
+        all_products[sid].append(dict(sup=HE.get(sid,sid),sid=sid,cat=cat_of(title),name=title,he=heb(title),
+          code=c.get('item_code',''),sizes='',pmin=None,pmax=None,moq='לבקש',term='',img=lp,illu=False,web=c.get('product_url',''),
+          key=mkkey(sid,c.get('item_code',''),title,'web'),rec=False,mine=''))
+        it=all_products[sid][-1]; it['rec']=it['key'] in REC; it['mine']='like' if it['key'] in LIKED else ('no' if it['key'] in REJ else '')
 MOQFIX={'Slow feeder bowl':'10','Dog bed':'50','Pets Elizabeth Circle':'—'}
 for sid,items in all_products.items():
     for it in items:
@@ -84,7 +96,7 @@ for sid,items in all_products.items():
     for it in items:
         if it['cat']!='other' or sid=='T01': by[it['cat']].append(it)
     for c,its in by.items():
-        its=sorted(its,key=lambda x:x['pmin'])
+        its=sorted([i for i in its if i['pmin'] is not None],key=lambda x:x['pmin'])
         display+= its if len(its)<=12 else its[:6]+its[6::max(1,len(its)//6)][:6]
 # ---------- suppliers + dossiers
 suppliers=[]; todo=[]; approvals=[]
@@ -126,7 +138,7 @@ for r in sup:
     md=[f'# תיק רכש – {name} ({sid})',f'עודכן: {today}','',f'**חברה:** {r["legal_name"]}  ',f'**עיר:** {r["city_province"]}  ',f'**מייל:** {r["email"]}  ',f'**טלפון:** {r["phone_whatsapp"]}  ',f'**אתר:** {r["website"]}  ',f'**סטטוס:** {r["status"]}  ',f'**תיקיית Drive:** {drive}','',
         '## תקציר',notes['summary'].get(sid,'—'),'','## מחכים ל',*(['- '+w for w in wait] or ['—']),'','## בעיות פתוחות',*(['- '+i for i in issues] or ['—']),'',
         f'## מוצרים עם מחיר ({len(all_products.get(sid,[]))})','| מוצר | קוד | מחיר $ | MOQ |','|---|---|---|---|',
-        *[f'| {p["he"]} – {p["name"][:40]} | {p["code"]} | {p["pmin"]:.2f}–{p["pmax"]:.2f} | {p["moq"]} |' for p in all_products.get(sid,[])[:200]],'',
+        *[f'| {p["he"]} – {p["name"][:40]} | {p["code"]} | {(f'{p["pmin"]:.2f}–{p["pmax"]:.2f}' if p["pmin"] is not None else 'לבקש מחיר')} | {p["moq"]} |' for p in all_products.get(sid,[])[:200]],'',
         '## קבצים',*(['- ['+f['name']+'](https://drive.google.com/file/d/'+f['file_id']+'/view) – '+f['result'] for f in fl] or ['—']),'',
         '## התכתבות',*(['- '+l['sent_date']+' · '+l['subject']+' · '+l['status'] for l in contacted] or ['—']),'','## סיכומי תשובות',inbox or '—']
     open(B+f'suppliers/{sid}/dossier.md','w',encoding='utf-8').write('\n'.join(md))
