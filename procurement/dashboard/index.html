@@ -1,0 +1,207 @@
+<title>Ashtal Yourpet רכש</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: sticky tab bar, one column of big touch-friendly cards; products as a shop-style grid with price tags */
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d2a2a; --muted:#5d6b69; --line:#e2ddd2;
+  --accent:#0f6f6a; --accent-ink:#ffffff; --tag:#ffcf3d; --tag-ink:#1d2a2a;
+  --ok:#1e8a4c; --wait:#c98a07; --off:#9aa3a1; --soft:#eef4f3;
+  --display:'Rubik',system-ui,sans-serif; --body:'Assistant','Rubik',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121a19; --card:#1b2524; --ink:#eef3f2; --muted:#a6b3b1; --line:#2c3836;
+  --accent:#4cc3b9; --accent-ink:#0b1514; --tag:#ffd54f; --tag-ink:#1d2a2a;
+  --ok:#4cd187; --wait:#f0b532; --off:#6f7a78; --soft:#1f2d2b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a19; --card:#1b2524; --ink:#eef3f2; --muted:#a6b3b1; --line:#2c3836;
+  --accent:#4cc3b9; --accent-ink:#0b1514; --tag:#ffd54f; --tag-ink:#1d2a2a;
+  --ok:#4cd187; --wait:#f0b532; --off:#6f7a78; --soft:#1f2d2b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;direction:rtl;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 6px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.2px}
+.brand small{display:block;font-family:var(--body);font-weight:600;font-size:14px;color:var(--muted)}
+.upd{font-size:14px;color:var(--muted)}
+nav{display:flex;gap:8px;padding-block:6px 12px;overflow-x:auto}
+nav a{flex:0 0 auto;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:700;font-size:17px;padding:10px 18px;border-radius:999px;border:2px solid var(--line);background:var(--bg)}
+nav a[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav a:focus-visible,.chip:focus-visible,.btn:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+h2{font-family:var(--display);font-size:26px;margin:28px 0 12px;text-wrap:balance}
+h3{font-family:var(--display);font-size:19px;margin:0}
+.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stat b{display:block;font-family:var(--display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-weight:600}
+.stat.ok b{color:var(--ok)}.stat.wait b{color:var(--wait)}.stat.you b{color:var(--accent)}
+.todo{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.todo li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.todo li::before{content:"";flex:0 0 12px;height:12px;margin-top:7px;border-radius:50%;background:var(--wait)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{font-family:var(--display);font-weight:700;font-size:16px;padding:10px 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.pic{position:relative;aspect-ratio:1/1;background:var(--soft);display:grid;place-items:center;max-width:100%}
+.pic img{width:100%;height:100%;object-fit:contain;background:#fff}
+.pic svg{width:46%;height:46%;opacity:.55}
+.price{position:absolute;top:10px;inset-inline-start:10px;background:var(--tag);color:var(--tag-ink);font-family:var(--display);font-weight:800;font-size:22px;padding:6px 12px;border-radius:10px;box-shadow:0 2px 0 rgba(0,0,0,.18);font-variant-numeric:tabular-nums;direction:ltr}
+.price small{font-size:13px;font-weight:700}
+.pbody{padding:12px 14px 14px;display:grid;gap:4px}
+.pbody .sup{font-size:14px;font-weight:700;color:var(--accent)}
+.kv{display:flex;justify-content:space-between;gap:8px;font-size:15px;border-top:1px dashed var(--line);padding-top:6px}
+.kv span:last-child{font-weight:700;font-variant-numeric:tabular-nums;text-align:left}
+.code{font-size:13px;color:var(--muted);direction:ltr;text-align:right}
+.sups{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.sup-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:8px;min-width:0}
+.sup-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pill{font-size:14px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.pill.replied{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.pill.waiting{background:color-mix(in srgb,var(--wait) 20%,transparent);color:var(--wait)}
+.pill.lead{background:color-mix(in srgb,var(--off) 20%,transparent);color:var(--muted)}
+.contact{font-size:15px;direction:ltr;text-align:right;overflow-wrap:anywhere}
+.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;text-decoration:none;font-family:var(--display);font-weight:700;font-size:16px;padding:12px 16px;border-radius:12px;background:var(--accent);color:var(--accent-ink);border:0}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.file{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:12px}
+.tbl{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-family:var(--display);background:var(--soft)}
+.note{font-size:14px;color:var(--muted);margin-top:10px}
+.empty{padding:28px;text-align:center;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:14px}
+@media (max-width:560px){.stats{grid-template-columns:1fr}.stat b{font-size:36px}h2{font-size:22px}}
+@media (prefers-reduced-motion:no-preference){.prod,.sup-card{transition:transform .15s}.prod:hover{transform:translateY(-2px)}}
+</style>
+
+<header><div class="wrap">
+  <div class="top">
+    <div class="brand">Ashtal Yourpet · רכש<small>ספקים, מוצרים ומחירים במקום אחד</small></div>
+    <div class="upd" id="upd">טוען…</div>
+  </div>
+  <nav aria-label="מסכים">
+    <a href="#home" data-v="home">🏠 מה המצב</a>
+    <a href="#products" data-v="products">🛍️ מוצרים ומחירים</a>
+    <a href="#suppliers" data-v="suppliers">🏭 ספקים</a>
+    <a href="#files" data-v="files">📁 קבצים</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <section id="v-home">
+    <h2>מה המצב היום</h2>
+    <div class="stats">
+      <div class="stat ok"><b id="s-rep">–</b><span>ספקים ענו</span></div>
+      <div class="stat wait"><b id="s-wait">–</b><span>מחכים לתשובה</span></div>
+      <div class="stat you"><b id="s-prod">–</b><span>מוצרים עם מחיר</span></div>
+    </div>
+    <h2>מה קורה עכשיו</h2>
+    <ul class="todo" id="todo"></ul>
+    <h2>מה נשלח לספקים</h2>
+    <div class="tbl"><table><thead><tr><th>תאריך</th><th>ספק</th><th>סטטוס</th></tr></thead><tbody id="hist"></tbody></table></div>
+  </section>
+
+  <section id="v-products" hidden>
+    <h2>מוצרים ומחירים</h2>
+    <p class="muted">מחיר ליחידה בדולר, כפי שהספק כתב. עוד לא כולל הובלה, מכס ומע״מ. לחצו על קטגוריה:</p>
+    <div class="chips" id="chips" role="group" aria-label="קטגוריות"></div>
+    <div class="grid" id="grid"></div>
+    <p class="note">בקטגוריות מיטות, קערות ופדים חסרים עדיין מחירים מרוב הספקים. ביקשנו, ומחכים לתשובה.</p>
+  </section>
+
+  <section id="v-suppliers" hidden>
+    <h2>ספקים</h2>
+    <div class="chips" id="schips" role="group" aria-label="סינון ספקים"></div>
+    <div class="sups" id="sups"></div>
+  </section>
+
+  <section id="v-files" hidden>
+    <h2>קבצים</h2>
+    <div class="files" id="files"></div>
+  </section>
+</main>
+
+<script>
+const ICON={
+ harness:'<path d="M20 30c8-10 32-10 40 0l-6 30H26z" fill="none" stroke="currentColor" stroke-width="5"/><path d="M28 42h24" stroke="currentColor" stroke-width="5"/>',
+ collar:'<circle cx="40" cy="40" r="24" fill="none" stroke="currentColor" stroke-width="7"/><circle cx="40" cy="66" r="6" fill="currentColor"/>',
+ leash:'<path d="M14 66c20-40 32-50 52-52" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="14" cy="66" r="7" fill="none" stroke="currentColor" stroke-width="5"/>',
+ bed:'<rect x="10" y="34" width="60" height="26" rx="12" fill="none" stroke="currentColor" stroke-width="6"/><path d="M22 42h36" stroke="currentColor" stroke-width="5"/>',
+ bowl:'<path d="M12 36h56c-2 18-14 26-28 26S14 54 12 36z" fill="none" stroke="currentColor" stroke-width="6"/>',
+ toy:'<circle cx="40" cy="40" r="22" fill="none" stroke="currentColor" stroke-width="6"/><path d="M22 30c10 6 26 6 36 0M22 50c10-6 26-6 36 0" stroke="currentColor" stroke-width="4" fill="none"/>',
+ pad:'<rect x="14" y="14" width="52" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="6"/><path d="M14 30h52M14 50h52" stroke="currentColor" stroke-width="3"/>',
+ other:'<path d="M40 14l8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3z" fill="none" stroke="currentColor" stroke-width="5"/>'};
+const STATE={replied:'ענה',waiting:'מחכים לו',lead:'עוד לא פנינו'};
+let D=null, cat='all', sfilter='contacted';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=(a,b)=>a===b||!b?`$${a.toFixed(2)}`:`$${a.toFixed(2)}<small>–${b.toFixed(2)}</small>`;
+
+function show(){
+  const v=(location.hash||'#home').slice(1);
+  const views=['home','products','suppliers','files'];
+  const cur=views.includes(v)?v:'home';
+  views.forEach(x=>{$('v-'+x).hidden=x!==cur});
+  document.querySelectorAll('nav a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.v===cur)||a.dataset.v===cur&&a.setAttribute('aria-current','page'));
+}
+function renderHome(){
+  const s=D.suppliers;
+  $('s-rep').textContent=s.filter(x=>x.state==='replied').length;
+  $('s-wait').textContent=s.filter(x=>x.state==='waiting').length;
+  $('s-prod').textContent=D.products.length;
+  $('todo').innerHTML=D.todo.map(t=>`<li>${esc(t)}</li>`).join('');
+  $('hist').innerHTML=D.history.slice().reverse().map(h=>`<tr><td>${esc(h.date.split('-').reverse().join('.'))}</td><td>${esc(h.sup)}</td><td>${esc(/repl|follow|quote|holding/.test(h.status)?'✅ ענה / בטיפול':'⏳ מחכים')}</td></tr>`).join('');
+}
+function renderChips(){
+  const used=[...new Set(D.products.map(p=>p.cat))];
+  const order=Object.keys(D.cats).filter(k=>used.includes(k));
+  const all=[['all','הכול']].concat(order.map(k=>[k,D.cats[k]]));
+  $('chips').innerHTML=all.map(([k,l])=>`<button class="chip" data-c="${k}" aria-pressed="${k===cat}">${esc(l)} <span class="muted">${k==='all'?D.products.length:D.products.filter(p=>p.cat===k).length}</span></button>`).join('');
+}
+function renderProducts(){
+  renderChips();
+  const list=D.products.filter(p=>cat==='all'||p.cat===cat);
+  $('grid').innerHTML=list.length?list.map(p=>`<article class="prod">
+    <div class="pic">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.he)}" loading="lazy">`:`<svg viewBox="0 0 80 80" aria-hidden="true" style="color:var(--accent)">${ICON[p.cat]||ICON.other}</svg>`}
+      <div class="price">${money(p.pmin,p.pmax)}</div></div>
+    <div class="pbody"><h3>${esc(p.he)}</h3><div class="sup">${esc(p.sup)}</div>
+      ${p.code?`<div class="code">${esc(p.code)}</div>`:''}
+      <div class="kv"><span>מינימום הזמנה</span><span>${esc(p.moq||'—')}</span></div>
+      <div class="kv"><span>מידות</span><span>${esc(typeof p.sizes==='number'?p.sizes+' מידות':p.sizes||'—')}</span></div>
+    </div></article>`).join(''):'<div class="empty">אין עדיין מוצרים בקטגוריה הזו</div>';
+}
+function renderSuppliers(){
+  const f=[['contacted','פנינו אליהם'],['replied','ענו'],['all','כולם']];
+  $('schips').innerHTML=f.map(([k,l])=>`<button class="chip" data-s="${k}" aria-pressed="${k===sfilter}">${l}</button>`).join('');
+  const list=D.suppliers.filter(s=>sfilter==='all'||(sfilter==='replied'?s.state==='replied':s.state!=='lead'));
+  $('sups').innerHTML=list.map(s=>`<article class="sup-card">
+    <div class="sup-head"><h3>${esc(s.name)}</h3><span class="pill ${s.state}">${STATE[s.state]}</span></div>
+    <div class="muted">${esc(s.kind)} · ${esc(s.city)}</div>
+    ${s.summary?`<div>${esc(s.summary)}</div>`:''}
+    ${s.email&&!/not found|not stated/.test(s.email)?`<div class="contact">✉️ ${esc(s.email)}</div>`:''}
+    ${s.phone&&!/not found|not stated/.test(s.phone)?`<div class="contact">📞 ${esc(s.phone)}</div>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${s.drive?`<a class="btn" href="${esc(s.drive)}" target="_blank" rel="noopener">📂 קטלוגים</a>`:''}
+      ${s.web&&/^https?:/.test(s.web)?`<a class="btn ghost" href="${esc(s.web.split(' ')[0])}" target="_blank" rel="noopener">🌐 אתר</a>`:''}
+    </div></article>`).join('');
+}
+function renderFiles(){
+  const items=[{name:'כל הקטלוגים והמחירונים',desc:'תיקייה לכל ספק ב-Google Drive',url:D.drive_root}].concat(D.files.filter(f=>f.url).map(f=>({name:f.name,desc:'פתיחה והדפסה מ-Google Drive',url:f.url})));
+  $('files').innerHTML=items.map(f=>`<div class="file"><h3>${esc(f.name)}</h3><div class="muted">${esc(f.desc)}</div><a class="btn" href="${esc(f.url)}" target="_blank" rel="noopener">פתח</a></div>`).join('');
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-c]'); if(c){cat=c.dataset.c;renderProducts();}
+  const s=e.target.closest('[data-s]'); if(s){sfilter=s.dataset.s;renderSuppliers();}
+});
+window.addEventListener('hashchange',show);
+fetch('data.json').then(r=>r.json()).then(d=>{D=d;
+  $('upd').textContent='עודכן: '+d.updated;
+  renderHome();renderProducts();renderSuppliers();renderFiles();show();
+}).catch(()=>{$('upd').textContent='לא הצלחתי לטעון את הנתונים. נסו לרענן.'});
+show();
+</script>
