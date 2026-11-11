@@ -1,5 +1,5 @@
 {
- "updated": "11.11.2026 09:50",
+ "updated": "11.11.2026 10:16",
  "drive_root": "https://drive.google.com/drive/folders/11s8eOTg0uXjmOX9Zt9EXrU7jVfrMkae7",
  "cats": {
   "harness": "רתמות",
@@ -25,7 +25,21 @@
    "state": "waiting",
    "status": "first inquiry sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label inquiry from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "S002",
@@ -40,7 +54,21 @@
    "state": "waiting",
    "status": "first inquiry sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label inquiry from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "S003",
@@ -54,8 +82,22 @@
    "score": "3",
    "state": "replied",
    "status": "holding reply 2026-11-11 - full answer promised 12.11 (team at CIPS fair)",
-   "summary": "ענו שהצוות בתערוכה בגואנגג׳ואו. תשובה מלאה הובטחה ל-12.11.",
-   "drive": ""
+   "summary": "הצוות בתערוכת CIPS בגואנגג׳ואו (12–15.11). תשובה מלאה הובטחה ל-12.11.",
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label inquiry from Israel – Ashtal Yourpet",
+      "status": "holding reply 2026-11-11 - full answer promised 12.11 (team at CIPS fair)"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": "# S003 Ronipet – תשובה 11.11.2026 (James Pan, עוזר של Rosa Wen, Sales Director)\n(כפי שנמסר ע\"י הספק)\n- תשובת ביניים: Rosa ו-Nina בטיסה לתערוכת CIPS בגואנגג'ואו (12–15.11.2026)\n- Rosa תענה עם כל הפרטים \"תוך מחר\" (12.11)\n- מצורף: תמונה אחת (InsertPic_.jpg – כנראה חתימה)\n"
+   }
   },
   {
    "id": "S004",
@@ -70,37 +112,118 @@
    "state": "lead",
    "status": "contact details found - not yet contacted",
    "summary": "",
-   "drive": ""
-  },
-  {
-   "id": "S005",
-   "name": "Hangzhou Rena Pet Products Co., Ltd.",
-   "legal": "Hangzhou Rena Pet Products Co., Ltd.",
-   "city": "Hangzhou, Zhejiang",
-   "email": "",
-   "phone": "",
-   "web": "",
-   "kind": "אקססוריז",
-   "score": "",
-   "state": "lead",
-   "status": "lead - not researched",
-   "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "T01",
    "name": "OKEYPETS",
    "legal": "Guangzhou OKEYPETS Products Co., Ltd.",
    "city": "Baiyun District, Guangzhou, Guangdong",
-   "email": "sale@okeypets.com",
-   "phone": "+86 183 1957 4312 (contact: Bella)",
+   "email": "pets@okeypets.com, sale@okeypets.com",
+   "phone": "+86 191 0201 6387 (Freya, WhatsApp); +86 183 1957 4312 (Bella)",
    "web": "https://www.okeypets.com",
    "kind": "אקססוריז",
    "score": "4",
    "state": "replied",
    "status": "follow-up sent 2026-11-11 (FOB, cartons, samples, packaging partner)",
-   "summary": "מפעל לרתמות, קולרים ורצועות. MOQ נמוך מאוד (20–50). שלח מחירונים. ביקשנו FOB ודוגמאות.",
-   "drive": "https://drive.google.com/drive/folders/11MdlVxgBEAHiHQAt-sVXoK2sYDS1z4aO"
+   "summary": "מפעל לרתמות, קולרים ורצועות. MOQ נמוך מאוד (20–50). שלח מחירונים. ביקשנו FOB, נתוני קרטון ודוגמאות.",
+   "drive": "https://drive.google.com/drive/folders/11MdlVxgBEAHiHQAt-sVXoK2sYDS1z4aO",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label inquiry from Israel – Ashtal Yourpet",
+      "status": "follow-up sent 2026-11-11 (FOB, cartons, samples, packaging partner)"
+     }
+    ],
+    "files": [
+     {
+      "name": "OKEYPETS CATALOG 1.pdf",
+      "kind": "images only",
+      "url": "https://drive.google.com/file/d/1iG_MgqUj_WEY5KiTebYdsCxnW7tIAy0V/view"
+     },
+     {
+      "name": "OKEYPETS CATALOG 2.pdf",
+      "kind": "catalog - no prices",
+      "url": "https://drive.google.com/file/d/182MBQPrJ36RL2At-sg2Ns8VdLXai9cSk/view"
+     },
+     {
+      "name": "ISO最新证书.pdf",
+      "kind": "certificate",
+      "url": "https://drive.google.com/file/d/1a2u3SoKVSMi-cPRJz8YzfOeLABxIi_25/view"
+     },
+     {
+      "name": "26年BSCI_result.pdf",
+      "kind": "certificate",
+      "url": "https://drive.google.com/file/d/1kR3rEcD4MUj1Hp9YHmHr0w0LHSNH9_Y3/view"
+     },
+     {
+      "name": "EN71 report.pdf",
+      "kind": "test report (other company name)",
+      "url": "https://drive.google.com/file/d/1NfTvzVu-9mNIp4VBJTRqirmN_14pAorQ/view"
+     },
+     {
+      "name": "REACH report 2.pdf",
+      "kind": "test report (other company name)",
+      "url": "https://drive.google.com/file/d/1rr7TLUpgToi6D6MK2e-Q7pnk9x-OatHl/view"
+     },
+     {
+      "name": "REACH report 1.pdf",
+      "kind": "test report (other company name)",
+      "url": "https://drive.google.com/file/d/15K0_1PbD-2SmovjrF8UDpnn7Z2wQ0_O_/view"
+     },
+     {
+      "name": "EN71 certificate.pdf",
+      "kind": "certificate (other company name)",
+      "url": "https://drive.google.com/file/d/1UmmptdYBzgocoJ9EuFNm-wmIeu6Eilff/view"
+     },
+     {
+      "name": "polyester+neoprene harness sets.jpg",
+      "kind": "image",
+      "url": "https://drive.google.com/file/d/19Bn6k5LoN7_kOCZZcovUtVV746yb9D5C/view"
+     },
+     {
+      "name": "dog bed.png",
+      "kind": "prices -> analysis/okeypets-prices.csv",
+      "url": "https://drive.google.com/file/d/1mlO9jHehfVqwBLTRXERoLM0qAK-cRVds/view"
+     },
+     {
+      "name": "Slow-feeder bowl.jpg",
+      "kind": "prices -> analysis/okeypets-prices.csv",
+      "url": "https://drive.google.com/file/d/1YA9FXuQhQ35iCY_3qODF32pFN6-C5C0R/view"
+     },
+     {
+      "name": "Stainless steel bowl.png",
+      "kind": "image - no text",
+      "url": "https://drive.google.com/file/d/1hlk64-0dE4mu4ZQs0R6hgEraG86E1RYY/view"
+     },
+     {
+      "name": "A pet harness sets.png",
+      "kind": "prices -> analysis/okeypets-prices.csv",
+      "url": "https://drive.google.com/file/d/1V3cxowAni-6hw9nt4coais-K-sL_wWph/view"
+     }
+    ],
+    "products": 18,
+    "waiting_for": [
+     "מחירי FOB",
+     "נתוני קרטון",
+     "עלות דוגמאות ממותגות",
+     "הסבר על חברה אחרת בדוחות",
+     "תשובה על שותף אריזה"
+    ],
+    "issues": [
+     "מחכים ל: מחירי FOB, נתוני קרטון, עלות דוגמאות ממותגות, הסבר על חברה אחרת בדוחות, תשובה על שותף אריזה"
+    ],
+    "notes": "# T01 OKEYPETS – תשובה 11.11.2026 (Freya Wong, Sales Manager, pets@okeypets.com, +86 191 0201 6387)\n(כל הנתונים – כפי שנמסרו ע\"י הספק)\n- מפעל בעיקר לרתמות, קולרים, רצועות וסטים תואמים (שקית קקי, בנדנה, פפיון) – ייצור עצמי\n- קערות נירוסטה ו-slow feeder – מספקי מלאי; מיטות – מפעל שותף; פדים וצעצועים – לא בתחום, יכולים לאתר\n- מחירונים מצורפים במחירי EXW בדולר (לא FOB)\n- MOQ: רתמה/קולר 20 יח' למידה לדגם; רצועה/שקית/בנדנה/פפיון 30; מיטות 50 למידה לצבע; קערות נירוסטה 50 (7 צבעים, אפשר לערבב); slow feeder 10 למידה לצבע\n- MOQ לא מצטבר בין פריטים\n- לוגו, תוויות, hang tags, אריזה מותאמת – כן (אריזה מלאה = MOQ גבוה יותר)\n- נמל: Guangzhou / Shenzhen. תשלום – לדיון\n- תעודות מצורפות: BSCI 2026, ISO, EN71 + REACH לסטי רתמות (על שם 东赫商贸 – חברת מסחר קשורה?)\n- מבקשים: לבחור דגמים + כמויות משוערות; האם דוגמאות ממותגות או מהמלאי\nAttachments: OKEYPETS CATALOG 1.pdf, CATALOG 2.pdf, תמונות רתמות/קערות/מיטה, EN71, REACH, BSCI, ISO\n\n## 11.11.2026 – תשובה שנשלחה (באישור טל)\nFOB במקום EXW לסטים, קולרים, רצועות, קערות, 2 מיטות; נתוני קרטון; עלות דוגמאות ממותגות ל-3 סטים (בלי התחייבות); הסבר על חברה אחרת בדוחות; מפעלים נוספים + שותף אריזה לכל הליינים.\n"
+   }
   },
   {
    "id": "T02",
@@ -115,7 +238,15 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "T03",
@@ -130,7 +261,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "T04",
@@ -145,14 +284,22 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "B01",
    "name": "Bestjoy",
    "legal": "Qingdao Bestjoy Import & Export Co., Ltd",
    "city": "Qingdao, Shandong",
-   "email": "info@bestjoypet.com",
+   "email": "carina@bestjoypet.com, Shirley@bestjoypet.com, info@bestjoypet.com",
    "phone": "+86 13687695613 (phone + WhatsApp)",
    "web": "https://www.bestjoypet.com",
    "kind": "אקססוריז",
@@ -160,22 +307,158 @@
    "state": "replied",
    "status": "follow-up sent 2026-11-11 (FOB, beds/bowls quote, MOQ 100-150, packaging partner)",
    "summary": "מבחר ענק, 14 קטלוגים. MOQ 300 לדגם. ביקשנו FOB, מחירי מיטות וקערות, MOQ 100–150.",
-   "drive": "https://drive.google.com/drive/folders/1HMEpcWUSH9qgwZvHz6VSDcOOUT83c5xz"
+   "drive": "https://drive.google.com/drive/folders/1HMEpcWUSH9qgwZvHz6VSDcOOUT83c5xz",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label inquiry from Israel – Ashtal Yourpet",
+      "status": "follow-up sent 2026-11-11 (FOB, beds/bowls quote, MOQ 100-150, packaging partner)"
+     }
+    ],
+    "files": [
+     {
+      "name": "2026 Bestjoy Pet Beds & Houses.pdf",
+      "kind": "catalog - no prices",
+      "url": "https://drive.google.com/file/d/18X7f_N6Bs66In2my7lGiOcpMNCmi8Xce/view"
+     },
+     {
+      "name": "2026 Bestjoy Pet Bowls and Feeders.pdf",
+      "kind": "catalog - no prices",
+      "url": "https://drive.google.com/file/d/12RSVcNphigFpvnsEKQi9igGHZuP8DwLG/view"
+     },
+     {
+      "name": "2026 Bestjoy Pet Grooming Products & Adjustable Leashes.pdf",
+      "kind": "catalog",
+      "url": "https://drive.google.com/file/d/1syfBkdDLynxodvf_bWKNwp48H2tXl1IJ/view"
+     },
+     {
+      "name": "2026 Quotation for Pet Harness-Bestjoy Pet.pdf",
+      "kind": "prices -> analysis/bestjoy-prices.csv",
+      "url": "https://drive.google.com/file/d/1N3RczOYv6DQNT2oJPEjvuf__TLI9QuNb/view"
+     },
+     {
+      "name": "2026 Quotation for Pet Toys-Bestjoy Pet.pdf",
+      "kind": "prices -> analysis/bestjoy-prices.csv",
+      "url": "https://drive.google.com/file/d/1MwUrd7LmC8kOPnauqOSMqTcAlQuOo6CN/view"
+     },
+     {
+      "name": "2026 Quotation for Pet Snuffle Mats & Sniffing Toys-Bestjoy pet.pdf",
+      "kind": "prices -> analysis/bestjoy-prices.csv",
+      "url": "https://drive.google.com/file/d/1pApljbwD9YMS-i2om-KuljI-lRQP8qJj/view"
+     },
+     {
+      "name": "2026 Quotation for Pet Collars & Leashes-Bestjoy Pet.pdf",
+      "kind": "prices -> analysis/bestjoy-prices.csv",
+      "url": "https://drive.google.com/file/d/1Mtp_dYQ4MTpIl09SZjY_uHVl9d10ATlc/view"
+     },
+     {
+      "name": "2026 Quotation for Pet Clothing & Accessories-Bestjoy Pet.pdf",
+      "kind": "prices -> analysis/bestjoy-prices.csv",
+      "url": "https://drive.google.com/file/d/1hHv6_iPdeEDhP0HOIv97Ixv4TY6g0NKs/view"
+     },
+     {
+      "name": "2026 Quotation for Pet Carriers and Bags-Bestjoy Pet.pdf",
+      "kind": "scanned - no text prices",
+      "url": "https://drive.google.com/file/d/1WKDclUiTMECnxT6RXBZaeLndJLJtIdWE/view"
+     },
+     {
+      "name": "2026 Quotation for Cat Products-Bestjoy Pet.pdf",
+      "kind": "scanned - no text prices",
+      "url": "https://drive.google.com/file/d/1A8pfxOZ0mWzB_Whaj7DOreOcr8aQSC-Z/view"
+     },
+     {
+      "name": "2026 Catalogue for Rubber Pet Toys-Bestjoy Pet.pdf",
+      "kind": "catalog",
+      "url": "https://drive.google.com/file/d/1K80-UOlhb_OAHzGeZK_5HoBSRapfHRai/view"
+     },
+     {
+      "name": "2026 Catalogue for Pet Toys-Bestjoy Pet.pdf",
+      "kind": "catalog",
+      "url": "https://drive.google.com/file/d/134ewN56kgeTz0ifRZoKDwaNWr__WhEsw/view"
+     },
+     {
+      "name": "2026 Catalogue for Hard pet toy-Bestjoy Pet.pdf",
+      "kind": "catalog",
+      "url": "https://drive.google.com/file/d/1TL7kQ9AQ_0dQSkR8p42XGuKjSSJbnXo4/view"
+     },
+     {
+      "name": "2026 Bestjoy Pet Cat Scratchers.pdf",
+      "kind": "catalog",
+      "url": "https://drive.google.com/file/d/1A3RXLqdFVm-CUnKc2AEGU82mp-0Ehl5I/view"
+     }
+    ],
+    "products": 1155,
+    "waiting_for": [
+     "מחירי FOB",
+     "נתוני קרטון",
+     "מחירי מיטות",
+     "מחירי קערות",
+     "אישור MOQ 100–150",
+     "תשובה על שותף אריזה"
+    ],
+    "issues": [
+     "מחכים ל: מחירי FOB, נתוני קרטון, מחירי מיטות, מחירי קערות, אישור MOQ 100–150, תשובה על שותף אריזה"
+    ],
+    "notes": "# B01 Bestjoy – תשובה 11.11.2026 (Carina Chen, carina@bestjoypet.com, cc Shirley@bestjoypet.com) – 6 מיילים\n(כל הנתונים – כפי שנמסרו ע\"י הספק)\n- MOQ: 100–500 יח' לצבע למידה, תלוי סגנון\n- לוגו, אריזה, hang tags – כן\n- תעודות: BSCI, ISO (לא צורפו)\n- תשלום: 30% מקדמה, 70% לפני משלוח\n- מפעל עצמי למוצרי תפירה (cut-and-sew); בשאר – עובדים עם מפעלים שמאושרים ל-PetSmart, Petco, Chewy, Trixie\n- מחירים: אחרי בחירת פריטים\nAttachments (קטלוגים/הצעות מחיר 2026): Pet Beds & Houses, Collars & Leashes quotation, Hard pet toy, Pet Toys, Rubber Toys, Toys quotation, Clothing & Accessories quotation, Harness quotation, Bowls & Feeders, Grooming & Adjustable Leashes, Snuffle Mats quotation, Cat Scratchers, Cat Products quotation, Carriers & Bags quotation\n\n## 11.11.2026 – תשובה שנשלחה (באישור טל)\nFOB + נתוני קרטון; הצעה ל-10 מיטות ולקערות; MOQ 100–150 להזמנה ראשונה; שותף אריזה לכל הליינים עם מיתוג זהה ומשלוח מאוחד.\n"
+   }
   },
   {
    "id": "B02",
    "name": "Ivy Textile",
    "legal": "Jinhua Ivy Home Textile Co., Ltd.",
    "city": "Jinhua, Zhejiang",
-   "email": "julieni@ivytextile.com",
-   "phone": "+86 13017996628",
+   "email": "Laura@ivytextile.com, ivy-sales03@ivytextile.com, julieni@ivytextile.com",
+   "phone": "+86 188 5799 7699 (Laura, WhatsApp/WeChat)",
    "web": "https://www.ivytextile.com",
    "kind": "אקססוריז",
    "score": "4",
    "state": "replied",
    "status": "quote request sent 2026-11-11 (10 beds + pads 50x50) - awaiting quote",
    "summary": "מיטות ופדים רחיצים. ביקשנו הצעה ל-10 מיטות + פד 50×50, ושאלנו על אריזה לכל הליינים.",
-   "drive": "https://drive.google.com/drive/folders/1YZS2nDqJQdBTnT6YMCA6aJUVwgoTzDVx"
+   "drive": "https://drive.google.com/drive/folders/1YZS2nDqJQdBTnT6YMCA6aJUVwgoTzDVx",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label inquiry from Israel – Ashtal Yourpet",
+      "status": "quote request sent 2026-11-11 (10 beds + pads 50x50) - awaiting quote"
+     }
+    ],
+    "files": [
+     {
+      "name": "BSCI_IVY 2026.pdf",
+      "kind": "certificate",
+      "url": "https://drive.google.com/file/d/1bw51lzAb0D65whdVTQpjUdPJeKc7hi3a/view"
+     },
+     {
+      "name": "ISO 9001----Jinhua IVY.jpg",
+      "kind": "certificate",
+      "url": "https://drive.google.com/file/d/1e_Z-oXzjA5Dav4GEpwx6VHi3tWbmuZ5H/view"
+     },
+     {
+      "name": "Pet Mat catalog--Jinhua IVY.pdf",
+      "kind": "catalog - no prices -> analysis/ivy-catalog.csv",
+      "url": "https://drive.google.com/file/d/17XBGXqA8sn_qHqBm1yMRPefvG4j0pxy6/view"
+     },
+     {
+      "name": "Jinhua IVY Pet Catalog.pdf",
+      "kind": "catalog - no prices -> analysis/ivy-catalog.csv",
+      "url": "https://drive.google.com/file/d/14z-0aEo5gH3GB02VhJkVYGBkzIVoh-zw/view"
+     }
+    ],
+    "products": 0,
+    "waiting_for": [
+     "הצעת מחיר ל-10 מיטות",
+     "מחיר פד 50×50",
+     "נתוני קרטון",
+     "תשובה על שותף אריזה"
+    ],
+    "issues": [
+     "מחכים ל: הצעת מחיר ל-10 מיטות, מחיר פד 50×50, נתוני קרטון, תשובה על שותף אריזה"
+    ],
+    "notes": "# B02 Ivy Textile – תשובה 11.11.2026 (Laura He, Laura@ivytextile.com, WhatsApp/WeChat +86-18857997699)\n(כל הנתונים – כפי שנמסרו ע\"י הספק)\n- מפנים לקטלוג מיטות ומזרנים + תעודות BSCI 2026 ו-ISO9001 (מצורפים)\n- שואלים על מיצוב המותג וקהל היעד כדי להמליץ על סגנונות ולתמחר\n- מציעים מוצרים חדשים: מיטה מקררת (cooling bed), פד רחיץ נגד ריחות\n- מותאם אישית: סגנון, צבע, צורה, לוגו, תווית, אריזה\n- נמל: Ningbo / Shanghai\n- תשלום: 30% מקדמה + 70% (בהזמנה מעל 5,000$)\n- מחירים: לא נשלחו עדיין – אחרי בחירת סגנונות\nAttachments: Jinhua IVY Pet Catalog.pdf, Pet Mat catalog--Jinhua IVY.pdf, BSCI_IVY 2026.pdf, ISO 9001----Jinhua IVY.jpg\n\n## 11.11.2026 – תשובה שנשלחה (באישור טל)\nמיצוב: מותג ביניים, איכות טובה במחיר תחרותי, חנויות ורשתות בישראל, צבעים ניטרליים.\nבקשה: ~10 דגמי מיטות לכלבים/חתולים (S/M/L), פד רחיץ במידה אחת ~50x50 / 55x55 (רגיל + נגד ריחות). FOB, MOQ, דוגמה, זמנים, אריזה עם לוגו, קרטון. בלי מיטה מקררת.\n## 11.11.2026 – תוספת שנשלחה\nשאלה: שיתוף פעולה עם מפעלים נוספים (רתמות, רצועות, צעצועים, קערות), איחוד משלוח, והאם יכולים להיות שותף אריזה לכל הליינים – מיתוג זהה לכל המוצרים.\n"
+   }
   },
   {
    "id": "B03",
@@ -190,7 +473,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "B04",
@@ -205,7 +496,21 @@
    "state": "waiting",
    "status": "first inquiry sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label puppy pads inquiry from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "B05",
@@ -220,7 +525,21 @@
    "state": "waiting",
    "status": "first inquiry sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label puppy pads inquiry from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "L02",
@@ -235,7 +554,15 @@
    "state": "lead",
    "status": "lead - needs email confirmation",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "L03",
@@ -250,7 +577,15 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "L04",
@@ -265,7 +600,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "L05",
@@ -280,7 +623,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F01",
@@ -295,7 +646,21 @@
    "state": "waiting",
    "status": "first inquiry sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label dog treats inquiry from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F02",
@@ -310,7 +675,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F03",
@@ -325,7 +698,21 @@
    "state": "waiting",
    "status": "first inquiry sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label dog treats inquiry from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F04",
@@ -340,7 +727,21 @@
    "state": "waiting",
    "status": "first inquiry sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label dog treats inquiry from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F05",
@@ -355,7 +756,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F06",
@@ -370,7 +779,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P01",
@@ -385,7 +802,15 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P02",
@@ -400,7 +825,15 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P03",
@@ -415,7 +848,21 @@
    "state": "waiting",
    "status": "catalog request sent 2026-11-10 - awaiting reply",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [
+     {
+      "date": "2026-11-10",
+      "subject": "Private label natural dog chews – catalog request from Israel – Ashtal Yourpet",
+      "status": "sent - awaiting reply"
+     }
+    ],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P04",
@@ -430,7 +877,15 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P05",
@@ -445,7 +900,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P06",
@@ -460,7 +923,15 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P07",
@@ -475,7 +946,15 @@
    "state": "lead",
    "status": "not yet contacted",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P08",
@@ -490,7 +969,15 @@
    "state": "lead",
    "status": "lead - needs contact check",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "P09",
@@ -505,7 +992,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F07",
@@ -520,7 +1015,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   },
   {
    "id": "F08",
@@ -535,7 +1038,15 @@
    "state": "lead",
    "status": "lead - needs contact details",
    "summary": "",
-   "drive": ""
+   "drive": "",
+   "dossier": {
+    "emails": [],
+    "files": [],
+    "products": 0,
+    "waiting_for": [],
+    "issues": [],
+    "notes": ""
+   }
   }
  ],
  "products": [
@@ -543,665 +1054,768 @@
    "sup": "OKEYPETS",
    "sid": "T01",
    "cat": "harness",
-   "name": "Dog harness (ribbon with printed)",
-   "code": "",
-   "sizes": 12,
-   "pmin": 3.53,
-   "pmax": 5.95,
-   "moq": "20 / 50",
-   "term": "not stated",
-   "img": "",
-   "he": "רתמה"
-  },
-  {
-   "sup": "OKEYPETS",
-   "sid": "T01",
-   "cat": "collar",
-   "name": "Pet Collar",
-   "code": "",
-   "sizes": 8,
-   "pmin": 1.35,
-   "pmax": 2.79,
-   "moq": "20 / 50",
-   "term": "not stated",
-   "img": "",
-   "he": "קולר"
-  },
-  {
-   "sup": "OKEYPETS",
-   "sid": "T01",
-   "cat": "leash",
-   "name": "Dog Leash",
-   "code": "",
-   "sizes": 6,
-   "pmin": 2.28,
-   "pmax": 3.65,
-   "moq": "30 / 50",
-   "term": "not stated",
-   "img": "",
-   "he": "רצועה"
-  },
-  {
-   "sup": "OKEYPETS",
-   "sid": "T01",
-   "cat": "other",
-   "name": "Bow Tie",
-   "code": "",
-   "sizes": 4,
-   "pmin": 1.2,
-   "pmax": 1.62,
-   "moq": "30 / 50",
-   "term": "not stated",
-   "img": "",
-   "he": "פפיון"
-  },
-  {
-   "sup": "OKEYPETS",
-   "sid": "T01",
-   "cat": "other",
-   "name": "Poop bag (as labelled; item as read from image)",
-   "code": "",
-   "sizes": 2,
-   "pmin": 1.92,
-   "pmax": 2.7,
-   "moq": "30 / 50",
-   "term": "not stated",
-   "img": "",
-   "he": "מחזיק שקיות"
-  },
-  {
-   "sup": "OKEYPETS",
-   "sid": "T01",
-   "cat": "other",
-   "name": "Bandana",
-   "code": "",
-   "sizes": 4,
-   "pmin": 1.5,
-   "pmax": 2.31,
-   "moq": "30 / 50",
-   "term": "not stated",
-   "img": "",
-   "he": "בנדנה"
-  },
-  {
-   "sup": "OKEYPETS",
-   "sid": "T01",
-   "cat": "other",
    "name": "Safety belt",
+   "he": "חגורת בטיחות לרכב",
    "code": "",
    "sizes": 2,
    "pmin": 2.45,
    "pmax": 2.85,
    "moq": "30 / 50",
    "term": "not stated",
-   "img": "",
-   "he": "חגורת בטיחות לרכב"
+   "img": ""
   },
   {
    "sup": "OKEYPETS",
    "sid": "T01",
-   "cat": "bowl",
-   "name": "Slow feeder bowl",
-   "code": "Slow feeder-1",
-   "sizes": 24,
-   "pmin": 3.29,
-   "pmax": 7.1,
-   "moq": "10",
+   "cat": "harness",
+   "name": "Dog harness (ribbon with printed)",
+   "he": "רתמה",
+   "code": "",
+   "sizes": 12,
+   "pmin": 3.53,
+   "pmax": 5.95,
+   "moq": "20 / 50",
    "term": "not stated",
-   "img": "",
-   "he": "קערת האכלה איטית"
+   "img": ""
   },
   {
    "sup": "OKEYPETS",
    "sid": "T01",
-   "cat": "bed",
-   "name": "Dog bed",
-   "code": "Dog bed-1",
-   "sizes": 49,
-   "pmin": 3.38,
-   "pmax": 17.0,
-   "moq": "50",
-   "term": "not stated",
-   "img": "",
-   "he": "מיטת כלב"
-  },
-  {
-   "sup": "OKEYPETS",
-   "sid": "T01",
-   "cat": "other",
+   "cat": "collar",
    "name": "Pets Elizabeth Circle (recovery collar); tier-to-column mapping reconstructed from OCR, verify",
+   "he": "קונוס לאחר ניתוח",
    "code": "Pets Elizabeth Circle",
    "sizes": 35,
    "pmin": 1.25,
    "pmax": 2.55,
    "moq": "—",
    "term": "not stated",
-   "img": "",
-   "he": "קונוס לאחר ניתוח"
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "collar",
+   "name": "Pet Collar",
+   "he": "קולר",
+   "code": "",
+   "sizes": 8,
+   "pmin": 1.35,
+   "pmax": 2.79,
+   "moq": "20 / 50",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "leash",
+   "name": "Dog Leash",
+   "he": "רצועה",
+   "code": "",
+   "sizes": 6,
+   "pmin": 2.28,
+   "pmax": 3.65,
+   "moq": "30 / 50",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "other",
+   "name": "Bow Tie",
+   "he": "פפיון",
+   "code": "",
+   "sizes": 4,
+   "pmin": 1.2,
+   "pmax": 1.62,
+   "moq": "30 / 50",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "other",
+   "name": "Bandana",
+   "he": "בנדנה",
+   "code": "",
+   "sizes": 4,
+   "pmin": 1.5,
+   "pmax": 2.31,
+   "moq": "30 / 50",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "other",
+   "name": "Poop bag (as labelled; item as read from image)",
+   "he": "מחזיק שקיות",
+   "code": "",
+   "sizes": 2,
+   "pmin": 1.92,
+   "pmax": 2.7,
+   "moq": "30 / 50",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-5",
+   "sizes": 3,
+   "pmin": 3.29,
+   "pmax": 4.15,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-7",
+   "sizes": 3,
+   "pmin": 3.29,
+   "pmax": 4.15,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-1",
+   "sizes": 3,
+   "pmin": 3.43,
+   "pmax": 4.29,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-2",
+   "sizes": 3,
+   "pmin": 3.43,
+   "pmax": 4.29,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-B",
+   "sizes": 3,
+   "pmin": 3.43,
+   "pmax": 4.29,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-4",
+   "sizes": 3,
+   "pmin": 3.72,
+   "pmax": 4.58,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-6",
+   "sizes": 3,
+   "pmin": 3.72,
+   "pmax": 4.58,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bowl",
+   "name": "Slow feeder bowl",
+   "he": "קערת האכלה איטית",
+   "code": "Slow feeder-3",
+   "sizes": 3,
+   "pmin": 5.75,
+   "pmax": 7.1,
+   "moq": "10",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bed",
+   "name": "Dog bed",
+   "he": "מיטה",
+   "code": "Dog bed-1",
+   "sizes": 21,
+   "pmin": 3.38,
+   "pmax": 10.0,
+   "moq": "50",
+   "term": "not stated",
+   "img": ""
+  },
+  {
+   "sup": "OKEYPETS",
+   "sid": "T01",
+   "cat": "bed",
+   "name": "Dog bed",
+   "he": "מיטה",
+   "code": "Dog bed-2",
+   "sizes": 28,
+   "pmin": 3.65,
+   "pmax": 17.0,
+   "moq": "50",
+   "term": "not stated",
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "Collar/leash item; keywords in source block: leash, harness",
+   "he": "רתמה",
    "code": "AMD18075",
    "sizes": "1.0*30cm, 2.0*120cm, 2.0*24-40cm, 2.5*120cm, 2.5*29-50cm",
    "pmin": 0.73,
    "pmax": 2.2,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמה"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "Mesh fabric harness",
+   "he": "רתמת רשת",
    "code": "YWBL29",
    "sizes": "XS-L",
    "pmin": 0.78,
    "pmax": 0.81,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמת רשת"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "Collar/leash item; keywords in source block: leash, harness",
+   "he": "רתמה",
    "code": "AMD18074",
    "sizes": "1.0*28cm, 2.0*35cm, 2.0*40, 2.5*50",
    "pmin": 0.83,
    "pmax": 2.48,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמה"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "Dog and cat harness",
+   "he": "רתמה",
    "code": "YWBL41",
    "sizes": "XS-L",
    "pmin": 0.96,
    "pmax": 1.13,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמה"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "Mesh fabric harness",
+   "he": "רתמת רשת",
    "code": "YWBL25",
    "sizes": "XS-XL",
    "pmin": 1.02,
    "pmax": 1.1,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמת רשת"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "Mesh fabric harness",
+   "he": "רתמת רשת",
    "code": "YWBL26",
    "sizes": "XS-XL",
    "pmin": 1.06,
    "pmax": 1.15,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמת רשת"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "Mesh fabric harness",
+   "he": "רתמת רשת",
    "code": "YWBL27",
    "sizes": "XS-XL",
    "pmin": 1.08,
    "pmax": 1.14,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמת רשת"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
-   "name": "Outdoor Tactical Dog Harness and Collar Set with Leash",
-   "code": "DWWD01",
-   "sizes": "M(15-30kg), L(30-45kg), XL(45-60kg)",
+   "name": "Collar/leash item; keywords in source block: leash",
+   "he": "קולר",
+   "code": "AMD18513",
+   "sizes": "1.3*120cm, 1.5*35cm, 2.0*45cm, 2.5*55cm",
    "pmin": 1.56,
-   "pmax": 1.62,
+   "pmax": 2.02,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמה טקטית"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
-   "name": "PU Harness+leash",
-   "code": "ZSLD10",
+   "name": "Dog and cat harness",
+   "he": "רתמה",
+   "code": "YWBL35",
    "sizes": "S-L",
-   "pmin": 1.89,
-   "pmax": 2.48,
+   "pmin": 1.92,
+   "pmax": 2.03,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "סט רתמה + רצועה"
-  },
-  {
-   "sup": "Bestjoy",
-   "sid": "B01",
-   "cat": "harness",
-   "name": "Anti-Pull Harness",
-   "code": "YWBL03",
-   "sizes": "XS-XL",
-   "pmin": 3.08,
-   "pmax": 3.27,
-   "moq": "300",
-   "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמה נגד משיכה"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "harness",
    "name": "PU Harness",
-   "code": "ZSLD14",
-   "sizes": "S-L",
-   "pmin": 3.9,
-   "pmax": 8.81,
-   "moq": "300",
-   "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמה"
-  },
-  {
-   "sup": "Bestjoy",
-   "sid": "B01",
-   "cat": "harness",
-   "name": "PU Harness",
-   "code": "ZSLD22",
+   "he": "רתמה",
+   "code": "ZSLD25",
    "sizes": "S-XL",
-   "pmin": 7.17,
-   "pmax": 8.78,
+   "pmin": 3.08,
+   "pmax": 7.99,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "רתמה"
+   "img": ""
+  },
+  {
+   "sup": "Bestjoy",
+   "sid": "B01",
+   "cat": "harness",
+   "name": "Tactical Harness",
+   "he": "רתמה טקטית",
+   "code": "DWWD02",
+   "sizes": "S-L",
+   "pmin": 4.26,
+   "pmax": 4.43,
+   "moq": "300",
+   "term": "Ex-Factory",
+   "img": ""
+  },
+  {
+   "sup": "Bestjoy",
+   "sid": "B01",
+   "cat": "harness",
+   "name": "PU Harness",
+   "he": "רתמה",
+   "code": "ZSLD24",
+   "sizes": "S-XL",
+   "pmin": 7.34,
+   "pmax": 7.83,
+   "moq": "300",
+   "term": "Ex-Factory",
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar",
+   "he": "קולר",
    "code": "BJA20-25",
    "sizes": "27.5cm - 37cm + 1cm",
    "pmin": 0.49,
    "pmax": 0.49,
    "moq": "2000",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar",
+   "he": "קולר",
    "code": "BJA20-18",
    "sizes": "27.5cm - 37cm + 2cm",
    "pmin": 0.5,
    "pmax": 0.5,
    "moq": "2000",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar",
+   "he": "קולר",
    "code": "BJA20-22",
    "sizes": "27.5cm - 37cm + 1cm",
    "pmin": 0.5,
    "pmax": 0.5,
    "moq": "2000",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar",
+   "he": "קולר",
    "code": "BJA20-23",
    "sizes": "27.5cm - 37cm + 1cm",
    "pmin": 0.5,
    "pmax": 0.5,
    "moq": "2000",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar",
+   "he": "קולר",
    "code": "BJA20-24",
    "sizes": "27.5cm - 37cm + 1cm",
    "pmin": 0.51,
    "pmax": 0.51,
    "moq": "2000",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar",
+   "he": "קולר",
    "code": "BJA20-26",
    "sizes": "27.5cm - 37cm + 1cm",
    "pmin": 0.53,
    "pmax": 0.53,
    "moq": "2000",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar",
+   "he": "קולר",
    "code": "BJA20-21",
    "sizes": "27.5cm - 37cm + 2cm",
    "pmin": 0.54,
    "pmax": 0.54,
    "moq": "2000",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar/leash item; keywords in source block: not stated",
+   "he": "קולר",
    "code": "AMD18251",
    "sizes": "1.0*30cm",
    "pmin": 1.25,
    "pmax": 1.25,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar/leash item; keywords in source block: leash",
+   "he": "קולר",
    "code": "AMD18694",
    "sizes": "1.0*28cm, 1.5*120cm, 1.5*30cm, 1.5*35cm, 2.0*120cm, 2.0*40cm, 2.5*60cm",
    "pmin": 1.56,
    "pmax": 2.75,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar/leash item; keywords in source block: cat collar",
+   "he": "קולר לחתול",
    "code": "AMD18022",
    "sizes": "1.0*32cm",
    "pmin": 1.56,
    "pmax": 1.56,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר לחתול"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
    "name": "Collar/leash item; keywords in source block: bandana",
+   "he": "קולר",
    "code": "AMD17225",
    "sizes": "1.0*30cm, 1.3*35cm",
    "pmin": 1.65,
    "pmax": 1.83,
    "moq": "300",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "collar",
-   "name": "Collar/leash item; keywords in source block: leash",
-   "code": "AMD18701",
-   "sizes": "1.5*120cm, 1.5*24.5-35cm, 2.0*30, 2.5*36",
-   "pmin": 1.98,
-   "pmax": 3.08,
-   "moq": "300",
+   "name": "Dog collar (set item, no code)",
+   "he": "קולר",
+   "code": "",
+   "sizes": 3,
+   "pmin": 1.97,
+   "pmax": 2.23,
+   "moq": "500",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "קולר"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019030",
    "sizes": "not stated",
    "pmin": 0.61,
    "pmax": 0.61,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019069",
    "sizes": "not stated",
    "pmin": 0.67,
    "pmax": 0.67,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019070",
    "sizes": "not stated",
    "pmin": 0.7,
    "pmax": 0.7,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019021",
    "sizes": "not stated",
    "pmin": 0.79,
    "pmax": 0.79,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019028",
    "sizes": "not stated",
    "pmin": 0.79,
    "pmax": 0.79,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019037",
    "sizes": "not stated",
    "pmin": 0.79,
    "pmax": 0.79,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019051",
    "sizes": "not stated",
    "pmin": 0.79,
    "pmax": 0.79,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet toy (description not stated; picture only)",
+   "he": "צעצוע",
    "code": "2019019",
    "sizes": "not stated",
    "pmin": 1.58,
    "pmax": 1.58,
    "moq": "1000",
    "term": "Ex-Factory (as stated \"Ex-Factory Price\")",
-   "img": "",
-   "he": "צעצוע"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet snuffle mat",
+   "he": "משטח הרחה",
    "code": "MBC168",
    "sizes": "35*30cm",
    "pmin": 2.37,
    "pmax": 2.37,
    "moq": "50",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "משטח הרחה"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet snuffle mat",
+   "he": "משטח הרחה",
    "code": "KSD-2303",
    "sizes": "36x36cm",
    "pmin": 4.03,
    "pmax": 4.03,
    "moq": "50",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "משטח הרחה"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet snuffle mat",
+   "he": "משטח הרחה",
    "code": "MBC068",
    "sizes": "Surface 55*55cm; Bottom 50*50cm",
    "pmin": 5.25,
    "pmax": 5.25,
    "moq": "50",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "משטח הרחה"
+   "img": ""
   },
   {
    "sup": "Bestjoy",
    "sid": "B01",
    "cat": "toy",
    "name": "Pet snuffle mat",
+   "he": "משטח הרחה",
    "code": "KD2225",
    "sizes": "40x25cm",
    "pmin": 6.83,
    "pmax": 6.83,
    "moq": "50",
    "term": "Ex-Factory",
-   "img": "",
-   "he": "משטח הרחה"
+   "img": ""
   }
  ],
  "todo": [
-  "לחכות למחירי FOB ונתוני קרטון מ-OKEYPETS ו-Bestjoy (נשלח 11.11)",
-  "לחכות להצעת Ivy ל-10 מיטות ופדים 50×50 (נשלח 11.11)",
-  "Ronipet – תשובה מלאה צפויה 12.11",
-  "17.11 – תזכורות לספקים שלא ענו (אאשר איתך לפני שליחה)"
+  "OKEYPETS: מחכים ל: מחירי FOB, נתוני קרטון, עלות דוגמאות ממותגות, הסבר על חברה אחרת בדוחות, תשובה על שותף אריזה",
+  "Bestjoy: מחכים ל: מחירי FOB, נתוני קרטון, מחירי מיטות, מחירי קערות, אישור MOQ 100–150, תשובה על שותף אריזה",
+  "Ivy Textile: מחכים ל: הצעת מחיר ל-10 מיטות, מחיר פד 50×50, נתוני קרטון, תשובה על שותף אריזה"
  ],
  "files": [
   {
-   "name": "תיק ספקים",
-   "url": ""
-  },
-  {
    "name": "השוואת מחירים",
    "url": "https://docs.google.com/document/d/1lkvh9VCgCaOcCDJBCu6UfVVJxql2PbQoJPppU3Ix6SQ/edit"
-  },
-  {
-   "name": "מדריך עבודה",
-   "url": ""
   }
  ],
  "history": [
@@ -1276,6 +1890,45 @@
    "sup": "Petmex",
    "subject": "Private label natural dog chews – catalog request from Israel – Ashtal Yourpet",
    "status": "sent - awaiting reply"
+  }
+ ],
+ "approvals": [],
+ "team": [
+  {
+   "name": "מנהל רכש",
+   "role": "מתאם את הצוות, מסכם לך בעברית ומרכז אישורים",
+   "schedule": "כל ריצה (08:43 · 11:43 · 16:43)",
+   "last": "11.11 – בנה תיקי ספקים ומנגנון זיהוי משימות תקועות"
+  },
+  {
+   "name": "תקשורת עם ספקים",
+   "role": "בודק Gmail, משייך תשובות לספק, מתרגם ומכין טיוטות באנגלית",
+   "schedule": "3 פעמים ביום",
+   "last": "11.11 – זיהה תשובה מ-Ronipet; נשלחו תשובות ל-Ivy, OKEYPETS, Bestjoy"
+  },
+  {
+   "name": "ניתוח מחירים",
+   "role": "קורא מחירונים וקטלוגים חדשים מ-Drive ומעדכן מחירים ו-MOQ",
+   "schedule": "3 פעמים ביום (קבצים חדשים בלבד)",
+   "last": "11.11 – חילץ 1,173 שורות מחיר מ-Bestjoy ו-OKEYPETS"
+  },
+  {
+   "name": "איתור מפעלים",
+   "role": "מחפש ומאמת מפעלים חדשים בסין ובפולין",
+   "schedule": "פעם בשבוע (ראשון)",
+   "last": "10.11 – 37 ספקים; מפעלי חטיפים בפולין המאושרים לישראל"
+  },
+  {
+   "name": "מיתוג ואריזות",
+   "role": "מפרט אריזה אחיד, לוגו, עברית וברקודים לכל הליינים",
+   "schedule": "כשנבחר ספק / מגיע dieline",
+   "last": "11.11 – נרשמה דרישת מיתוג זהה לכל הליינים"
+  },
+  {
+   "name": "לוגיסטיקה ותקינה",
+   "role": "קרטונים, נפח, עלות שילוח, דרישות יבוא לישראל",
+   "schedule": "כשמגיעים נתוני קרטון",
+   "last": "10.11 – דרישות יבוא וחטיפים לישראל, רשימות פולין"
   }
  ]
 }

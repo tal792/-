@@ -89,6 +89,7 @@ th{font-family:var(--display);background:var(--soft)}
     <a href="#products" data-v="products">🛍️ מוצרים ומחירים</a>
     <a href="#suppliers" data-v="suppliers">🏭 ספקים</a>
     <a href="#files" data-v="files">📁 קבצים</a>
+    <a href="#team" data-v="team">🤖 הצוות</a>
   </nav>
 </div></header>
 
@@ -100,6 +101,8 @@ th{font-family:var(--display);background:var(--soft)}
       <div class="stat wait"><b id="s-wait">–</b><span>מחכים לתשובה</span></div>
       <div class="stat you"><b id="s-prod">–</b><span>מוצרים עם מחיר</span></div>
     </div>
+    <h2>✋ מחכה לאישורך</h2>
+    <div id="appr"></div>
     <h2>מה קורה עכשיו</h2>
     <ul class="todo" id="todo"></ul>
     <h2>מה נשלח לספקים</h2>
@@ -118,6 +121,17 @@ th{font-family:var(--display);background:var(--soft)}
     <h2>ספקים</h2>
     <div class="chips" id="schips" role="group" aria-label="סינון ספקים"></div>
     <div class="sups" id="sups"></div>
+  </section>
+
+  <section id="v-dossier" hidden>
+    <p><a class="btn ghost" href="#suppliers">→ חזרה לספקים</a></p>
+    <div id="dossier"></div>
+  </section>
+
+  <section id="v-team" hidden>
+    <h2>צוות הסוכנים</h2>
+    <p class="muted">הסוכנים עובדים לבד לפי לוח הזמנים. כל דבר שיוצא החוצה (מייל, הזמנה, תשלום) מחכה לאישור שלך.</p>
+    <div class="sups" id="team"></div>
   </section>
 
   <section id="v-files" hidden>
@@ -144,10 +158,13 @@ const money=(a,b)=>a===b||!b?`$${a.toFixed(2)}`:`$${a.toFixed(2)}<small>–${b.t
 
 function show(){
   const v=(location.hash||'#home').slice(1);
-  const views=['home','products','suppliers','files'];
-  const cur=views.includes(v)?v:'home';
+  const views=['home','products','suppliers','files','team','dossier'];
+  let cur=views.includes(v)?v:'home';
+  if(v.startsWith('sup-')){cur='dossier'; if(D) renderDossier(v.slice(4));}
   views.forEach(x=>{$('v-'+x).hidden=x!==cur});
-  document.querySelectorAll('nav a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.v===cur)||a.dataset.v===cur&&a.setAttribute('aria-current','page'));
+  const navCur=cur==='dossier'?'suppliers':cur;
+  document.querySelectorAll('nav a').forEach(a=>{if(a.dataset.v===navCur)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  window.scrollTo(0,0);
 }
 function renderHome(){
   const s=D.suppliers;
@@ -155,6 +172,8 @@ function renderHome(){
   $('s-wait').textContent=s.filter(x=>x.state==='waiting').length;
   $('s-prod').textContent=D.products.length;
   $('todo').innerHTML=D.todo.map(t=>`<li>${esc(t)}</li>`).join('');
+  const ap=D.approvals||[];
+  $('appr').innerHTML=ap.length?`<ul class="todo">${ap.map(a=>`<li style="flex-direction:column"><b>${esc(a.id)} · ${esc(a.title)}</b><span class="muted">${esc(a.supplier||'')} · ${esc(a.detail||'')}</span><span>לאישור: כתבו בצ׳אט "מאשר ${esc(a.id)}"</span></li>`).join('')}</ul>`:'<div class="empty">אין כרגע שום דבר שמחכה לאישור שלך ✅</div>';
   $('hist').innerHTML=D.history.slice().reverse().map(h=>`<tr><td>${esc(h.date.split('-').reverse().join('.'))}</td><td>${esc(h.sup)}</td><td>${esc(/repl|follow|quote|holding/.test(h.status)?'✅ ענה / בטיפול':'⏳ מחכים')}</td></tr>`).join('');
 }
 function renderChips(){
@@ -186,9 +205,34 @@ function renderSuppliers(){
     ${s.email&&!/not found|not stated/.test(s.email)?`<div class="contact">✉️ ${esc(s.email)}</div>`:''}
     ${s.phone&&!/not found|not stated/.test(s.phone)?`<div class="contact">📞 ${esc(s.phone)}</div>`:''}
     <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn" href="#sup-${esc(s.id)}">📋 תיק ספק</a>
       ${s.drive?`<a class="btn" href="${esc(s.drive)}" target="_blank" rel="noopener">📂 קטלוגים</a>`:''}
       ${s.web&&/^https?:/.test(s.web)?`<a class="btn ghost" href="${esc(s.web.split(' ')[0])}" target="_blank" rel="noopener">🌐 אתר</a>`:''}
     </div></article>`).join('');
+}
+function renderDossier(id){
+  const s=D.suppliers.find(x=>x.id===id); if(!s){$('dossier').innerHTML='<div class="empty">ספק לא נמצא</div>';return;}
+  const d=s.dossier||{}; const prods=D.products.filter(p=>p.sid===id);
+  const list=(a,f)=>a&&a.length?`<ul class="todo">${a.map(f).join('')}</ul>`:'<div class="empty">אין</div>';
+  $('dossier').innerHTML=`<article class="sup-card">
+    <div class="sup-head"><h2 style="margin:0">📋 ${esc(s.name)}</h2><span class="pill ${s.state}">${STATE[s.state]}</span></div>
+    <div class="muted">${esc(s.legal)} · ${esc(s.city)} · ${esc(s.kind)}</div>
+    ${s.summary?`<div>${esc(s.summary)}</div>`:''}
+    ${s.email?`<div class="contact">✉️ ${esc(s.email)}</div>`:''}${s.phone?`<div class="contact">📞 ${esc(s.phone)}</div>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap">${s.drive?`<a class="btn" href="${esc(s.drive)}" target="_blank" rel="noopener">📂 כל הקבצים ב-Drive</a>`:''}${s.web&&/^https?:/.test(s.web)?`<a class="btn ghost" href="${esc(s.web.split(' ')[0])}" target="_blank" rel="noopener">🌐 אתר</a>`:''}</div>
+  </article>
+  <h2>⏳ מחכים מהספק</h2>${list(d.waiting_for,w=>`<li>${esc(w)}</li>`)}
+  <h2>⚠️ בעיות פתוחות</h2>${list(d.issues,w=>`<li>${esc(w)}</li>`)}
+  <h2>🛍️ מוצרים ומחירים (${d.products||0})</h2>
+  ${prods.length?`<div class="grid">${prods.slice(0,24).map(p=>`<article class="prod"><div class="pic"><svg viewBox="0 0 80 80" aria-hidden="true" style="color:var(--accent)">${ICON[p.cat]||ICON.other}</svg><div class="price">${money(p.pmin,p.pmax)}</div></div><div class="pbody"><h3>${esc(p.he)}</h3>${p.code?`<div class="code">${esc(p.code)}</div>`:''}<div class="kv"><span>מינימום</span><span>${esc(p.moq||'—')}</span></div></div></article>`).join('')}</div>${d.products>prods.length?`<p class="note">מוצגים ${prods.length} מתוך ${d.products}. הרשימה המלאה בתיק הספק ב-Drive/במערכת.</p>`:''}`:'<div class="empty">עוד לא התקבלו מחירים</div>'}
+  <h2>📁 קבצים מהספק</h2>
+  ${d.files&&d.files.length?`<div class="tbl"><table><thead><tr><th>קובץ</th><th>מה זה</th></tr></thead><tbody>${d.files.map(f=>`<tr><td><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a></td><td>${esc(f.kind)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">אין קבצים עדיין</div>'}
+  <h2>📧 התכתבות</h2>
+  ${d.emails&&d.emails.length?`<div class="tbl"><table><thead><tr><th>תאריך</th><th>נושא</th><th>סטטוס</th></tr></thead><tbody>${d.emails.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.subject)}</td><td>${esc(e.status)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">עוד לא פנינו לספק הזה</div>'}
+  ${d.notes?`<h2>📝 סיכומי תשובות</h2><div class="sup-card" style="white-space:pre-wrap">${esc(d.notes)}</div>`:''}`;
+}
+function renderTeam(){
+  $('team').innerHTML=(D.team||[]).map(t=>`<article class="sup-card"><h3>🤖 ${esc(t.name)}</h3><div>${esc(t.role)}</div><div class="kv"><span>מתי עובד</span><span>${esc(t.schedule||'')}</span></div><div class="muted">אחרון: ${esc(t.last)}</div></article>`).join('');
 }
 function renderFiles(){
   const items=[{name:'כל הקטלוגים והמחירונים',desc:'תיקייה לכל ספק ב-Google Drive',url:D.drive_root}].concat(D.files.filter(f=>f.url).map(f=>({name:f.name,desc:'פתיחה והדפסה מ-Google Drive',url:f.url})));
@@ -201,7 +245,7 @@ document.addEventListener('click',e=>{
 window.addEventListener('hashchange',show);
 fetch('data.json').then(r=>r.json()).then(d=>{D=d;
   $('upd').textContent='עודכן: '+d.updated;
-  renderHome();renderProducts();renderSuppliers();renderFiles();show();
+  renderHome();renderProducts();renderSuppliers();renderFiles();renderTeam();show();
 }).catch(()=>{$('upd').textContent='לא הצלחתי לטעון את הנתונים. נסו לרענן.'});
 show();
 </script>
