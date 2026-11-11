@@ -181,7 +181,40 @@ function home(){
   <h2>📌 מה קורה עכשיו</h2>
   <ul class="list">${D.todo.map(t=>`<li class="item"><span class="dot"></span><span>${esc(t)}</span></li>`).join('')}</ul>
   <h2>🤖 הצוות שעובד בשבילך</h2>
-  <div class="list">${(D.team||[]).map(t=>`<div class="item"><span style="font-size:24px">🤖</span><div><h3>${esc(t.name)}</h3><div class="sub">${esc(t.schedule||'')}</div><div>${esc(t.last)}</div></div></div>`).join('')}</div>`;
+  <div class="sub" style="margin-bottom:8px">עד עכשיו הצוות חסך לך בערך <b>${(D.team||[]).reduce((a,t)=>a+((t.stats||{}).hours_saved||0),0).toFixed(0)} שעות עבודה</b> (הערכה). לחצו על סוכן לפרטים.</div>
+  <div class="list">${(D.team||[]).map(agentRow).join('')}</div>`;
+}
+function agentRow(t){
+  const st=t.stats||{};
+  const cls=t.status==='פעיל'?'replied':t.status==='מושבת'?'lead':'waiting';
+  return `<a class="srow" href="#a-${esc(t.id)}"><span class="avatar" style="background:var(--accent-2);font-size:26px" aria-hidden="true">${esc(t.emoji||'🤖')}</span>
+  <div class="mid"><h3>${esc(t.name)}</h3><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="st ${cls}">${esc(t.status||'')}</span><span class="sub">${esc(t.schedule||'')}</span></div>
+  <div class="chips"><span class="chip">⏱️ ${st.hours_saved||0} שעות נחסכו</span><span class="chip">✅ ${st.items||0} פעולות</span></div></div><span class="chev" aria-hidden="true">‹</span></a>`;
+}
+function agent(id){
+  const t=(D.team||[]).find(x=>x.id===id); if(!t) return `<a class="back" href="#home">→ בית</a><div class="empty">הסוכן לא נמצא</div>`;
+  const st=t.stats||{}; const tok=st.tokens||0;
+  const eff=st.runs?Math.round(100*(st.runs-(st.empty||0)-(st.fail||0))/st.runs):null;
+  return `<a class="back" href="#home">→ בית</a>
+  <section class="hero"><div class="top"><span class="avatar" style="background:var(--accent-2);font-size:32px" aria-hidden="true">${esc(t.emoji||'🤖')}</span><div style="min-width:0"><h1 style="margin:0">${esc(t.name)}</h1><div class="sub">${esc(t.status||'')} · ${esc(t.schedule||'')}</div></div></div>
+  <div>${esc(t.role)}</div></section>
+  <h2>📊 כמה הוא שווה לך</h2>
+  <div class="tiles">
+    <div class="tile ok"><b>${st.hours_saved||0}</b><span>שעות שחסך לך*</span></div>
+    <div class="tile you"><b>${st.items||0}</b><span>פעולות שביצע</span></div>
+    <div class="tile wait"><b>${eff==null?'—':eff+'%'}</b><span>ריצות עם תוצאה</span></div>
+  </div>
+  <h2>💸 כמה הוא עולה לך</h2>
+  <div class="tiles">
+    <div class="tile"><b style="font-size:26px">${tok?(tok/1000).toFixed(0)+'K':'—'}</b><span>טוקנים שצרך${tok?'':' (לא נמדד)'}</span></div>
+    <div class="tile"><b>${tok?st.share+'%':'—'}</b><span>מהשימוש של הצוות</span></div>
+    <div class="tile"><b>${(st.empty||0)+(st.fail||0)}</b><span>ריצות בלי תוצאה</span></div>
+  </div>
+  <div class="howto">* "שעות שחסך" = הערכה של זמן העבודה הידני שהפעולות האלה היו לוקחות לך. טוקנים = יחידות השימוש שנספרות במנוי Claude; נמדדים לסוכנים שרצים בנפרד. ריצות בתוך השיחה הראשית (מנהל, תקשורת) לא נמדדות בנפרד.</div>
+  <h2>🛠️ איך הוא עובד</h2>
+  <ol class="list" style="list-style:none">${(t.how||[]).map((h,i)=>`<li class="item"><span class="chip" style="flex:0 0 auto">${i+1}</span><span>${esc(h)}</span></li>`).join('')}</ol>
+  <h2>📜 מה עשה לאחרונה</h2>
+  ${(t.log||[]).length?`<div class="list">${t.log.map(l=>`<div class="item mail"><span class="d">${esc(l.date.split('-').reverse().join('.'))} · ${l.result==='ok'?'✅':l.result==='partial'?'🟡 חלקי':l.result==='no-match'||l.result==='empty'?'⚪ בלי תוצאה':'❌'}</span><b>${esc(l.action)}</b><span class="sub">${esc(l.items)} פריטים${+l.tokens?` · ${(l.tokens/1000).toFixed(0)}K טוקנים`:''}</span></div>`).join('')}</div>`:'<div class="empty">עוד לא היו פעולות</div>'}`;
 }
 function row(s){
   const d=s.dossier||{};
@@ -278,6 +311,7 @@ function render(){
   const h=(location.hash||'#home').slice(1);
   let v=h, html='';
   if(h.startsWith('s-')){v='suppliers';html=supplier(h.slice(2));}
+  else if(h.startsWith('a-')){v='home';html=agent(h.slice(2));}
   else if(h==='suppliers')html=suppliers();
   else if(h==='products')html=products();
   else if(h==='mine')html=mine();

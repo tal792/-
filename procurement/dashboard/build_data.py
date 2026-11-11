@@ -133,6 +133,15 @@ for r in sup:
 todo+=notes.get('manual_todo',[])
 apq=json.load(open(B+'data/approvals.json',encoding='utf-8')) if os.path.exists(B+'data/approvals.json') else []
 TEAM=json.load(open(B+'data/team.json',encoding='utf-8')) if os.path.exists(B+'data/team.json') else []
+ALOG=rows('data/agent-log.csv')
+tot_tokens=sum(int(r['tokens'] or 0) for r in ALOG) or 1
+for t in TEAM:
+    L=[r for r in ALOG if r['agent']==t['id']]
+    tok=sum(int(r['tokens'] or 0) for r in L)
+    t['stats']=dict(runs=len(L),items=sum(int(r['items'] or 0) for r in L),hours_saved=round(sum(int(r['minutes_saved'] or 0) for r in L)/60,1),
+        tokens=tok,share=round(100*tok/tot_tokens),empty=sum(1 for r in L if r['result'] in ('empty','no-match')),
+        partial=sum(1 for r in L if r['result']=='partial'),fail=sum(1 for r in L if r['result']=='fail'))
+    t['log']=[dict(date=r['date'],action=r['action'],items=r['items'],tokens=r['tokens'],result=r['result']) for r in L][-15:][::-1]
 data=dict(updated=datetime.datetime.now().strftime('%d.%m.%Y %H:%M'),drive_root=ROOT,cats=CATS,suppliers=suppliers,products=display,
   todo=todo or ['אין משימות תקועות כרגע'],
   files=[dict(name='השוואת מחירים',url='https://docs.google.com/document/d/1lkvh9VCgCaOcCDJBCu6UfVVJxql2PbQoJPppU3Ix6SQ/edit')],
