@@ -1,7 +1,7 @@
 supplier_id,supplier,to,cc,subject,sent_date,gmail_thread_id,status,follow_up_due
 S001,Petstar,info@tianyuanpet.com,,Private label inquiry from Israel – Ashtal Yourpet,2026-11-10,1a1c691e84b0ea7f,sent - awaiting reply,2026-11-17
 S002,PamiPet,info@cnpreeminent.com,,Private label inquiry from Israel – Ashtal Yourpet,2026-11-10,1a1c691eb1b9b9ef,sent - awaiting reply,2026-11-17
-S003,Ronipet,rosa@ronipet.com,nina@ronipet.com,Private label inquiry from Israel – Ashtal Yourpet,2026-11-10,1a1c691eca9964d5,sent - awaiting reply,2026-11-17
+S003,Ronipet,rosa@ronipet.com,nina@ronipet.com,Private label inquiry from Israel – Ashtal Yourpet,2026-11-10,1a1c691eca9964d5,holding reply 2026-11-11 - full answer promised 12.11 (team at CIPS fair),2026-11-17
 T01,OKEYPETS,sale@okeypets.com,,Private label inquiry from Israel – Ashtal Yourpet,2026-11-10,1a1c691f1a3a300d,"follow-up sent 2026-11-11 (FOB, cartons, samples, packaging partner)",2026-11-17
 B01,Bestjoy,info@bestjoypet.com,,Private label inquiry from Israel – Ashtal Yourpet,2026-11-10,1a1c691f2d8d4d64,"follow-up sent 2026-11-11 (FOB, beds/bowls quote, MOQ 100-150, packaging partner)",2026-11-17
 B02,Ivy Textile,julieni@ivytextile.com,,Private label inquiry from Israel – Ashtal Yourpet,2026-11-10,1a1c691f35fae496,quote request sent 2026-11-11 (10 beds + pads 50x50) - awaiting quote,2026-11-17
