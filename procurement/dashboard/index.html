@@ -181,8 +181,7 @@ function home(){
   <h2>📌 מה קורה עכשיו</h2>
   <ul class="list">${D.todo.map(t=>`<li class="item"><span class="dot"></span><span>${esc(t)}</span></li>`).join('')}</ul>
   <h2>🤖 הצוות שעובד בשבילך</h2>
-  <div class="sub" style="margin-bottom:8px">עד עכשיו הצוות חסך לך בערך <b>${(D.team||[]).reduce((a,t)=>a+((t.stats||{}).hours_saved||0),0).toFixed(0)} שעות עבודה</b> (הערכה). לחצו על סוכן לפרטים.</div>
-  <div class="list">${(D.team||[]).map(agentRow).join('')}</div>`;
+  <a class="alert" href="#team"><span class="big">🤖</span><div><h3>הצוות חסך לך בערך ${(D.team||[]).reduce((a,t)=>a+((t.stats||{}).hours_saved||0),0).toFixed(0)} שעות עבודה</h3><div class="sub">${(D.team||[]).length} סוכנים · לחצו לראות כמה כל אחד עובד ועולה</div></div></a>`;
 }
 function agentRow(t){
   const st=t.stats||{};
@@ -191,11 +190,26 @@ function agentRow(t){
   <div class="mid"><h3>${esc(t.name)}</h3><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="st ${cls}">${esc(t.status||'')}</span><span class="sub">${esc(t.schedule||'')}</span></div>
   <div class="chips"><span class="chip">⏱️ ${st.hours_saved||0} שעות נחסכו</span><span class="chip">✅ ${st.items||0} פעולות</span></div></div><span class="chev" aria-hidden="true">‹</span></a>`;
 }
-function agent(id){
-  const t=(D.team||[]).find(x=>x.id===id); if(!t) return `<a class="back" href="#home">→ בית</a><div class="empty">הסוכן לא נמצא</div>`;
+function team(){
+  const T=D.team||[]; if(!ui.agent) ui.agent=T[0]&&T[0].id;
+  const sum=k=>T.reduce((a,t)=>a+((t.stats||{})[k]||0),0);
+  const maxH=Math.max(1,...T.map(t=>(t.stats||{}).hours_saved||0));
+  return `<a class="back" href="#home">→ בית</a><h1>🤖 הצוות</h1><div class="sub">כל הסוכנים בדף אחד · בחרו סוכן כדי לראות כמה הוא עובד ועולה</div>
+  <div class="tiles">
+    <div class="tile ok"><b>${sum('hours_saved').toFixed(0)}</b><span>שעות נחסכו*</span></div>
+    <div class="tile you"><b>${sum('items')}</b><span>פעולות</span></div>
+    <div class="tile"><b style="font-size:26px">${sum('tokens')>=1e6?(sum('tokens')/1e6).toFixed(1)+'M':(sum('tokens')/1000).toFixed(0)+'K'}</b><span>טוקנים (נמדד)</span></div>
+  </div>
+  <h2>מי עובד הכי הרבה</h2>
+  <div class="list">${T.map(t=>{const h=(t.stats||{}).hours_saved||0;return `<button class="item" data-agent="${esc(t.id)}" style="cursor:pointer;text-align:right;border:${ui.agent===t.id?'2px solid var(--accent)':'1px solid var(--line)'};align-items:center"><span style="font-size:24px">${esc(t.emoji||'🤖')}</span><span style="flex:1;min-width:0;display:grid;gap:4px"><b>${esc(t.name)} <span class="sub">· ${esc(t.status||'')}</span></b><span style="display:block;height:10px;border-radius:6px;background:var(--accent-2);overflow:hidden"><span style="display:block;height:100%;width:${Math.max(3,Math.round(100*h/maxH))}%;background:var(--accent)"></span></span><span class="sub">${h} שעות · ${(t.stats||{}).items||0} פעולות${(t.stats||{}).tokens?` · ${(t.stats.tokens/1000).toFixed(0)}K טוקנים`:''}</span></span></button>`}).join('')}</div>
+  <div class="seg" role="group" aria-label="בחירת סוכן" style="margin-top:18px">${T.map(t=>`<button data-agent="${esc(t.id)}" aria-pressed="${ui.agent===t.id}">${esc(t.emoji||'')} ${esc(t.name)}</button>`).join('')}</div>
+  ${agent(ui.agent,true)}`;
+}
+function agent(id,embedded){
+  const t=(D.team||[]).find(x=>x.id===id); if(!t) return `<div class="empty">הסוכן לא נמצא</div>`;
   const st=t.stats||{}; const tok=st.tokens||0;
   const eff=st.runs?Math.round(100*(st.runs-(st.empty||0)-(st.fail||0))/st.runs):null;
-  return `<a class="back" href="#home">→ בית</a>
+  return `${embedded?'':'<a class="back" href="#team">→ הצוות</a>'}
   <section class="hero"><div class="top"><span class="avatar" style="background:var(--accent-2);font-size:32px" aria-hidden="true">${esc(t.emoji||'🤖')}</span><div style="min-width:0"><h1 style="margin:0">${esc(t.name)}</h1><div class="sub">${esc(t.status||'')} · ${esc(t.schedule||'')}</div></div></div>
   <div>${esc(t.role)}</div></section>
   <h2>📊 כמה הוא שווה לך</h2>
@@ -311,7 +325,8 @@ function render(){
   const h=(location.hash||'#home').slice(1);
   let v=h, html='';
   if(h.startsWith('s-')){v='suppliers';html=supplier(h.slice(2));}
-  else if(h.startsWith('a-')){v='home';html=agent(h.slice(2));}
+  else if(h.startsWith('a-')){v='home';ui.agent=h.slice(2);html=team();}
+  else if(h==='team'){v='home';html=team();}
   else if(h==='suppliers')html=suppliers();
   else if(h==='products')html=products();
   else if(h==='mine')html=mine();
@@ -324,7 +339,8 @@ function render(){
 let lastHash=location.hash;
 window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#s-')&&location.hash!==lastHash){ui.seg='prices';ui.scat='all';ui.shown=20;}lastHash=location.hash;render();window.scrollTo(0,0)});
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-sup],[data-seg],[data-scat],[data-cat],[data-more],[data-pmore],[data-copy],[data-filter],[data-pick],[data-noimg],[data-mcat]'); if(!t) return;
+  const t=e.target.closest('[data-sup],[data-seg],[data-scat],[data-cat],[data-more],[data-pmore],[data-copy],[data-filter],[data-pick],[data-noimg],[data-mcat],[data-agent]'); if(!t) return;
+  if(t.dataset.agent){ui.agent=t.dataset.agent;const y=window.scrollY;render();window.scrollTo(0,y);return;}
   if(t.dataset.copy){copy(t.dataset.copy);return;}
   if(t.dataset.pick){pick(t.dataset.key,t.dataset.pick);return;}
   if(t.dataset.noimg){ui.noimg=true;}
