@@ -100,6 +100,15 @@ button{font:inherit;color:inherit}
 .pb .m{font-size:13px;color:var(--muted)}
 .pb .code{font-size:12px;color:var(--muted);direction:ltr;text-align:right}
 .more{width:100%;margin-top:12px}
+.picks{position:absolute;top:8px;inset-inline-end:8px;display:flex;gap:6px}
+.picks button{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:19px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.18);display:grid;place-items:center}
+.picks button[aria-pressed="true"].like{background:#ffe1e6}
+.picks button[aria-pressed="true"].no{background:#e8e8e8}
+.prod.liked{border-color:#e8577a;box-shadow:0 0 0 2px color-mix(in srgb,#e8577a 30%,transparent)}
+.prod.dim{opacity:.55}
+.ribbon{position:absolute;top:8px;inset-inline-start:8px;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px}
+.howto{background:var(--accent-2);border-radius:16px;padding:12px 14px;font-size:15px;margin-top:10px}
+.tabs a{font-size:12px}
 /* files */
 .frow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;text-decoration:none;color:inherit;min-height:68px}
 .frow .fi{font-size:28px}
@@ -125,7 +134,8 @@ button{font:inherit;color:inherit}
 <nav class="tabs" aria-label="תפריט ראשי">
   <a href="#home" data-v="home"><span class="ic">🏠</span>בית</a>
   <a href="#suppliers" data-v="suppliers"><span class="ic">🏭</span>ספקים</a>
-  <a href="#products" data-v="products"><span class="ic">💰</span>מחירים</a>
+  <a href="#mine" data-v="mine"><span class="ic">⭐</span>הקטלוג שלי</a>
+  <a href="#products" data-v="products"><span class="ic">📚</span>קטלוג</a>
   <a href="#approve" data-v="approve"><span class="ic">✋</span>לאישור<span class="badge" id="nb" hidden></span></a>
 </nav>
 <div class="toast" id="toast" hidden></div>
@@ -135,7 +145,12 @@ const CATEMO={harness:'🦺',collar:'⭕',leash:'🦮',bed:'🛏️',bowl:'🥣'
 const CATBG={harness:'#dff1ee',collar:'#fdf0d5',leash:'#e6eefc',bed:'#f3e6f7',bowl:'#e3f4e1',toy:'#fde5e1',pad:'#eceae4',other:'#f1efe8'};
 const AV=['#0e6f69','#b2552d','#3d5a99','#7a4e9c','#2f7d3e','#9c6b10','#a33a59'];
 const ST={replied:'ענה ✓',waiting:'מחכים לו',lead:'עוד לא פנינו'};
-let D=null, ui={sup:'all', q:'', cat:'all', sort:'price', seg:'prices', scat:'all', shown:20, pshown:20};
+let D=null, ui={sup:'all', q:'', cat:'all', sort:'price', seg:'prices', scat:'all', shown:20, pshown:20, noimg:false, mcat:'all'};
+let PICKS={}, canPick=false, dbh=null;
+const ALL=()=>D.suppliers.flatMap(s=>((s.dossier||{}).items||[]).map(i=>Object.assign({sup:s.name,sid:s.id},i)));
+const pickOf=p=>(PICKS[p.key]&&PICKS[p.key].v)||p.mine||'';
+const isMine=p=>pickOf(p)==='like'||(p.rec&&pickOf(p)!=='no');
+const imgFirst=(li,flag)=>{const w=li.filter(p=>p.img);return {list:flag?li:w,hidden:li.length-w.length};};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const money=(a,b)=>a==null?'—':(!b||a===b?`$${a.toFixed(2)}`:`$${a.toFixed(2)}<small> –${b.toFixed(2)}</small>`);
@@ -144,7 +159,9 @@ const clean=v=>v&&!/not found|not stated|^—$/.test(v)?v:'';
 function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,1800)}
 function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('הועתק ✓'),()=>toast('סמנו והעתיקו ידנית'))}catch(e){toast('סמנו והעתיקו ידנית')}}
 function card(p,showSup){
-  return `<article class="prod"><div class="pic" style="background:${CATBG[p.cat]||CATBG.other}">${p.img?`<img src="${esc(p.img)}" alt="" loading="lazy">`:`<span class="emo" aria-hidden="true">${CATEMO[p.cat]||'⭐'}</span>`}<div class="price">${money(p.pmin,p.pmax)}</div></div>
+  const pk=pickOf(p);
+  const btns=canPick?`<div class="picks"><button class="like" data-pick="like" data-key="${esc(p.key)}" aria-pressed="${pk==='like'}" aria-label="להוסיף לקטלוג שלי">${pk==='like'?'❤️':'🤍'}</button><button class="no" data-pick="no" data-key="${esc(p.key)}" aria-pressed="${pk==='no'}" aria-label="לא רלוונטי כרגע">✖️</button></div>`:'';
+  return `<article class="prod ${pk==='like'?'liked':''} ${pk==='no'?'dim':''}"><div class="pic" style="background:${CATBG[p.cat]||CATBG.other}">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.he)}" loading="lazy">`:`<span class="emo" aria-hidden="true">${CATEMO[p.cat]||'⭐'}</span>`}${p.rec&&pk!=='like'?'<span class="ribbon">✨ מומלץ לך</span>':''}${btns}<div class="price">${money(p.pmin,p.pmax)}</div></div>
   <div class="pb"><h3>${esc(p.he)}</h3>${showSup?`<div class="s">${esc(p.sup)}</div>`:''}<div class="m">מינימום: <b>${esc(p.moq||'—')}</b></div>${p.code?`<div class="code">${esc(p.code)}</div>`:''}</div></article>`;
 }
 /* ---------- screens ---------- */
@@ -190,12 +207,14 @@ function supplier(id){
   let body='';
   if(ui.seg==='prices'){
     const cats=[...new Set(items.map(i=>i.cat))];
-    let li=items.filter(i=>ui.scat==='all'||i.cat===ui.scat);
+    let li0=items.map(i=>Object.assign({sup:s.name,sid:s.id},i)).filter(i=>ui.scat==='all'||i.cat===ui.scat);
+    const r=imgFirst(li0,ui.noimg); let li=r.list;
     li=li.slice().sort((a,b)=>ui.sort==='price'?a.pmin-b.pmin:b.pmin-a.pmin);
     body=items.length?`${cats.length>1?`<div class="seg" role="group" aria-label="קטגוריה">${[['all','הכול']].concat(cats.map(c=>[c,(CATEMO[c]||'')+' '+(D.cats[c]||c)])).map(([k,l])=>`<button data-scat="${k}" aria-pressed="${ui.scat===k}">${l}</button>`).join('')}</div>`:''}
       <div class="sort"><span class="sub">${li.length} מוצרים · מחיר ליחידה בדולר</span><select id="sort" aria-label="מיון"><option value="price" ${ui.sort==='price'?'selected':''}>הזול קודם</option><option value="desc" ${ui.sort==='desc'?'selected':''}>היקר קודם</option></select></div>
       <div class="grid">${li.slice(0,ui.shown).map(p=>card(p,false)).join('')}</div>
-      ${li.length>ui.shown?`<button class="btn ghost more" data-more="1">עוד ${Math.min(20,li.length-ui.shown)} מוצרים ↓</button>`:''}`
+      ${li.length>ui.shown?`<button class="btn ghost more" data-more="1">עוד ${Math.min(20,li.length-ui.shown)} מוצרים ↓</button>`:''}
+      ${r.hidden&&!ui.noimg?`<button class="btn ghost more" data-noimg="1">הצג גם ${r.hidden} מוצרים בלי תמונה</button>`:''}`
       :`<div class="empty"><span class="big">⏳</span>עוד לא קיבלנו מחירים מהספק הזה${(d.waiting_for||[]).length?'<br>מחכים ל: '+esc(d.waiting_for.join(', ')):''}</div>`;
   } else if(ui.seg==='files'){
     body=(d.files||[]).length?`<div class="list">${d.files.map(f=>`<a class="frow" href="${esc(f.url)}" target="_blank" rel="noopener"><span class="fi">${/certif|report|BSCI|ISO/i.test(f.kind+f.name)?'📜':/price/i.test(f.kind)?'💲':/image|jpg|png/i.test(f.kind+f.name)?'🖼️':'📘'}</span><span class="fn">${esc(f.name)}<br><span class="fk">${esc(f.kind)}</span></span><span class="chev">‹</span></a>`).join('')}</div>
@@ -217,19 +236,31 @@ function supplier(id){
   <div class="segtabs" role="group" aria-label="תיק הספק">${segs.map(([k,l])=>`<button data-seg="${k}" aria-pressed="${ui.seg===k}">${l}</button>`).join('')}</div>
   ${body}`;
 }
-function products(){
-  const all=D.suppliers.flatMap(s=>((s.dossier||{}).items||[]).map(i=>Object.assign({sup:s.name,sid:s.id},i)));
+function mine(){
+  const all=ALL().filter(isMine);
   const cats=Object.keys(D.cats).filter(c=>all.some(p=>p.cat===c));
-  let li=all.filter(p=>ui.cat==='all'||p.cat===ui.cat);
-  if(ui.q2) li=li.filter(p=>(p.he+' '+p.name+' '+p.code+' '+p.sup).toLowerCase().includes(ui.q2.toLowerCase()));
+  const li=all.filter(p=>ui.mcat==='all'||p.cat===ui.mcat).sort((a,b)=>(pickOf(b)==='like')-(pickOf(a)==='like')||a.cat.localeCompare(b.cat)||a.pmin-b.pmin);
+  const liked=all.filter(p=>pickOf(p)==='like').length, rec=all.length-liked;
+  return `<h1>⭐ הקטלוג שלי</h1><div class="sub">${liked} מוצרים שבחרת · ${rec} שסוכן הטעם ממליץ לך</div>
+  <div class="howto">💡 איך זה עובד: בקטלוג, לוחצים 🤍 על מוצר שמתאים לך והוא עובר לכאן. ✖️ = לא רלוונטי כרגע (נשאר בקטלוג הכללי). סוכן הטעם לומד מהבחירות שלך וממליץ על מוצרים דומים, מסומנים ✨.</div>
+  ${cats.length>1?`<div class="seg" role="group" aria-label="קטגוריה">${[['all','הכול']].concat(cats.map(c=>[c,CATEMO[c]+' '+D.cats[c]])).map(([k,l])=>`<button data-mcat="${k}" aria-pressed="${ui.mcat===k}">${l}</button>`).join('')}</div>`:''}
+  ${li.length?`<div class="grid" style="margin-top:12px">${li.map(p=>card(p,true)).join('')}</div>`:`<div class="empty" style="margin-top:14px"><span class="big">🤍</span>עוד לא בחרת מוצרים.<br>היכנס ל"קטלוג" ולחץ 🤍 על מה שמתאים לך.</div>`}`;
+}
+function products(){
+  const all=ALL().filter(p=>!isMine(p));
+  const cats=Object.keys(D.cats).filter(c=>all.some(p=>p.cat===c));
+  let li0=all.filter(p=>ui.cat==='all'||p.cat===ui.cat);
+  if(ui.q2) li0=li0.filter(p=>(p.he+' '+p.name+' '+p.code+' '+p.sup).toLowerCase().includes(ui.q2.toLowerCase()));
+  const r=imgFirst(li0,ui.noimg); const li=r.list;
   li.sort((a,b)=>ui.sort==='price'?a.pmin-b.pmin:b.pmin-a.pmin);
-  return `<h1>💰 מחירים</h1><div class="sub">כל המוצרים מכל הספקים · מחיר ליחידה בדולר, כפי שהספק כתב (לפני הובלה ומכס)</div>
+  return `<h1>📚 קטלוג</h1><div class="sub">כל המוצרים מכל הספקים · מחיר ליחידה בדולר, כפי שהספק כתב (לפני הובלה ומכס)${canPick?' · 🤍 = לקטלוג שלי':''}</div>
   <div style="margin-top:12px"><input class="search" id="q2" type="search" placeholder="🔎 חיפוש: רתמה, קולר, קוד…" value="${esc(ui.q2||'')}" aria-label="חיפוש מוצר"></div>
   <div class="seg" role="group" aria-label="קטגוריה">${[['all','הכול']].concat(cats.map(c=>[c,CATEMO[c]+' '+D.cats[c]])).map(([k,l])=>`<button data-cat="${k}" aria-pressed="${ui.cat===k}">${l}</button>`).join('')}</div>
   <div class="sort"><span class="sub">${li.length} מוצרים</span><select id="sort" aria-label="מיון"><option value="price" ${ui.sort==='price'?'selected':''}>הזול קודם</option><option value="desc" ${ui.sort==='desc'?'selected':''}>היקר קודם</option></select></div>
   <div class="grid">${li.slice(0,ui.pshown).map(p=>card(p,true)).join('')||''}</div>
   ${li.length?'':'<div class="empty"><span class="big">🔍</span>לא נמצאו מוצרים</div>'}
   ${li.length>ui.pshown?`<button class="btn ghost more" data-pmore="1">עוד ${Math.min(20,li.length-ui.pshown)} מוצרים ↓</button>`:''}
+  ${r.hidden&&!ui.noimg?`<button class="btn ghost more" data-noimg="1">הצג גם ${r.hidden} מוצרים בלי תמונה</button>`:''}
   <p class="sub" style="margin-top:14px">מיטות, קערות ופדים: עוד מחכים למחירים מרוב הספקים.</p>`;
 }
 function approve(){
@@ -249,6 +280,7 @@ function render(){
   if(h.startsWith('s-')){v='suppliers';html=supplier(h.slice(2));}
   else if(h==='suppliers')html=suppliers();
   else if(h==='products')html=products();
+  else if(h==='mine')html=mine();
   else if(h==='approve')html=approve();
   else {v='home';html=home();}
   $('app').innerHTML=html;
@@ -258,8 +290,11 @@ function render(){
 let lastHash=location.hash;
 window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#s-')&&location.hash!==lastHash){ui.seg='prices';ui.scat='all';ui.shown=20;}lastHash=location.hash;render();window.scrollTo(0,0)});
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-sup],[data-seg],[data-scat],[data-cat],[data-more],[data-pmore],[data-copy],[data-filter]'); if(!t) return;
+  const t=e.target.closest('[data-sup],[data-seg],[data-scat],[data-cat],[data-more],[data-pmore],[data-copy],[data-filter],[data-pick],[data-noimg],[data-mcat]'); if(!t) return;
   if(t.dataset.copy){copy(t.dataset.copy);return;}
+  if(t.dataset.pick){pick(t.dataset.key,t.dataset.pick);return;}
+  if(t.dataset.noimg){ui.noimg=true;}
+  if(t.dataset.mcat){ui.mcat=t.dataset.mcat;}
   if(t.dataset.filter){ui.sup=t.dataset.filter;return;}
   if(t.dataset.sup) ui.sup=t.dataset.sup;
   if(t.dataset.seg){ui.seg=t.dataset.seg;}
@@ -274,6 +309,29 @@ document.addEventListener('input',e=>{
   if(e.target.id==='q2'){ui.q2=e.target.value;ui.pshown=20;render();const q=$('q2');q.focus();q.setSelectionRange(q.value.length,q.value.length);}
 });
 document.addEventListener('change',e=>{if(e.target.id==='sort'){ui.sort=e.target.value;render();}});
+async function pick(key,v){
+  const cur=(PICKS[key]&&PICKS[key].v)||'';
+  const nv=cur===v?'':v;
+  PICKS[key]=nv?{v:nv}:{v:'none'}; const y=window.scrollY; render(); window.scrollTo(0,y);
+  toast(nv==='like'?'נוסף לקטלוג שלי ❤️':nv==='no'?'סומן: לא רלוונטי כרגע':'הבחירה בוטלה');
+  if(!dbh) return;
+  try{ await dbh.collection('picks').doc(key).set({v:nv||'none',at:new Date().toISOString()}); }
+  catch(e){ toast('לא הצלחתי לשמור. נסו שוב'); }
+}
+async function initPicks(){
+  try{
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!db) return;
+    dbh=db;
+    canPick=!!(user&&user.isOwner&&await user.isOwner());
+    db.collection('picks').onSnapshot(snap=>{
+      const m={}; snap.docs.forEach(d=>{const b=d.data(); if(b) m[d.id]=b;}); PICKS=m;
+      const y=window.scrollY; render(); window.scrollTo(0,y);
+    },()=>{});
+    render();
+  }catch(e){}
+}
+if(window.claude&&claude.use) initPicks();
 fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{D=d;render();})
  .catch(()=>{$('app').innerHTML='<div class="empty"><span class="big">😕</span>לא הצלחתי לטעון את הנתונים. נסו לרענן את הדף.</div>'});
 </script>

@@ -40,6 +40,18 @@ def heb(n):
     return n
 def nums(s): return [float(x) for x in re.findall(r'\d+\.?\d*',s or '')]
 all_products=collections.defaultdict(list)   # sid -> all priced rows (dossier)
+def mkkey(sid,code,name,size):
+    raw=f"{sid}~{code or name}~{size}"
+    return re.sub(r'[^A-Za-z0-9_\-.~:@+]','-',raw)[:180].strip('.') or sid
+IMG={}
+if os.path.exists(B+'dashboard/img/matches.csv'):
+    for m in rows('dashboard/img/matches.csv'):
+        if m.get('local_path') and m.get('match_type') in ('code','type'):
+            lp=m['local_path'].split('dashboard/')[-1]
+            IMG[(m['supplier_id'],m.get('price_item_code') or '',m.get('price_description') or '')]=lp
+            if m.get('price_item_code'): IMG.setdefault((m['supplier_id'],m['price_item_code'],''),lp)
+TASTE=json.load(open(B+'data/taste.json',encoding='utf-8')) if os.path.exists(B+'data/taste.json') else {}
+REC=set(TASTE.get('recommended',[])); LIKED=set(TASTE.get('liked',[])); REJ=set(TASTE.get('rejected',[]))
 display=[]
 for sid,path in PRICE_FILES.items():
     name=HE.get(sid,sid)
@@ -56,7 +68,12 @@ for sid,path in PRICE_FILES.items():
         item=dict(sup=name,sid=sid,cat=cat_of((r0.get('category') or '')+' '+clean),name=clean,he=heb(clean),
           code=r0.get('item_code','') if r0.get('item_code') not in (None,'not stated') else '',
           sizes=len(rs) if len(rs)>1 else (r0.get('size') or ''),pmin=min(allp),pmax=max(allp),
-          moq=' / '.join(moqs[:2]),term=r0.get('price_term',''),img=r0.get('img',''))
+          moq=' / '.join(moqs[:2]),term=r0.get('price_term',''),img='')
+        code=item['code']
+        item['img']=IMG.get((sid,code,''),'') or IMG.get((sid,code,desc or ''),'') or IMG.get((sid,'',desc or ''),'')
+        item['key']=mkkey(sid,code,clean,str(item['sizes']))
+        item['rec']=item['key'] in REC
+        item['mine']='like' if item['key'] in LIKED else ('no' if item['key'] in REJ else '')
         all_products[sid].append(item)
 MOQFIX={'Slow feeder bowl':'10','Dog bed':'50','Pets Elizabeth Circle':'—'}
 for sid,items in all_products.items():
